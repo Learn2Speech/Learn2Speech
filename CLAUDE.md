@@ -19,7 +19,7 @@ Read this file at the start of every session and follow it strictly.
 
 ## Team ownership (important for CAC judging)
 - **Rian** owns transcription, metrics, and AI feedback.
-- **[PARTNER NAME]** owns auth, upload, and history.
+- **Akshith** owns auth, upload, and history.
 - Check `git config user.name` at the start of a session to know who you're working with.
 - Only edit files in that person's feature area. If a change touches the other person's area or shared files (`package.json`, root layout, Supabase client, shared types, database schema), **stop and flag it** so we can coordinate first.
 
