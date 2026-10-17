@@ -19,7 +19,7 @@ Read this file at the start of every session and follow it strictly.
 ## Stack
 - Next.js (App Router) + TypeScript, Tailwind CSS, shadcn/ui
 - Supabase (auth + Postgres), hosted on Vercel, code in our GitHub Organization repo
-- Transcription provider is **not decided yet** (AssemblyAI / Whisper / Groq). Do not pick one without asking.
+- Transcription: **AssemblyAI** (chosen by Rian, Oct 2026), called with plain `fetch` from server code only.
 
 ## Commands
 - `npm run dev`: local server at http://localhost:3000
