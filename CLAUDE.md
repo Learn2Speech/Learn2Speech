@@ -76,7 +76,7 @@ Go one level at a time, and only move up when the student asks:
 - Server Components by default; add `"use client"` only when needed (state, effects, browser APIs).
 - Add shadcn components with `npx shadcn@latest add <component>`; don't hand-copy them.
 - Supabase: Row Level Security on every table. Ask before any schema change; keep migrations in `supabase/migrations/`.
-- Keep metrics logic (WPM, fillers, pauses) as pure functions in `src/lib/` so they're easy to test and explain.
+- Keep metrics logic (WPM, fillers, pauses) as pure functions in `lib/` (project root) so they're easy to test and explain.
 
 ## AI disclosure (CAC requirement)
 - Keep the `Co-Authored-By: Claude` trailer on every commit Claude helped write. Never remove it.
