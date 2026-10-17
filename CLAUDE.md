@@ -79,7 +79,10 @@ Go one level at a time, and only move up when the student asks:
 - Keep metrics logic (WPM, fillers, pauses) as pure functions in `lib/` (project root) so they're easy to test and explain.
 
 ## AI disclosure (CAC requirement)
-- Keep the `Co-Authored-By: Claude` trailer on every commit Claude helped write. Never remove it.
+- Every commit Claude was involved in must say how, so the git history matches `docs/AI_LOG.md`:
+  - **Student wrote the code, Claude reviewed / explained / debugged:** add a body line `Written by <name>. Claude <what it did>.` and the trailer `Assisted-by: Claude <model> (<what it did>)`.
+  - **Claude wrote the code** (supporting code, or full code from the hint ladder): keep the `Co-Authored-By: Claude <model> <noreply@anthropic.com>` trailer.
+  - Never leave out the attribution, and never use `Assisted-by` on code Claude wrote.
 - At the end of every session, add an entry to `docs/AI_LOG.md` in this format:
   - `Date | Who | Feature / files | What Claude did (explained / wrote / reviewed / debugged) | What the student wrote`
 - When a new library, API, or tool is added, add it to `docs/CREDITS.md` (name, what we use it for, license).
