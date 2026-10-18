@@ -1,3 +1,4 @@
+import type { Transcript } from "@/lib/transcription/types";
 // transcribeAudio(audioURL) returns a Transcript
 // 1. Get the API key from .env.local 
 //if it is missing, give me the error and i will readd it
@@ -11,8 +12,7 @@
 //    - words ← the reply's words (each word has text, start, end, confidence)
 //    - durationMs ← reply's audio_duration * 1000 (careful with units!)
 // 5. Return the Transcript
-
-export async function transcribeAudio(audioURL: string){
+export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
   if (!assemblyKey){
     throw new Error("ASSEMBLYAI_API_KEY is missing. Add it to .env.local");
@@ -42,9 +42,27 @@ export async function transcribeAudio(audioURL: string){
     if (!response.ok) {
       throw new Error(`Checking transcription failed: ${response.status}`);
     }
-    const result: {status: string; error?: string} = await response.json();
+    const result: {
+      status: string;
+      error?: string;
+      text: string | null;
+      words: { text: string; start: number; end: number; confidence: number }[] | null;
+      audio_duration: number | null;
+    } = await response.json();
     if (result.status === "completed"){
-      return result;
+      if (!result.words || result.words.length === 0){
+        throw new Error("No speech detected in the recording");
+      }
+      return {
+        text: result.text ?? "",
+        words: (result.words ?? []).map((word) => ({
+          text: word.text,
+          start: word.start,
+          end: word.end,
+          confidence: word.confidence,
+        })),
+        durationMs: (result.audio_duration ?? 0) * 1000,
+      };
     }
     if (result.status === "error"){
       throw new Error(`Transcription failed: ${result.error}`);
