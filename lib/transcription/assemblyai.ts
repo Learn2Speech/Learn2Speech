@@ -30,4 +30,25 @@ export async function transcribeAudio(audioURL: string){
   }
   const data: { id: string } = await response.json();
   const jobID = data.id;
+  const startedAt = Date.now();
+  const limitMs = 3*60*1000;
+  while (true){
+    if (Date.now() - startedAt > limitMs){
+      throw new Error("Transcription took too long");
+    }
+    const response = await fetch(`https://api.assemblyai.com/v2/transcript/${jobID}`,{
+      headers: { authorization: assemblyKey},
+    });
+    if (!response.ok) {
+      throw new Error(`Checking transcription failed: ${response.status}`);
+    }
+    const result: {status: string; error?: string} = await response.json();
+    if (result.status === "completed"){
+      return result;
+    }
+    if (result.status === "error"){
+      throw new Error(`Transcription failed: ${result.error}`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
 }
