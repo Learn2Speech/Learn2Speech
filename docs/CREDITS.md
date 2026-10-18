@@ -8,11 +8,11 @@ Required for Congressional App Challenge disclosure. Add a row whenever we add a
 | [React](https://react.dev) | Building the user interface | MIT |
 | [TypeScript](https://www.typescriptlang.org) | Type-checked JavaScript | Apache-2.0 |
 | [Tailwind CSS](https://tailwindcss.com) | Styling | MIT |
+| [Supabase](https://supabase.com) (`@supabase/supabase-js`, `@supabase/ssr`) | Login (authentication) and, later, database and storage | MIT (libraries); hosted service under Supabase terms
 | [ESLint](https://eslint.org) | Catching code mistakes (linting) | MIT |
 | [Claude Code](https://claude.com/claude-code) (Anthropic) | AI coding assistant; every use is logged in `docs/AI_LOG.md` | Anthropic Commercial Terms |
 
 ## Planned (add a row when actually added)
-- Supabase (auth + database)
 - shadcn/ui (UI components)
 - Anthropic API (coaching feedback)
 - Transcription provider (not chosen yet)
