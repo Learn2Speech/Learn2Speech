@@ -23,8 +23,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       authorization: assemblyKey,
       "content-type": "application/json",
     },
-    body: JSON.stringify({audio_url: audioURL}),
-    });
+    body: JSON.stringify({audio_url: audioURL, disfluencies: true}),
+  });
   if (!response.ok){
     throw new Error(`Submitting transcription failed: ${response.status}`);
   }
