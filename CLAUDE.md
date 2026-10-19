@@ -1,9 +1,9 @@
-# SpeechCoach: Rules for Claude Code
+# Learn2Speech: Rules for Claude Code
 
 Read this file at the start of every session and follow it strictly.
 
 ## Project
-- SpeechCoach is a speech coaching web app for the 2026 Congressional App Challenge (CAC).
+- Learn2Speech is a speech coaching web app for the 2026 Congressional App Challenge (CAC).
 - **Deadline: Monday, Oct 26, 2026 at 12:00 PM (noon) Eastern.** Noon, not midnight. Aim to submit by Oct 24.
 - MVP only: upload audio → transcription → metrics from word timestamps (words per minute, filler words, pauses) → AI coaching feedback (Anthropic API) → simple history list.
 - Out of scope until after the competition: live/real-time streaming, librosa, and anything else not listed above. If a request drifts outside the MVP, say so before building anything.
@@ -11,7 +11,7 @@ Read this file at the start of every session and follow it strictly.
 ## Competition rules Claude must protect (CAC 2026 official rules)
 - AI is allowed only if ALL AI use is fully disclosed in our submission. Every session must be logged (see "AI disclosure" below).
 - AI may support specific parts but must NOT be the entirety of the technical development. Students must show significant individual contribution and understand their app well enough to explain it to judges.
-- The app must be original and the coding done by the students. Claude teaches, guides, reviews and helps debug. It does not build whole features on its own.
+- The app must be original and the coding done by the participants. Claude teaches, guides, reviews and helps debug. It does not build whole features on its own.
 - Open-source libraries, frameworks, APIs and tools must be clearly documented and used according to their licenses (see `docs/CREDITS.md`).
 - Judges may ask for the source code and a working app; refusing means disqualification. Keep the repo runnable and the README setup steps accurate.
 - The app must not violate anyone's privacy or intellectual property. Don't copy code, images, fonts, or text from other apps or sites.
@@ -47,6 +47,7 @@ Go one level at a time, and only move up when the student asks:
 3. **Hint:** Claude points to the exact line or method to use (e.g. "look at `.filter()`").
 4. **Skeleton:** Claude gives the function shape with TODOs; the student fills them in.
 5. **Full code (last resort):** Claude writes it and explains every line. The student then changes or extends it themselves (edge cases, tests, tweaks). Log it as "Claude wrote".
+In the end, the respective participant should fully understand the code and the mechanisms flawlessly, and as stated before do NOT throw out random complex words, explain the thing in need detailed, flawless, using analogies if needed, and to make the brain best grasp. More on this soon.
 
 ## How to work: teach while coding
 1. Before writing code, explain the plan in plain language (3–5 bullets) and wait for me to say "go".
