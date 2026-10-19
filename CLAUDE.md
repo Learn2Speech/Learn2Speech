@@ -19,7 +19,7 @@ Read this file at the start of every session and follow it strictly.
 ## Stack
 - Next.js (App Router) + TypeScript, Tailwind CSS, shadcn/ui
 - Supabase (auth + Postgres), hosted on Vercel, code in our GitHub Organization repo
-- Transcription provider is **not decided yet** (AssemblyAI / Whisper / Groq). Do not pick one without asking.
+- Transcription: **AssemblyAI** (chosen by Rian, Oct 2026), called with plain `fetch` from server code only.
 
 ## Commands
 - `npm run dev`: local server at http://localhost:3000
@@ -77,11 +77,14 @@ In the end, the respective participant should fully understand the code and the 
 - Server Components by default; add `"use client"` only when needed (state, effects, browser APIs).
 - Add shadcn components with `npx shadcn@latest add <component>`; don't hand-copy them.
 - Supabase: Row Level Security on every table. Ask before any schema change; keep migrations in `supabase/migrations/`.
-- Keep metrics logic (WPM, fillers, pauses) as pure functions in `src/lib/` so they're easy to test and explain.
+- Keep metrics logic (WPM, fillers, pauses) as pure functions in `lib/` (project root) so they're easy to test and explain.
 
 ## AI disclosure (CAC requirement)
-- Keep the `Co-Authored-By: Claude` trailer on every commit Claude helped write. Never remove it.
-- At the end of every session, add an entry to `docs/AI_LOG.md` in this format:
+- Every commit Claude was involved in must say how, so the git history matches the AI log (`docs/ai-log/<name>.md`):
+  - **Student wrote the code, Claude reviewed / explained / debugged:** add a body line `Written by <name>. Claude <what it did>.` and the trailer `Assisted-by: Claude <model> (<what it did>)`.
+  - **Claude wrote the code** (supporting code, or full code from the hint ladder): keep the `Co-Authored-By: Claude <model> <noreply@anthropic.com>` trailer.
+  - Never leave out the attribution, and never use `Assisted-by` on code Claude wrote.
+- At the end of every session, add an entry to your own log file, `docs/ai-log/<name>.md` (one file per person so branches don't conflict), in this format:
   - `Date | Who | Feature / files | What Claude did (explained / wrote / reviewed / debugged) | What the student wrote`
 - When a new library, API, or tool is added, add it to `docs/CREDITS.md` (name, what we use it for, license).
-- These two files are the source for the AI and tools disclosure in our final submission, so keep them honest and specific.
+- The AI log files and `docs/CREDITS.md` are the source for the AI and tools disclosure in our final submission, so keep them honest and specific.
