@@ -11,7 +11,7 @@ Required for Congressional App Challenge disclosure. Add a row whenever we add a
 | [Supabase](https://supabase.com) (`@supabase/supabase-js`, `@supabase/ssr`) | Login (authentication) and, later, database and storage | MIT (libraries); hosted service under Supabase terms
 | [ESLint](https://eslint.org) | Catching code mistakes (linting) | MIT |
 | [AssemblyAI](https://www.assemblyai.com) | Speech-to-text API: turns uploaded audio into a transcript with word timestamps (called with plain `fetch`, no SDK) | Commercial API, used under AssemblyAI's Terms of Service |
-| [Claude Code](https://claude.com/claude-code) (Anthropic) | AI coding assistant; every use is logged in `docs/AI_LOG.md` | Anthropic Commercial Terms |
+| [Claude Code](https://claude.com/claude-code) (Anthropic) | AI coding assistant; every use is logged in `docs/ai-log/` | Anthropic Commercial Terms |
 
 ## Planned (add a row when actually added)
 - shadcn/ui (UI components)
