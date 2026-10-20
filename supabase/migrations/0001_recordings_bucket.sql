@@ -4,6 +4,11 @@
 -- allowed only if user of the perosn trying ot od the action equals the user id of the upload, since the bucket contianing the audios are a huge datavse
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types) values ('recordings', 'recordings', false, 52428800, array['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/x-m4a']);
 
+
+
+-- The path we are trying to find is not above, but instead it is whats represented by storage.foldername
+-- To make storage.foldername actually have a path, we use a seperate function to construct a path
+-- Path is not constructed above
 create policy "Users are able to access and read recordings (access components in the bucket)" 
 on storage.objects 
 for select 
