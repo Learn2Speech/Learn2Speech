@@ -55,7 +55,8 @@ export default function UploadPage() {
                     <input id="audio" type="file" accept="audio/*" required
                         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                         className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" />
-                    {message && <p className="text-sm text-red-600">{message}</p>}
+                    {/* green only for the success text, red for every error */}
+                    {message && <p className={message === "Upload successful!" ? "text-sm text-green-600" : "text-sm text-red-600"}>{message}</p>}
                 </div>
                 <button type="submit" disabled={!file}
                     className="w-full rounded-md bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50">Upload
