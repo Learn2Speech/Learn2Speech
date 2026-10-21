@@ -18,8 +18,9 @@ export async function requestFeedback(prompt: string): Promise<string> {
 }),
   });
   if (!response.ok){
-    throw new Error(`Submitting feedback failed: ${response.status}`);
-  }
+    const reason = await response.text();                      
+    throw new Error(`Response failed: ${response.status} ${reason}`);
+}
   const data: {
     content: {type: string; text?: string}[];
     stop_reason: string;
