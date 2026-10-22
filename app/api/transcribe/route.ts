@@ -1,8 +1,15 @@
 // file: app/api/transcribe/route.ts  →  URL: /api/transcribe
 import { transcribeAudio } from "@/lib/transcription/assemblyai";
+import { createServerSupabase } from "@/lib/supabase-server";
+
 export const maxDuration = 200;
 
 export async function POST(request: Request) {
+  const supabase = await createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return Response.json({ error: "Please log in or sign up to transcribe audio." }, { status: 401 });
+  }
   const body: { audioUrl?: unknown } = await request.json();
 
   if (typeof body.audioUrl !== "string" || body.audioUrl === "") {

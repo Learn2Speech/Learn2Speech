@@ -2,7 +2,8 @@ import type { CoachingFeedback } from "@/lib/feedback/types";
 export async function requestFeedback(prompt: string): Promise<string> {
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   if (!anthropicKey){
-    throw new Error("ANTHROPIC_API_KEY is missing. Add it to .env.local");
+    console.error("ANTHROPIC_API_KEY is missing. Add it to .env.local");
+    throw new Error("Feedback isn't available right now. Please try again later.");
   }
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -19,21 +20,25 @@ export async function requestFeedback(prompt: string): Promise<string> {
   });
   if (!response.ok){
     const reason = await response.text();                      
-    throw new Error(`Response failed: ${response.status} ${reason}`);
+    console.error(`Response failed: ${response.status} ${reason}`);
+    throw new Error("We couldn't get feedback right now. Please try again.");
 }
   const data: {
     content: {type: string; text?: string}[];
     stop_reason: string;
   } = await response.json();
   if (data.stop_reason === "max_tokens"){
-    throw new Error("Stop failed! Reached max token capacity.");
+    console.error("Stop failed! Reached max token capacity.");
+    throw new Error("We couldn't get feedback right now. Please try again.");
   }
   if (data.stop_reason === "refusal"){
-    throw new Error("Answer declined!");
+    console.error("Answer declined!");
+    throw new Error("Claude isn't giving feedback on this recording. Try a different recording!");
   }
   const analysis = data.content.find(d => d.type === "text");
   if (analysis === undefined || analysis.text === undefined){  
-    throw new Error("The data text has no text.");
+    console.error("The data text has no text.");
+    throw new Error("Reply came back empty. Please try again.");
   }
   return analysis.text;
 }
@@ -55,10 +60,12 @@ export function parseFeedback(text: string): CoachingFeedback{
         }
         data = JSON.parse(jsonText);
     } catch{
-        throw new Error("Claude's reply wasn't valid JSON.");
+        console.error("Claude's reply wasn't valid JSON.", text);
+        throw new Error("Reply was garbled. Please try again.");
     }
     if (!isCoachingFeedback(data)){
-        throw new Error("Claude's reply was missing summary, strengths, or improvements.")
+        console.error("Claude's reply was missing summary, strengths, or improvements.");
+        throw new Error("Reply was garbled. Please try again.")
     }
     return data as CoachingFeedback;
 }

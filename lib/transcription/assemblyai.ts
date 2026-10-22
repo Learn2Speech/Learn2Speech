@@ -15,7 +15,8 @@ import type { Transcript } from "@/lib/transcription/types";
 export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
   if (!assemblyKey){
-    throw new Error("ASSEMBLYAI_API_KEY is missing. Add it to .env.local");
+    console.error("ASSEMBLYAI_API_KEY is missing. Add it to .env.local");
+    throw new Error("Transcription isn't available right now. Please try again later.");
   }
   const response = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
@@ -26,7 +27,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
     body: JSON.stringify({audio_url: audioURL, disfluencies: true}),
   });
   if (!response.ok){
-    throw new Error(`Submitting transcription failed: ${response.status}`);
+    console.error(`Submitting transcription failed: ${response.status}`);
+    throw new Error("Transcription couldn't start. Please try again.");
   }
   const data: { id: string } = await response.json();
   const jobID = data.id;
@@ -34,13 +36,14 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const limitMs = 3*60*1000;
   while (true){
     if (Date.now() - startedAt > limitMs){
-      throw new Error("Transcription took too long");
+      throw new Error("Transcription took too long. Try a shorter recording.");
     }
     const response = await fetch(`https://api.assemblyai.com/v2/transcript/${jobID}`,{
       headers: { authorization: assemblyKey},
     });
     if (!response.ok) {
-      throw new Error(`Checking transcription failed: ${response.status}`);
+      console.error(`Checking transcription failed: ${response.status}`);
+      throw new Error("Transcription was interrupted. Please try again.");
     }
     const result: {
       status: string;
@@ -51,7 +54,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
     } = await response.json();
     if (result.status === "completed"){
       if (!result.words || result.words.length === 0){
-        throw new Error("No speech detected in the recording");
+        throw new Error("No speech detected in the recording. Check the mic or try getting closer.");
       }
       return {
         text: result.text ?? "",
@@ -65,7 +68,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       };
     }
     if (result.status === "error"){
-      throw new Error(`Transcription failed: ${result.error}`);
+      console.error(`Transcription failed: ${result.error}`);
+      throw new Error("Transcription failed. Please try again.");
     }
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
