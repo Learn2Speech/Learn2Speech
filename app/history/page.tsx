@@ -1,7 +1,12 @@
+import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import formatSize from "@/lib/format-size";
 import {createServerSupabase} from "@/lib/supabase-server"
-export default async function HistoryPage() {
+
+async function RecordingsList() {
+
+    await connection();
     const supabase = await createServerSupabase();
     const {data, error} = await supabase.from("recordings").select("*").order("created_at", {ascending: false})
     if (error) {
@@ -30,5 +35,14 @@ export default async function HistoryPage() {
                 ))}
             </ul>
         </main>
+    );
+}
+
+
+export default function HistoryPage() {
+    return (
+        <Suspense fallback={<p className="p-10 text-zinc-600">Loading your recordings...</p>}>
+            <RecordingsList />
+        </Suspense>
     );
 }
