@@ -3,9 +3,7 @@
 // coaching feedback. Kept separate from transcription so a failed feedback call
 // can be retried without paying to transcribe the audio again.
 import type { Transcript } from "@/lib/transcription/types";
-import { calculateMetrics } from "@/lib/metrics/calculateMetrics";
-import { speechFeedbackPrompt } from "@/lib/feedback/buildPrompt";
-import { requestFeedback, parseFeedback } from "@/lib/feedback/anthropic";
+import { getFeedback } from "@/lib/feedback/getFeedback";
 
 // Claude thinks before answering, so give it more than the default time limit.
 export const maxDuration = 60;
@@ -26,11 +24,8 @@ export async function POST(request: Request) {
   }
 
   try {
-    const metrics = calculateMetrics(transcript as Transcript);
-    const prompt = speechFeedbackPrompt(transcript as Transcript, metrics);
-    const replyText = await requestFeedback(prompt);
-    const feedback = parseFeedback(replyText);
-    return Response.json({ metrics, feedback });
+    const result = await getFeedback(transcript as Transcript);
+    return Response.json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Feedback failed";
     return Response.json({ error: message }, { status: 500 });
