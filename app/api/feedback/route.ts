@@ -4,11 +4,17 @@
 // can be retried without paying to transcribe the audio again.
 import type { Transcript } from "@/lib/transcription/types";
 import { getFeedback } from "@/lib/feedback/getFeedback";
+import { createServerSupabase } from "@/lib/supabase-server";
 
 // Claude thinks before answering, so give it more than the default time limit.
 export const maxDuration = 60;
 
 export async function POST(request: Request) {
+  const supabase = await createServerSupabase();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return Response.json({ error: "Please log in or sign up to get feedback." }, { status: 401 });
+  }
   const body: { transcript?: Partial<Transcript> } = await request.json();
   const transcript = body.transcript;
 
