@@ -3,12 +3,22 @@ import { connection } from "next/server";
 import Link from "next/link";
 import formatSize from "@/lib/format-size";
 import {createServerSupabase} from "@/lib/supabase-server"
+import type {Recording} from "@/lib/recording-types"
+
+// Only the columns the list shows. We leave out the full transcript on purpose:
+// it holds every word with timestamps, which is too heavy to load for every row.
+type HistoryRow = Pick<Recording, "id" | "original_name" | "size_bytes" | "created_at" | "status" | "metrics" | "feedback" | "error_message">
 
 async function RecordingsList() {
 
     await connection();
     const supabase = await createServerSupabase();
-    const {data, error} = await supabase.from("recordings").select("*").order("created_at", {ascending: false})
+    const {data: rows, error} = await supabase
+        .from("recordings")
+        .select("id, original_name, size_bytes, created_at, status, metrics, feedback, error_message")
+        .order("created_at", {ascending: false})
+    // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
+    const data = (rows ?? []) as HistoryRow[]
     if (error) {
         return <p>We encountered an error with the display. Please try refreshing.</p>
     }
@@ -31,6 +41,25 @@ async function RecordingsList() {
                         <p className="text-sm text-zinc-600">
                             {formatSize(row.size_bytes)} · {new Date(row.created_at).toLocaleDateString()}
                         </p>
+                        {/* What we show depends on where the recording is in the analysis */}
+                        {row.status === "analyzing" && (
+                            <p className="mt-2 text-sm text-zinc-600">Analyzing... refresh in a few minutes.</p>
+                        )}
+                        {row.status === "uploaded" && (
+                            <p className="mt-2 text-sm text-zinc-600">Waiting to be analyzed.</p>
+                        )}
+                        {row.status === "failed" && (
+                            <p className="mt-2 text-sm text-red-600">Analysis failed: {row.error_message ?? "unknown reason"}</p>
+                        )}
+                        {/* metrics and feedback can be null, so check they exist before reading them */}
+                        {row.status === "done" && row.metrics && row.feedback && (
+                            <div className="mt-2 text-sm">
+                                <p className="text-zinc-900">
+                                    {row.metrics.wordsPerMinute} words per minute · {row.metrics.fillerCount} filler words · {row.metrics.pauses.length} long pauses
+                                </p>
+                                <p className="mt-1 text-zinc-600">{row.feedback.summary}</p>
+                            </div>
+                        )}
                     </li>
                 ))}
             </ul>
