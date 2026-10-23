@@ -4,6 +4,8 @@ import {createClient} from "@/lib/supabase";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import type {User} from "@supabase/supabase-js";
+import {LogIn, LogOut} from "lucide-react";
+import {SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar";
 export default function AuthButton() {
     const [user, setUser]=useState<User | null>(null);
     const [loading, setLoading]=useState(true);
@@ -33,13 +35,28 @@ export default function AuthButton() {
     }
     if (user) {
         return (
-            <div>
-                <button onClick={Logout} className="rounded-md bg-zinc-800 px-4 py-2 font-medium text-white hover:bg-zinc-700">Log Out</button>
-                {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
-            </div>
+            <SidebarMenu>
+                <SidebarMenuItem>
+                    {/* shows who is logged in; hidden when the sidebar is shrunk to icons */}
+                    <p className="truncate px-2 pb-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">{user.email}</p>
+                    <SidebarMenuButton onClick={Logout} tooltip="Log out">
+                        <LogOut />
+                        <span>Log out</span>
+                    </SidebarMenuButton>
+                    {errorMessage && <p className="px-2 text-xs text-destructive">{errorMessage}</p>}
+                </SidebarMenuItem>
+            </SidebarMenu>
         );
     }
     return (
-        <Link href="/login" className="rounded-md bg-zinc-800 px-4 py-2 font-medium text-white hover:bg-zinc-700">Log In</Link>
+        <SidebarMenu>
+            <SidebarMenuItem>
+                <SidebarMenuButton render={<Link href="/login" />} tooltip="Log in"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground">
+                    <LogIn />
+                    <span>Log in</span>
+                </SidebarMenuButton>
+            </SidebarMenuItem>
+        </SidebarMenu>
     );
 }
