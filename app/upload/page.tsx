@@ -7,6 +7,7 @@ export default function UploadPage() {
     const supabase = createClient();
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState("");
+    const [busy, setBusy] = useState(false)
     async function handleUpload(event: React.FormEvent) {
         event.preventDefault();
         setMessage("");
@@ -22,27 +23,49 @@ export default function UploadPage() {
             return;
         }
         const address = buildAudioPath(data.user.id, file.name)
+
+        setBusy(true)
         
         const {error: uploadError} = await supabase.storage.from("recordings").upload(address, file)
         if (uploadError) {
-            {setMessage(uploadError.message); return; }
+            {setMessage(uploadError.message); setBusy(false); return; }
         } 
 
-        const {error: insertError} = await supabase.from("recordings").insert({
+        // .select("id").single() asks Supabase to send back the row we just made,
+        // because the analyze route's address needs the new recording's id
+        const {data: newRecording, error: insertError} = await supabase.from("recordings").insert({
             user_id: data.user.id,
             file_path: address,
             original_name: file.name,
             size_bytes: file.size
 
-        })
+        }).select("id").single()
         if (insertError) {
             await supabase.storage.from("recordings").remove([address]);
             setMessage(insertError.message)
+            setBusy(false)
             return;
         }
+        
+        setMessage("Analyzing...this can take a few minutes.")
 
-        setMessage("Upload successful!")
+        try {
+            // Knocks on the analyze route and waits (up to a few minutes) for its answer
+            const response = await fetch(`/api/recordings/${newRecording.id}/analyze`, {method: "POST"})
+            const result = await response.json()
+            if (!response.ok) {
+                // The route reached us but said no; it sends {error: "..."}
+                setMessage(result.error)
+            } else {
+                setMessage("Analysis complete!")
+            }
+        } catch {
+            // The request never got an answer (no wifi, server down)
+            setMessage("Could not reach the server. Please try again.")
+        }
 
+        // Every way out of the function has to switch busy off, or the button stays locked
+        setBusy(false)
     }
 
     return (
@@ -56,9 +79,9 @@ export default function UploadPage() {
                         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                         className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" />
                     {/* green only for the success text, red for every error */}
-                    {message && <p className={message === "Upload successful!" ? "text-sm text-green-600" : "text-sm text-red-600"}>{message}</p>}
+                    {message && <p className={message === "Analysis complete!" ? "text-sm text-green-600" : message.startsWith("Analyzing") ? "text-sm text-zinc-600" : "text-sm text-red-600"}>{message}</p>}
                 </div>
-                <button type="submit" disabled={!file}
+                <button type="submit" disabled={!file || busy}
                     className="w-full rounded-md bg-blue-600 py-2 font-medium text-white hover:bg-blue-700 disabled:opacity-50">Upload
                 </button>
             </form>
