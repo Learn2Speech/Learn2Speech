@@ -1,17 +1,27 @@
  "use client";
-import {useState} from "react";
+import {useState, Suspense} from "react";
+import LoginNotice from "@/components/auth/login-notice";
 import {createClient} from "@/lib/supabase";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
+import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
+import {Label} from "@/components/ui/label";
 export default function LoginPage() {
     const[email, setEmail] = useState("");
     const[password, setPassword] = useState("");
     const[errorMessage, setErrorMessage] = useState("");
+    // true while we wait for Supabase, so the button can't be clicked twice
+    const[loading, setLoading] = useState(false);
     const supabase = createClient();
     const router = useRouter();
     async function Submission(event: React.FormEvent) {
         event.preventDefault();
         setErrorMessage("");
+        setLoading(true);
         const {error} = await supabase.auth.signInWithPassword({email, password})
+        setLoading(false);
         if (error) {
             setErrorMessage(error.message);
         } else {
@@ -19,25 +29,27 @@ export default function LoginPage() {
         }
     }
     return (
-        <main className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-            <form onSubmit={Submission} className="w-full max-w-sm space-y-4 rounded-xl bg-white p-6 text-zinc-900 shadow">
-                <h1 className="text-2xl font-semibold">Log In</h1>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium">Email</label>
-                    <input value={email} onChange={(e) => setEmail(e.target.value)} id="email" type="email" required
-                        className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" />
+        <AuthCard
+            title="Welcome back"
+            subtitle="Log in to keep practicing."
+            footer={<p>Don&apos;t have an account? <Link href="/signup" className="font-medium text-foreground underline-offset-4 hover:underline">Sign up</Link></p>}>
+            <form onSubmit={Submission} className="space-y-4">
+                {/* Suspense: Next.js needs it around anything that reads the address bar, so the rest of the page can load first */}
+                <Suspense fallback={null}><LoginNotice /></Suspense>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input value={email} onChange={(e) => setEmail(e.target.value)} id="email" type="email" autoComplete="email" required />
                 </div>
-                <div> 
-                    <label htmlFor="password" className="block text-sm font-medium">Password</label>
-                    <input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" required
-                        className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2" />
-                    {errorMessage && <p className="text-sm text-red-600">{errorMessage}</p>}
+                <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="current-password" required />
                 </div>
-                <button type="submit"
-                    className="w-full rounded-md bg-blue-600 py-2 font-medium text-white hover:bg-blue-700">Log In
-                </button>
+                {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
+                <Button type="submit" disabled={loading} className="h-10 w-full">
+                    {loading ? "Logging in..." : "Log in"}
+                </Button>
             </form>
-        </main>
+        </AuthCard>
     );
 
 }

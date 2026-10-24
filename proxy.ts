@@ -27,7 +27,10 @@ export async function proxy(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-        return NextResponse.redirect(new URL("/login", request.url));
+        // ?from=upload (or history) lets the login page say which page needs an account
+        const loginUrl = new URL("/login", request.url);
+        loginUrl.searchParams.set("from", request.nextUrl.pathname.split("/")[1]);
+        return NextResponse.redirect(loginUrl);
     } else {
         return response;
     }
