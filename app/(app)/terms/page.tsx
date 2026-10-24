@@ -7,7 +7,7 @@ import PageHeader from "@/components/page-header";
 const SECTIONS = [
   {
     heading: "What Learn2Speech is",
-    body: "Learn2Speech is a student project built for the 2026 Congressional App Challenge. It helps you practice speaking by measuring your pace, filler words and pauses, and giving you coaching tips. It is a learning tool, not professional speech therapy.",
+    body: "Learn2Speech helps you practice speaking by measuring your pace, filler words and pauses, and giving you coaching tips. It is a learning tool, not professional speech therapy.",
   },
   {
     heading: "Your recordings",
@@ -23,7 +23,7 @@ const SECTIONS = [
   },
   {
     heading: "No guarantees",
-    body: "This is a student project, so the app is provided as is. It may have bugs, be down sometimes, or change without notice.",
+    body: "The app is provided as is. It may have bugs, be down sometimes, or change without notice.",
   },
   {
     heading: "Changes and questions",
