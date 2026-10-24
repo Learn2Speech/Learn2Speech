@@ -91,9 +91,9 @@ export default function UploadPage() {
                     <form onSubmit={handleUpload} className="space-y-5">
                         {/* the whole dashed box is the label, so clicking anywhere in it opens the file picker */}
                         <label htmlFor="audio"
-                            className="flex cursor-pointer flex-col items-center gap-3 rounded-xl border-2 border-dashed border-primary/30 bg-accent/40 px-6 py-10 text-center transition-colors hover:border-primary/60 hover:bg-accent">
-                            <span className="flex size-12 items-center justify-center rounded-full bg-background text-primary shadow-sm">
-                                {file ? <FileAudio className="size-6" /> : <UploadIcon className="size-6" />}
+                            className="group flex cursor-pointer flex-col items-center gap-4 rounded-2xl border-2 border-dashed border-primary/40 bg-gradient-to-b from-primary/5 to-transparent px-6 py-14 text-center transition-all hover:-translate-y-0.5 hover:border-primary hover:from-primary/10 has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50">
+                            <span className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform group-hover:scale-105">
+                                {file ? <FileAudio className="size-7" /> : <UploadIcon className="size-7" />}
                             </span>
                             {file ? (
                                 <span>
@@ -102,8 +102,12 @@ export default function UploadPage() {
                                 </span>
                             ) : (
                                 <span>
-                                    <span className="block font-medium">Click to choose an audio file</span>
-                                    <span className="text-sm text-muted-foreground">mp3, wav or m4a, up to 50 MB</span>
+                                    <span className="block font-heading text-lg font-semibold">Click to choose an audio file</span>
+                                    <span className="mt-2 flex justify-center gap-2 text-xs font-medium text-muted-foreground">
+                                        {["MP3", "WAV", "M4A", "up to 50 MB"].map((tag) => (
+                                            <span key={tag} className="rounded-full border bg-background px-2.5 py-0.5">{tag}</span>
+                                        ))}
+                                    </span>
                                 </span>
                             )}
                         </label>
@@ -129,6 +133,20 @@ export default function UploadPage() {
                     </form>
                 </CardContent>
             </Card>
+            {/* what happens after you press Upload, so the wait doesn't feel like a mystery */}
+            <ol className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                    ["1", "Upload", "Your recording is saved privately to your account."],
+                    ["2", "Transcribe", "Every word is timed so we can measure pace and pauses."],
+                    ["3", "Coaching", "You get specific feedback on what to fix next."],
+                ].map(([num, title, text]) => (
+                    <li key={num} className="rounded-xl border bg-card p-4">
+                        <span className="font-heading text-2xl font-bold text-primary">{num}</span>
+                        <p className="mt-1 font-medium">{title}</p>
+                        <p className="text-sm text-muted-foreground">{text}</p>
+                    </li>
+                ))}
+            </ol>
             <p className="mt-4 flex items-center justify-center gap-2 text-sm text-muted-foreground">
                 <LockKeyhole className="size-4" /> Only you can see your recordings.
             </p>
