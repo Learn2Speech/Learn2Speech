@@ -47,6 +47,8 @@ async function RecordingsList() {
             {/* map returns one <li> per row; key lets React tell the items apart */}
             {data.map((row) => (
                 <li key={row.id}>
+                    {/* the whole row is a link to that recording's full results */}
+                    <Link href={`/history/${row.id}`} className="block rounded-xl transition-shadow hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
                     <Card size="sm" className="flex-row items-start gap-4 px-4">
                         <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-primary">
                             <FileAudio className="size-5" />
@@ -82,6 +84,7 @@ async function RecordingsList() {
                             )}
                         </div>
                     </Card>
+                    </Link>
                 </li>
             ))}
         </ul>

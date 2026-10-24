@@ -1,5 +1,6 @@
 "use client"; // needs usePathname to highlight the page you're on
 // The side panel on every main page: logo, the page links, and your account at the bottom.
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { History, House, Upload } from "lucide-react";
@@ -25,9 +26,34 @@ const PAGES = [
   { title: "History", href: "/history", icon: History },
 ];
 
-export default function AppSidebar() {
-  const pathname = usePathname();
+// The page links. activePath is the page you're on (highlighted), or null while unknown.
+function NavLinks({ activePath }: { activePath: string | null }) {
+  return (
+    <SidebarMenu>
+      {PAGES.map((page) => (
+        <SidebarMenuItem key={page.href}>
+          <SidebarMenuButton
+            render={<Link href={page.href} />}
+            // /history/123 still highlights History, but / only highlights Home on the home page
+            isActive={page.href === "/" ? activePath === "/" : activePath?.startsWith(page.href) ?? false}
+            tooltip={page.title}
+          >
+            <page.icon />
+            <span>{page.title}</span>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      ))}
+    </SidebarMenu>
+  );
+}
 
+// Reads the address bar. On pages like /history/123 the address is only known when someone
+// visits, so Next.js needs this inside <Suspense> (below), with plain links shown until then.
+function NavLinksWithActive() {
+  return <NavLinks activePath={usePathname()} />;
+}
+
+export default function AppSidebar() {
   return (
     // collapsible="icon": on desktop the panel can shrink to just icons instead of hiding
     <Sidebar collapsible="icon">
@@ -42,20 +68,9 @@ export default function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {PAGES.map((page) => (
-                <SidebarMenuItem key={page.href}>
-                  <SidebarMenuButton
-                    render={<Link href={page.href} />}
-                    isActive={pathname === page.href}
-                    tooltip={page.title}
-                  >
-                    <page.icon />
-                    <span>{page.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
+            <Suspense fallback={<NavLinks activePath={null} />}>
+              <NavLinksWithActive />
+            </Suspense>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
