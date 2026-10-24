@@ -16,9 +16,10 @@ function MetricCard({ label, value, unit, hint }: MetricCardProps) {
     <Card>
       <CardHeader>
         <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-4xl font-semibold tabular-nums">
+        {/* flex-wrap lets the unit drop below the number when the card is narrow */}
+        <CardTitle className="flex flex-wrap items-baseline gap-x-1 text-4xl font-semibold tabular-nums">
           {value}
-          <span className="ml-1 text-base font-normal text-muted-foreground">{unit}</span>
+          <span className="text-base font-normal whitespace-nowrap text-muted-foreground">{unit}</span>
         </CardTitle>
       </CardHeader>
       <CardContent className="text-sm text-muted-foreground">{hint}</CardContent>
@@ -40,7 +41,7 @@ export default function MetricsCards({ metrics }: { metrics: SpeechMetrics }) {
         label="Filler words"
         value={metrics.fillerCount}
         unit={metrics.fillerCount === 1 ? "filler" : "fillers"}
-        hint="Words like “um”, “uh” and “like”."
+        hint="Sounds like “um”, “uh” and “hmm”."
       />
       <MetricCard
         label="Long pauses"
