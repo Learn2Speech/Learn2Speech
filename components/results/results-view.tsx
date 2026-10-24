@@ -17,7 +17,7 @@ type ResultsViewProps = {
 export default function ResultsView({ metrics, feedback, transcript }: ResultsViewProps) {
   return (
     <div className="space-y-8">
-      <MetricsCards metrics={metrics} />
+      <MetricsCards metrics={metrics} durationMs={transcript.durationMs} />
       <FeedbackPanel feedback={feedback} />
       <TranscriptView transcript={transcript} metrics={metrics} />
     </div>
