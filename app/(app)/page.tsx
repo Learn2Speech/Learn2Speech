@@ -1,91 +1,60 @@
-// Home page: the first thing visitors (and judges) see. Explains what the app does
-// and how to use it. Anyone can see it; Upload and History need an account.
+// Home page: the first thing visitors (and judges) see. Says who the app is for,
+// shows a real example result, and explains the three steps. Anyone can see it;
+// Upload and History need an account.
 import Link from "next/link";
-import { Gauge, LockKeyhole, MessageSquareQuote, Mic, Sparkles, Timer, Upload, Waves } from "lucide-react";
 import Hero from "@/components/home/hero";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+
+const USES = ["Class presentations", "Debate and speech competitions", "Job and college interviews", "Toasts and speeches"];
 
 const STEPS = [
-  { icon: Mic, title: "Record", text: "Record yourself giving a speech or presentation on your phone or computer." },
-  { icon: Upload, title: "Upload", text: "Upload the audio file (mp3, wav or m4a). Only you can see your recordings." },
-  { icon: Sparkles, title: "Get feedback", text: "We turn your speech into text, measure how you spoke, and coach you on what to improve." },
+  { title: "Record a run-through", text: "Use your phone or laptop's voice recorder. Even 30 seconds is enough to see your habits." },
+  { title: "Upload the file", text: "mp3, wav or m4a. It's stored privately in your account; nobody else can open it." },
+  { title: "Fix the top three things", text: "Read your numbers, see where fillers and pauses landed on the timeline, and work through the coach's three suggestions." },
 ];
-
-const MEASURES = [
-  { icon: Gauge, title: "Pace", text: "Your words per minute, so you know if you're rushing or dragging." },
-  { icon: MessageSquareQuote, title: "Filler words", text: "Every “um”, “uh” and “hmm”, and when you said it." },
-  { icon: Timer, title: "Pauses", text: "Long silences that can make a speech lose its flow." },
-  { icon: Waves, title: "Coaching tips", text: "What you did well and the most important things to work on next." },
-];
-
-// Small heading used above each section, so all sections line up the same way.
-function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
-  return (
-    <div className="mb-8 space-y-2">
-      <p className="text-sm font-medium text-primary">{eyebrow}</p>
-      <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-    </div>
-  );
-}
 
 export default function Home() {
   return (
-    <main className="flex-1">
+    <main className="flex-1 pb-20">
       <Hero />
 
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <SectionHeading eyebrow="How it works" title="Three steps to better speeches" />
-        <ol className="grid gap-4 md:grid-cols-3">
+      <section className="mx-auto max-w-5xl px-6 pt-16">
+        <p className="text-sm font-medium text-muted-foreground">Made for practice runs before</p>
+        {/* a plain list instead of a row of icon cards; the small square echoes the timeline's marks */}
+        <ul className="mt-3 flex flex-wrap gap-x-8 gap-y-2 font-heading text-lg sm:text-xl">
+          {USES.map((use) => (
+            <li key={use} className="flex items-center gap-2.5">
+              <span aria-hidden="true" className="size-2 rounded-[2px] bg-primary" />
+              {use}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="mx-auto max-w-5xl px-6 pt-16">
+        <h2 className="text-2xl font-bold sm:text-3xl">How it works</h2>
+        <ol className="mt-8 grid gap-10 md:grid-cols-3">
           {STEPS.map((step, i) => (
-            <li key={step.title}>
-              <Card className="h-full">
-                <CardHeader>
-                  <div className="mb-2 flex items-center gap-3">
-                    <span className="flex size-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                      <step.icon className="size-5" />
-                    </span>
-                    <span className="text-sm font-medium text-muted-foreground">Step {i + 1}</span>
-                  </div>
-                  <CardTitle className="text-lg">{step.title}</CardTitle>
-                  <CardDescription className="text-sm">{step.text}</CardDescription>
-                </CardHeader>
-              </Card>
+            <li key={step.title} className="border-t-2 border-foreground pt-4">
+              <span className="font-heading text-4xl font-bold text-primary">{i + 1}</span>
+              <h3 className="mt-2 text-lg font-semibold">{step.title}</h3>
+              <p className="mt-1 text-muted-foreground">{step.text}</p>
             </li>
           ))}
         </ol>
       </section>
 
-      <section className="border-y bg-muted/40">
-        <div className="mx-auto max-w-6xl px-6 py-16">
-          <SectionHeading eyebrow="What we measure" title="Feedback you can actually act on" />
-          <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
-            {MEASURES.map((item) => (
-              <div key={item.title} className="flex gap-4">
-                <item.icon className="mt-0.5 size-5 shrink-0 text-primary" />
-                <div>
-                  <h3 className="font-medium">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+      <section className="mx-auto mt-16 flex max-w-5xl flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-xl">
+          <h2 className="text-2xl font-bold sm:text-3xl">Your recordings stay yours.</h2>
+          <p className="mt-2 text-muted-foreground">
+            Every recording, transcript and piece of feedback is locked to your account at the database level,
+            so not even someone who guesses a link can see it.
+          </p>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <Card className="items-center bg-primary text-center text-primary-foreground ring-0 [--card-spacing:--spacing(10)]">
-          <CardContent className="space-y-4">
-            <h2 className="text-2xl font-semibold tracking-tight">Ready to practice?</h2>
-            <p className="flex items-center justify-center gap-2 text-sm text-primary-foreground/85">
-              <LockKeyhole className="size-4" /> Your recordings and feedback are private to your account.
-            </p>
-            <Link href="/upload" className={cn(buttonVariants({ variant: "secondary", size: "lg" }), "h-11 px-6 text-base")}>
-              Upload your first speech
-            </Link>
-          </CardContent>
-        </Card>
+        <Link href="/signup" className={buttonVariants({ size: "lg", className: "h-11 px-5 text-base" })}>
+          Create a free account
+        </Link>
       </section>
     </main>
   );

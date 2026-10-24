@@ -1,77 +1,47 @@
-// The top of the home page: what the app does in one line, two buttons, and an
-// example results card so visitors can see what they'll get before signing up.
+// Top of the home page: a dark "ink" band with who the app is for and what it shows,
+// then a real example result (our actual results components with sample data)
+// overlapping the bottom edge, so visitors see the product instead of a slogan.
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Waveform from "@/components/brand/waveform";
-import { Badge } from "@/components/ui/badge";
+import { sampleMetrics, sampleTranscript } from "@/components/home/sample-result";
+import MetricsCards from "@/components/results/metrics-cards";
+import SpeechTimeline from "@/components/results/speech-timeline";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-
-// Made-up numbers, clearly labeled "Example" on the card, just to show the layout.
-const EXAMPLE_STATS = [
-  { label: "Pace", value: "148", unit: "wpm" },
-  { label: "Fillers", value: "4", unit: "" },
-  { label: "Pauses", value: "2", unit: "" },
-];
-
-function ExampleResultCard() {
-  return (
-    <Card className="w-full max-w-sm rotate-1 shadow-xl [--card-spacing:--spacing(5)]">
-      <CardHeader>
-        <CardDescription>Example result</CardDescription>
-        <CardTitle className="text-lg">My history class presentation</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-3 gap-2">
-          {EXAMPLE_STATS.map((stat) => (
-            <div key={stat.label} className="rounded-lg bg-muted px-3 py-2">
-              <p className="text-xs text-muted-foreground">{stat.label}</p>
-              <p className="text-xl font-semibold tabular-nums">
-                {stat.value}
-                <span className="ml-0.5 text-xs font-normal text-muted-foreground">{stat.unit}</span>
-              </p>
-            </div>
-          ))}
-        </div>
-        <div className="rounded-lg border border-primary/20 bg-accent p-3 text-sm text-accent-foreground">
-          <p className="mb-1 flex items-center gap-1.5 font-medium">
-            <Sparkles className="size-4" /> Coaching tip
-          </p>
-          Try pausing for a breath instead of saying &ldquo;um&rdquo; when you switch to a new point.
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden border-b bg-gradient-to-b from-accent/60 to-background">
-      <Waveform className="absolute inset-x-0 bottom-0 h-40 opacity-50" />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-6 py-16 md:py-24 lg:grid-cols-2">
-        <div className="space-y-6">
-          <Badge variant="outline" className="border-primary/30 bg-background text-primary">
-            Your personal speech coach
-          </Badge>
-          <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-5xl">
-            Speak with <span className="text-primary">confidence</span>.
+    <section>
+      <div className="relative overflow-hidden bg-ink text-ink-foreground">
+        <Waveform className="absolute inset-x-0 bottom-0 h-28 opacity-40" barClassName="bg-ink-accent/30" />
+        <div className="relative mx-auto max-w-5xl px-6 pt-16 pb-40 md:pt-24">
+          <h1 className="max-w-2xl text-4xl leading-[1.05] font-bold sm:text-6xl">
+            See exactly where your speech <span className="text-ink-accent">stumbles</span>.
           </h1>
-          <p className="max-w-lg text-lg text-muted-foreground">
-            Upload a recording of your speech and get clear feedback on your pace, filler words and pauses,
-            plus coaching tips on what to practice next.
+          <p className="mt-6 max-w-xl text-lg text-ink-foreground/75">
+            Upload a practice run of your class presentation, debate case or interview answer. Learn2Speech
+            times your pace, finds every &ldquo;um&rdquo; and long pause, and tells you what to fix before the real thing.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="mt-8 flex flex-wrap items-center gap-5">
             <Link href="/upload" className={cn(buttonVariants({ size: "lg" }), "h-11 px-5 text-base")}>
-              Upload a speech <ArrowRight />
+              Upload a practice run <ArrowRight />
             </Link>
-            <Link href="/history" className={cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 px-5 text-base")}>
-              View my history
+            <Link href="/history" className="text-base font-medium text-ink-foreground/80 underline-offset-4 hover:text-ink-foreground hover:underline">
+              See your past recordings
             </Link>
           </div>
         </div>
-        <div className="flex justify-center lg:justify-end">
-          <ExampleResultCard />
+      </div>
+
+      {/* the real results components with made-up data, pulled up over the dark band */}
+      <div className="relative mx-auto -mt-28 max-w-5xl px-6">
+        <div className="space-y-4 rounded-xl border bg-background p-4 shadow-xl sm:p-6">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Example result</span> · an 18-second practice run about sleep
+          </p>
+          <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
+          <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
         </div>
       </div>
     </section>

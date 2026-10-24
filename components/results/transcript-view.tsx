@@ -18,7 +18,7 @@ export default function TranscriptView({ transcript, metrics }: { transcript: Tr
         <CardTitle>Transcript</CardTitle>
         <CardDescription className="flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="flex items-center gap-1.5">
-            <mark className="rounded bg-primary/15 px-1 text-accent-foreground">um</mark> filler word
+            <mark className="rounded bg-highlight/20 px-1">um</mark> filler word
           </span>
           <span className="flex items-center gap-1.5">
             <PauseMarker durationMs={1500} /> long pause
@@ -35,7 +35,7 @@ export default function TranscriptView({ transcript, metrics }: { transcript: Tr
                 return (
                   <span key={i}>
                     {fillerStarts.has(word.start) ? (
-                      <mark className="rounded bg-primary/15 px-1 font-medium text-accent-foreground">{word.text}</mark>
+                      <mark className="rounded bg-highlight/20 px-1 font-medium">{word.text}</mark>
                     ) : (
                       word.text
                     )}
