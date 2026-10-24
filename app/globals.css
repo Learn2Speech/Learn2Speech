@@ -81,14 +81,15 @@
   --chart-4: #9AA3B2;
   --chart-5: #E4E7EC;
   --radius: 0.5rem;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #0E1525;
-  --sidebar-primary: #C24E28;
+  /* dark "ink" sidebar: navy panel, soft white text, orange for the active page */
+  --sidebar: #0E1525;
+  --sidebar-foreground: #C9D0DC;
+  --sidebar-primary: #D85B32;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F3F6;
-  --sidebar-accent-foreground: #0E1525;
-  --sidebar-border: #E4E7EC;
-  --sidebar-ring: #D85B32;
+  --sidebar-accent: #1B2538;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #243049;
+  --sidebar-ring: #E8704A;
   /* the exact logo color, for decoration only (too light for white text) */
   --brand: #D85B32;
   /* dark "ink" sections (home page top) and the text/accent used on them */

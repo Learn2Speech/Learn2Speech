@@ -30,12 +30,12 @@ async function RecordingsList() {
     }
     if (data.length === 0) {
         return (
-            <Card className="items-center py-12 text-center">
+            <Card className="items-center border-2 border-dashed border-primary/30 bg-gradient-to-b from-primary/5 to-transparent py-14 text-center">
                 <CardContent className="flex flex-col items-center gap-3">
-                    <span className="flex size-12 items-center justify-center rounded-full bg-accent text-primary">
-                        <Mic className="size-6" />
+                    <span className="flex size-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30">
+                        <Mic className="size-7" />
                     </span>
-                    <p className="font-medium">No recordings yet</p>
+                    <p className="font-heading text-lg font-semibold">No recordings yet</p>
                     <p className="text-sm text-muted-foreground">Upload a speech and it will show up here.</p>
                     <Link href="/upload" className={buttonVariants({ className: "mt-2" })}>Upload your first recording</Link>
                 </CardContent>
@@ -48,9 +48,10 @@ async function RecordingsList() {
             {data.map((row) => (
                 <li key={row.id}>
                     {/* the whole row is a link to that recording's full results */}
-                    <Link href={`/history/${row.id}`} className="block rounded-xl transition-shadow hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
-                    <Card size="sm" className="flex-row items-start gap-4 px-4">
-                        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-primary">
+                    <Link href={`/history/${row.id}`} className="group block rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
+                    {/* orange stripe on the left marks the row as a recording; hover lifts it */}
+                    <Card size="sm" className="flex-row items-start gap-4 border-l-4 border-l-primary px-4 transition-colors group-hover:border-l-brand">
+                        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                             <FileAudio className="size-5" />
                         </span>
                         <div className="min-w-0 flex-1">
@@ -74,12 +75,20 @@ async function RecordingsList() {
                             {/* metrics and feedback can be null, so check they exist before reading them */}
                             {row.status === "done" && row.metrics && row.feedback && (
                                 <div className="mt-3 space-y-2 text-sm">
-                                    <div className="flex flex-wrap gap-2">
-                                        <span className="rounded-md bg-muted px-2 py-0.5 tabular-nums">{row.metrics.wordsPerMinute} words per minute</span>
-                                        <span className="rounded-md bg-muted px-2 py-0.5 tabular-nums">{row.metrics.fillerCount} filler words</span>
-                                        <span className="rounded-md bg-muted px-2 py-0.5 tabular-nums">{row.metrics.pauses.length} long pauses</span>
+                                    {/* three small tiles: the number big, its label small, so rows are scannable */}
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            [row.metrics.wordsPerMinute, "words/min"],
+                                            [row.metrics.fillerCount, "fillers"],
+                                            [row.metrics.pauses.length, "long pauses"],
+                                        ].map(([value, label]) => (
+                                            <div key={label} className="rounded-lg bg-muted px-3 py-2">
+                                                <p className="font-heading text-xl font-semibold leading-none tabular-nums">{value}</p>
+                                                <p className="mt-1 text-xs text-muted-foreground">{label}</p>
+                                            </div>
+                                        ))}
                                     </div>
-                                    <p className="text-muted-foreground">{row.feedback.summary}</p>
+                                    <p className="line-clamp-2 text-muted-foreground">{row.feedback.summary}</p>
                                 </div>
                             )}
                         </div>
