@@ -6,26 +6,47 @@ import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import VerifyCodeForm from "@/components/auth/verify-code-form";
+import {useRouter} from "next/navigation";
 export default function SignUpPage() {
     const[email, setEmail]=useState("")
     const[password, setPassword]=useState("")
     const[errorMessage, setErrorMessage]=useState("")
-    const[confirmMessage, setConfirmMessage]=useState("")
+    // empty until sign-up works; then it holds the email the code was sent to,
+    // and the page swaps the form for the "type your code" step
+    const[codeSentTo, setCodeSentTo]=useState("")
     // true while we wait for Supabase, so the button can't be clicked twice
     const[loading, setLoading]=useState(false)
     const supabase = createClient();
+    const router = useRouter();
     async function newSubmission(event: React.FormEvent) {
         event.preventDefault();
         setErrorMessage("")
-        setConfirmMessage("")
         setLoading(true)
-        const {error} = await supabase.auth.signUp({email, password});
+        const {data, error} = await supabase.auth.signUp({email, password});
         setLoading(false)
         if (error) {
             setErrorMessage(error.message)
+        } else if (data.user && data.user.identities?.length === 0) {
+            // Supabase answers "fine" for an email that already has a confirmed account
+            // (so strangers can't test which emails are signed up), but sends no code.
+            setErrorMessage("An account with this email already exists. Try logging in.")
+        } else if (data.session) {
+            // only happens if email confirmation is turned off in Supabase: already logged in
+            router.push("/")
         } else {
-            setConfirmMessage("Check your email to confirm your account")
+            setCodeSentTo(email)
         }
+    }
+    if (codeSentTo) {
+        return (
+            <AuthCard
+                title="Check your email"
+                subtitle="One last step to create your account."
+                footer={<p>Wrong email? <button type="button" onClick={() => setCodeSentTo("")} className="font-medium text-foreground underline-offset-4 hover:underline">Go back</button></p>}>
+                <VerifyCodeForm email={codeSentTo} />
+            </AuthCard>
+        );
     }
     return (
         <AuthCard
@@ -43,7 +64,6 @@ export default function SignUpPage() {
                     <p className="text-xs text-muted-foreground">At least 6 characters.</p>
                 </div>
                 {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
-                {confirmMessage && <AuthMessage kind="success">{confirmMessage}</AuthMessage>}
                 <Button type="submit" disabled={loading} className="h-10 w-full">
                     {loading ? "Creating account..." : "Sign up"}
                 </Button>
