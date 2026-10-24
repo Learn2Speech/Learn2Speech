@@ -14,14 +14,14 @@ type AuthCardProps = {
 
 export default function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center gap-8 overflow-hidden bg-gradient-to-b from-orange-50 to-white px-4 py-10">
+    <main className="relative flex min-h-screen flex-col items-center justify-center gap-8 overflow-hidden bg-muted px-4 py-10">
       <Waveform className="absolute inset-x-0 bottom-0 h-56 px-4 opacity-60" />
       <Link href="/" aria-label="Learn2Speech home" className="relative">
         <Logo className="text-3xl" />
       </Link>
       <Card className="relative w-full max-w-sm border-t-4 border-t-primary shadow-lg [--card-spacing:--spacing(6)]">
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold">{title}</CardTitle>
+          <CardTitle className="font-heading text-3xl font-bold">{title}</CardTitle>
           <CardDescription>{subtitle}</CardDescription>
         </CardHeader>
         <CardContent>{children}</CardContent>

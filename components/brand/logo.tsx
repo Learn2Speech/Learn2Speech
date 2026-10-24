@@ -2,7 +2,8 @@
 // Drawn as SVG (shapes, not a picture file) so it stays sharp at any size.
 import { cn } from "@/lib/utils";
 
-const BRAND_ORANGE = "#D85B32";
+// --brand is set in globals.css, so the logo follows the color palette
+const BRAND_ORANGE = "var(--brand)";
 
 // Just the bubble. Used alone where space is tight (e.g. a collapsed sidebar).
 export function LogoMark({ className }: { className?: string }) {
