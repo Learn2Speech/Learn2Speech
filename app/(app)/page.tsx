@@ -15,7 +15,7 @@ const STEPS = [
 
 const MEASURES = [
   { icon: Gauge, title: "Pace", text: "Your words per minute, so you know if you're rushing or dragging." },
-  { icon: MessageSquareQuote, title: "Filler words", text: "Every “um”, “uh” and “like”, and when you said it." },
+  { icon: MessageSquareQuote, title: "Filler words", text: "Every “um”, “uh” and “hmm”, and when you said it." },
   { icon: Timer, title: "Pauses", text: "Long silences that can make a speech lose its flow." },
   { icon: Waves, title: "Coaching tips", text: "What you did well and the most important things to work on next." },
 ];
