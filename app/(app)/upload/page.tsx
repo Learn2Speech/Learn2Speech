@@ -5,6 +5,7 @@ import validateAudio from "@/lib/validate-audio";
 import buildAudioPath from "@/lib/build-audio-path";
 import formatSize from "@/lib/format-size";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import {FileAudio, Loader2, LockKeyhole, Upload as UploadIcon} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import PageHeader from "@/components/page-header";
@@ -12,6 +13,7 @@ import {Button} from "@/components/ui/button";
 import {Card, CardContent} from "@/components/ui/card";
 export default function UploadPage() {
     const supabase = createClient();
+    const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false)
@@ -65,6 +67,8 @@ export default function UploadPage() {
                 setMessage(result.error)
             } else {
                 setMessage("Analysis complete!")
+                // open the results right away; the results page lives at a real address, so it survives a refresh
+                router.push(`/history/${newRecording.id}`)
             }
         } catch {
             // The request never got an answer (no wifi, server down)

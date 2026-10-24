@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, Upload } from "lucide-react";
 import ResultsView from "@/components/results/results-view";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -25,12 +25,20 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
   const recording = data as Recording;
 
   const header = (
-    <div className="mb-8 space-y-1">
-      <h1 className="text-3xl font-semibold tracking-tight break-all">{recording.original_name}</h1>
-      <p className="text-muted-foreground">
-        {new Date(recording.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
-        {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
-      </p>
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div className="min-w-0 space-y-1">
+        <h1 className="text-3xl font-semibold tracking-tight break-all">{recording.original_name}</h1>
+        <p className="text-muted-foreground">
+          {new Date(recording.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
+          {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
+        </p>
+      </div>
+      {/* the next step after reading feedback is usually to try again */}
+      {recording.status === "done" && (
+        <Link href="/upload" className={buttonVariants()}>
+          <Upload /> Upload another speech
+        </Link>
+      )}
     </div>
   );
 
