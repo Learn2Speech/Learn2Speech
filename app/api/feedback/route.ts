@@ -2,6 +2,8 @@
 // Takes a Transcript (from /api/transcribe) and returns its metrics plus Claude's
 // coaching feedback. Kept separate from transcription so a failed feedback call
 // can be retried without paying to transcribe the audio again.
+// SUMMARY: checks login, checks the transcript has the right shape, then hands it to getFeedback.
+// Like /api/transcribe, the main upload flow calls getFeedback directly from the analyze route.
 import type { Transcript } from "@/lib/transcription/types";
 import { getFeedback } from "@/lib/feedback/getFeedback";
 import { createServerSupabase } from "@/lib/supabase-server";

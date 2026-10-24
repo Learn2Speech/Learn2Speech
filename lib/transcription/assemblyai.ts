@@ -12,6 +12,10 @@ import type { Transcript } from "@/lib/transcription/types";
 //    - words ← the reply's words (each word has text, start, end, confidence)
 //    - durationMs ← reply's audio_duration * 1000 (careful with units!)
 // 5. Return the Transcript
+// SUMMARY: sends an audio link to AssemblyAI and waits for the finished transcript.
+// Transcription isn't instant, so it works in two phases: submit a job (get an id back),
+// then ask for the result every 5 seconds until it is done, fails, or 3 minutes pass.
+// Plain fetch is used instead of an SDK, and only on the server so the key stays secret.
 export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
   if (!assemblyKey){
@@ -24,6 +28,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       authorization: assemblyKey,
       "content-type": "application/json",
     },
+    // disfluencies: true keeps "um" and "uh" in the transcript. By default AssemblyAI deletes them,
+    // which would make our filler-word counting impossible.
     body: JSON.stringify({audio_url: audioURL, disfluencies: true}),
   });
   if (!response.ok){
@@ -34,6 +40,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const jobID = data.id;
   const startedAt = Date.now();
   const limitMs = 3*60*1000;
+  // Polling loop. The time limit stops it from running forever if AssemblyAI never finishes.
   while (true){
     if (Date.now() - startedAt > limitMs){
       throw new Error("Transcription took too long. Try a shorter recording.");
@@ -64,6 +71,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
           end: word.end,
           confidence: word.confidence,
         })),
+        // AssemblyAI reports the length in seconds but our app uses milliseconds everywhere
         durationMs: (result.audio_duration ?? 0) * 1000,
       };
     }

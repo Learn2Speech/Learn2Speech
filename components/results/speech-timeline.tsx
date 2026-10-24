@@ -33,6 +33,8 @@ export default function SpeechTimeline({ metrics, durationMs }: { metrics: Speec
         </CardDescription>
       </CardHeader>
       <CardContent>
+        {/* "relative" on the bar + "absolute" on each mark lets us place a mark at any % along it.
+            Pauses are drawn first so the filler marks sit on top of them. */}
         <div className="relative h-12 overflow-hidden rounded-md bg-muted">
           {metrics.pauses.map((pause, i) => (
             <span

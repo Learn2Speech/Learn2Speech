@@ -1,5 +1,10 @@
 import type { Transcript } from "@/lib/transcription/types";
 import type { SpeechMetrics } from "@/lib/metrics/types";
+// SUMMARY: builds the instructions we send to Claude. The prompt has four parts:
+//   a role (supportive speech coach), the data (transcript + our measured numbers),
+//   the rules (what a normal pace is, keep it to 3-5 problems with doable tips),
+//   and the exact JSON format to reply in, so parseFeedback can read the answer.
+// Claude gets our calculated numbers instead of guessing them from the text.
 export function speechFeedbackPrompt(transcript: Transcript, metrics: SpeechMetrics): string{
     return `You are a supportive speech coach who is meant to look at data and transcript to help the user improve their speaking skills.   
     Data: Transcript: ${transcript.text}, Words per minute: ${metrics.wordsPerMinute}, Number of fillers: ${metrics.fillerCount}, Which fillers: ${metrics.fillers.map(f => f.word).join(", ")}, Pauses: ${metrics.pauses.length}.
