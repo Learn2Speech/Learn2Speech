@@ -2,6 +2,7 @@
 import {useState} from "react";
 import {createClient} from "@/lib/supabase";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
 import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
@@ -14,16 +15,21 @@ export default function SignUpPage() {
     // true while we wait for Supabase, so the button can't be clicked twice
     const[loading, setLoading]=useState(false)
     const supabase = createClient();
+    const router = useRouter();
     async function newSubmission(event: React.FormEvent) {
         event.preventDefault();
         setErrorMessage("")
         setConfirmMessage("")
         setLoading(true)
-        const {error} = await supabase.auth.signUp({email, password});
+        const {data, error} = await supabase.auth.signUp({email, password});
         setLoading(false)
         if (error) {
             setErrorMessage(error.message)
+        } else if (data.session) {
+            // "Confirm email" is off in Supabase, so the new user is already logged in: take them straight in
+            router.push("/upload")
         } else {
+            // only happens if "Confirm email" is turned back on in Supabase
             setConfirmMessage("Check your email to confirm your account")
         }
     }
