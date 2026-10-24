@@ -1,20 +1,18 @@
 // Shows Claude's coaching feedback for one recording: the overall summary,
 // what went well, and the most important things to work on (best first).
 // Display only: the prompt and parsing live in lib/feedback.
-import { CheckCircle2, Sparkles, Target } from "lucide-react";
+import { CheckCircle2, Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { CoachingFeedback } from "@/lib/feedback/types";
 
 export default function FeedbackPanel({ feedback }: { feedback: CoachingFeedback }) {
   return (
     <div className="space-y-4">
-      {/* summary first, in the brand tint, since it's the one-line answer to "how did I do?" */}
-      <div className="rounded-xl border border-primary/20 bg-accent p-5 text-accent-foreground">
-        <p className="mb-1 flex items-center gap-2 text-sm font-medium">
-          <Sparkles className="size-4" /> Coach&apos;s summary
-        </p>
-        <p className="text-base leading-relaxed">{feedback.summary}</p>
-      </div>
+      {/* summary first, as a pull quote, since it's the one-line answer to "how did I do?" */}
+      <blockquote className="border-l-4 border-primary py-1 pl-5">
+        <p className="mb-1 text-sm font-medium text-muted-foreground">Coach&apos;s summary</p>
+        <p className="font-heading text-xl leading-snug">{feedback.summary}</p>
+      </blockquote>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
