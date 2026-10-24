@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { FileText, History, House, Upload } from "lucide-react";
 import AuthButton from "@/app/auth-button";
 import Logo, { LogoMark } from "@/components/brand/logo";
+import ThemeToggle from "@/components/theme-toggle";
 import {
   Sidebar,
   SidebarContent,
@@ -80,6 +81,7 @@ export default function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border pt-3">
+        <ThemeToggle />
         <AuthButton />
       </SidebarFooter>
       {/* thin strip on the edge you can click to open/close the panel */}

@@ -101,38 +101,35 @@
 }
 
 
+/* Dark mode: the same ink + orange look, with the light surfaces swapped for deep navy.
+   Sidebar colors aren't repeated here because the sidebar is already dark in both themes. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0A0F1A;
+  --foreground: #E8ECF2;
+  --card: #121A2B;
+  --card-foreground: #E8ECF2;
+  --popover: #121A2B;
+  --popover-foreground: #E8ECF2;
+  --primary: #C24E28;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1B2538;
+  --secondary-foreground: #E8ECF2;
+  --muted: #1B2538;
+  --muted-foreground: #9AA3B2;
+  --accent: #1B2538;
+  --accent-foreground: #E8ECF2;
+  --destructive: #E5484D;
+  --border: #243049;
+  --input: #2E3A55;
+  --ring: #E8704A;
+  --chart-1: #E8704A;
+  --chart-2: #E8ECF2;
+  --chart-3: #9AA3B2;
+  --chart-4: #5B6474;
+  --chart-5: #243049;
+  /* a bit lighter than the page so the home page's ink band and pause marks still show */
+  --ink: #1E2A42;
+  --highlight: #E8704A;
 }
 
 @layer base {
