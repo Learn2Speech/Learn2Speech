@@ -59,7 +59,7 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "Age",
-    body: "You must be 13 or older to use Learn2Speech. If we learn that someone under 13 has created an account, we will delete it and its data.",
+    body: "You must be 13 or older to use Learn2Speech. At sign-up we ask for your birth month and year only to check this; we don't save them. If we learn that someone under 13 has created an account, we will delete it and its data.",
   },
   {
     heading: "Changes and contact",
