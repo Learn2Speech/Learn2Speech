@@ -12,7 +12,7 @@ const SECTIONS: Section[] = [
     heading: "The short version",
     points: [
       "We collect what the app needs to coach you: your email, your recordings, and the results we make from them.",
-      "Only you can see your recordings and results. The database itself enforces this.",
+      "Only you can see your recordings and results. The database itself enforces this, and you can delete any recording at any time.",
       "We don't sell your data, show ads, or use tracking or analytics tools.",
       "Your audio is sent to AssemblyAI for transcription, and the transcript to Anthropic (Claude) for feedback. Nobody else gets it.",
     ],
@@ -34,7 +34,7 @@ const SECTIONS: Section[] = [
     heading: "Services that handle your data",
     points: [
       "Supabase stores your account, recordings and results. Recordings are kept in a private storage area, and each person can only reach their own files and results.",
-      "AssemblyAI turns your audio into text. We give it a temporary link to your recording that stops working after 10 minutes. AssemblyAI may keep a copy of the audio and transcript under its own data policies.",
+      "AssemblyAI turns your audio into text. We give it a temporary link to your recording that stops working after 10 minutes, and as soon as the transcript is done we ask AssemblyAI to delete its copy of the audio and text.",
       "Anthropic (Claude) writes your coaching feedback from your transcript and speaking stats. Anthropic handles this data under its commercial terms, which say it doesn't train its models on data sent through its API by default.",
       "Vercel hosts the website. Like any web host, it keeps short-term technical logs (for example, when a page was requested) so the site can run and errors can be fixed.",
     ],
@@ -45,6 +45,7 @@ const SECTIONS: Section[] = [
       "Everything is sent over encrypted connections (HTTPS).",
       "Row Level Security rules in our database only return a recording or result to the account that owns it, so even someone who guesses a link can't open your data.",
       "Uploaded files get random names, and the secret keys for our AI services are only used on our server, never in your browser.",
+      "Our pages tell browsers not to let other sites embed them, and they block the camera, microphone and location, which the app never uses.",
       "No system is perfectly secure, but we keep the data we hold to what the app needs.",
     ],
   },
@@ -54,7 +55,7 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "How long we keep it, and deleting it",
-    body: "We keep your account, recordings and results until you ask us to delete them. To delete a recording or your whole account, contact the Learn2Speech team and we'll remove it from our storage and database.",
+    body: "We keep your recordings and results until you delete them. You can delete any recording yourself with the Delete recording button on its results page: this permanently removes the audio file, transcript, measurements and feedback from our storage and database. To delete your whole account, contact the Learn2Speech team and we'll remove it and everything in it.",
   },
   {
     heading: "Age",
