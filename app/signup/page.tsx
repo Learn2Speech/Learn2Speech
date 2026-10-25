@@ -58,6 +58,9 @@ export default function SignUpPage() {
         } else if (data.session) {
             // email confirmation is off in Supabase, so the new account is already logged in
             router.push("/")
+            // refresh() throws away pages Next.js pre-loaded before the login state changed; without it,
+            // clicking Upload or History can replay an old "go to login" answer until the page is refreshed
+            router.refresh()
         } else {
             // only happens if "Confirm email" is turned back on in Supabase
             setConfirmMessage("Check your email to confirm your account")
