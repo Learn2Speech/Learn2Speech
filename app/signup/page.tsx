@@ -7,6 +7,16 @@ import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
+import {isOldEnough} from "@/lib/age-check";
+
+// Options for the birth month / year dropdowns. Years go back 100 years from now.
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const THIS_YEAR = new Date().getFullYear();
+const YEARS = Array.from({length: 100}, (_, i) => THIS_YEAR - i);
+// Remembers in this browser that someone was too young, so going back and picking an older year doesn't work
+const UNDER_AGE_KEY = "l2s-under-13";
+// Same look as our text inputs
+const SELECT_CLASS = "h-8 w-full rounded-lg border border-input bg-transparent px-2 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30";
 export default function SignUpPage() {
     const[email, setEmail]=useState("")
     const[password, setPassword]=useState("")
@@ -16,12 +26,27 @@ export default function SignUpPage() {
     const[loading, setLoading]=useState(false)
     // the Sign up button stays disabled until the terms + privacy box is ticked
     const[agreed, setAgreed]=useState(false)
+    // birth month (1-12) and year, only used for the age check below and never sent to Supabase
+    const[birthMonth, setBirthMonth]=useState("")
+    const[birthYear, setBirthYear]=useState("")
     const supabase = createClient();
     const router = useRouter();
     async function newSubmission(event: React.FormEvent) {
         event.preventDefault();
         setErrorMessage("")
         setConfirmMessage("")
+        // Age check (Claude wrote this part at Rian's request): Learn2Speech is 13+ only (COPPA)
+        if (!birthMonth || !birthYear) {
+            setErrorMessage("Please choose your birth month and year.")
+            return;
+        }
+        let blockedBefore = false;
+        try { blockedBefore = localStorage.getItem(UNDER_AGE_KEY) === "1"; } catch {}
+        if (blockedBefore || !isOldEnough(Number(birthYear), Number(birthMonth))) {
+            try { localStorage.setItem(UNDER_AGE_KEY, "1"); } catch {}
+            setErrorMessage("Sorry, you need to be 13 or older to use Learn2Speech.")
+            return;
+        }
         setLoading(true)
         const {data, error} = await supabase.auth.signUp({email, password});
         setLoading(false)
@@ -50,6 +75,21 @@ export default function SignUpPage() {
                     <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="new-password" required minLength={6} />
                     <p className="text-xs text-muted-foreground">At least 6 characters.</p>
                 </div>
+                {/* Neutral age question: asks the date without hinting at the cutoff (FTC guidance) */}
+                <fieldset className="space-y-2">
+                    <legend className="text-sm font-medium">Date of birth</legend>
+                    <div className="grid grid-cols-2 gap-2">
+                        <select aria-label="Birth month" value={birthMonth} onChange={(e) => setBirthMonth(e.target.value)} required className={SELECT_CLASS}>
+                            <option value="" disabled>Month</option>
+                            {MONTHS.map((month, i) => <option key={month} value={i + 1}>{month}</option>)}
+                        </select>
+                        <select aria-label="Birth year" value={birthYear} onChange={(e) => setBirthYear(e.target.value)} required className={SELECT_CLASS}>
+                            <option value="" disabled>Year</option>
+                            {YEARS.map((year) => <option key={year} value={year}>{year}</option>)}
+                        </select>
+                    </div>
+                    <p className="text-xs text-muted-foreground">Only used to check your age. We don&apos;t save it.</p>
+                </fieldset>
                 {/* The terms and privacy policy open in a new tab so the email and password typed here aren't lost */}
                 <div className="flex items-start gap-2">
                     <input checked={agreed} onChange={(e) => setAgreed(e.target.checked)} id="agree" type="checkbox" className="mt-0.5 size-4 accent-primary" />
