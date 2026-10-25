@@ -4,6 +4,7 @@
 import Link from "next/link";
 import AppSidebar from "@/components/app-sidebar";
 import Logo from "@/components/brand/logo";
+import SiteFooter from "@/components/site-footer";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -23,6 +24,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </Link>
           </header>
           <div className="flex flex-1 flex-col">{children}</div>
+          {/* Terms and Privacy Policy live here instead of in the sidebar */}
+          <SiteFooter className="border-t" />
         </SidebarInset>
       </SidebarProvider>
     </TooltipProvider>

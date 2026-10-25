@@ -31,8 +31,7 @@ const SECTIONS = [
   },
   {
     heading: "Changes and questions",
-    // TODO(Akshith): add a contact email for the team
-    body: "We may update these terms as the app changes. If you have questions or want your data removed, contact the Learn2Speech team.",
+    body: "We may update these terms as the app changes. If you have questions or want your data removed, email learn2speechteam@gmail.com.",
   },
 ];
 

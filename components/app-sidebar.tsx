@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FileText, History, House, Upload } from "lucide-react";
+import { History, House, Upload } from "lucide-react";
 import AuthButton from "@/app/auth-button";
 import Logo, { LogoMark } from "@/components/brand/logo";
 import ThemeToggle from "@/components/theme-toggle";
@@ -25,7 +25,6 @@ const PAGES = [
   { title: "Home", href: "/", icon: House },
   { title: "Upload", href: "/upload", icon: Upload },
   { title: "History", href: "/history", icon: History },
-  { title: "Terms", href: "/terms", icon: FileText },
 ];
 
 // The page links. activePath is the page you're on (highlighted), or null while unknown.
