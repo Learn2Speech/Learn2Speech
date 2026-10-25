@@ -12,6 +12,7 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-ink-accent: var(--ink-accent);
   --color-highlight: var(--highlight);
+  --color-pause: var(--pause);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-bricolage);
@@ -98,6 +99,8 @@
   --ink-accent: #E8704A;
   /* filler-word marks in the transcript and timeline */
   --highlight: #D85B32;
+  /* long-pause blocks on the speech timeline: 3.3:1 against the bar so they're easy to spot */
+  --pause: #7D8798;
 }
 
 
@@ -127,9 +130,11 @@
   --chart-3: #9AA3B2;
   --chart-4: #5B6474;
   --chart-5: #243049;
-  /* a bit lighter than the page so the home page's ink band and pause marks still show */
+  /* a bit lighter than the page so the home page's ink band still shows */
   --ink: #1E2A42;
   --highlight: #E8704A;
+  /* long-pause blocks: lighter gray in dark mode, 3.5:1 against the dark bar */
+  --pause: #6B7A96;
 }
 
 @layer base {

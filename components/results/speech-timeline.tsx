@@ -28,7 +28,7 @@ export default function SpeechTimeline({ metrics, durationMs }: { metrics: Speec
             <span className="h-3.5 w-1 rounded-full bg-highlight" /> filler word
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-3.5 w-4 rounded-sm bg-ink/20" /> long pause
+            <span className="h-3.5 w-4 rounded-sm bg-pause" /> long pause
           </span>
         </CardDescription>
       </CardHeader>
@@ -40,7 +40,7 @@ export default function SpeechTimeline({ metrics, durationMs }: { metrics: Speec
             <span
               key={`p${i}`}
               title={`${(pause.durationMs / 1000).toFixed(1)}s pause at ${formatTime(pause.startMs)}`}
-              className="absolute inset-y-0 bg-ink/20"
+              className="absolute inset-y-0 bg-pause"
               style={{ left: toPercent(pause.startMs), width: toPercent(pause.durationMs) }}
             />
           ))}
