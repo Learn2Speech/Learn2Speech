@@ -13,7 +13,8 @@ import {isOldEnough} from "@/lib/age-check";
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({length: 100}, (_, i) => THIS_YEAR - i);
-// Remembers in this browser that someone was too young, so going back and picking an older year doesn't work
+// Remembers for this browser session (until the browser is closed) that someone was too young, so going
+// back and picking an older year doesn't work. Session only, so one misclick doesn't lock anyone out forever.
 const UNDER_AGE_KEY = "l2s-under-13";
 // Same look as our text inputs
 const SELECT_CLASS = "h-8 w-full rounded-lg border border-input bg-transparent px-2 text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30";
@@ -40,10 +41,12 @@ export default function SignUpPage() {
             setErrorMessage("Please choose your birth month and year.")
             return;
         }
+        // The first version saved the block permanently (localStorage); clear that so stuck browsers recover
+        try { localStorage.removeItem(UNDER_AGE_KEY); } catch {}
         let blockedBefore = false;
-        try { blockedBefore = localStorage.getItem(UNDER_AGE_KEY) === "1"; } catch {}
+        try { blockedBefore = sessionStorage.getItem(UNDER_AGE_KEY) === "1"; } catch {}
         if (blockedBefore || !isOldEnough(Number(birthYear), Number(birthMonth))) {
-            try { localStorage.setItem(UNDER_AGE_KEY, "1"); } catch {}
+            try { sessionStorage.setItem(UNDER_AGE_KEY, "1"); } catch {}
             setErrorMessage("Sorry, you need to be 13 or older to use Learn2Speech.")
             return;
         }
