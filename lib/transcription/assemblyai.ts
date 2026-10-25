@@ -30,7 +30,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
     },
     // disfluencies: true keeps "um" and "uh" in the transcript. By default AssemblyAI deletes them,
     // which would make our filler-word counting impossible.
-    body: JSON.stringify({audio_url: audioURL, disfluencies: true}),
+    // Always English: without this, heavily accented English was guessed as another language (e.g. Tamil)
+    body: JSON.stringify({audio_url: audioURL, disfluencies: true, language_code: "en", language_detection: false}),
   });
   if (!response.ok){
     console.error(`Submitting transcription failed: ${response.status}`);
