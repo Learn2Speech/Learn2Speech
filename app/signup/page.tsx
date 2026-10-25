@@ -14,7 +14,7 @@ export default function SignUpPage() {
     const[confirmMessage, setConfirmMessage]=useState("")
     // true while we wait for Supabase, so the button can't be clicked twice
     const[loading, setLoading]=useState(false)
-    // the Sign up button stays disabled until the terms box is ticked
+    // the Sign up button stays disabled until the terms + privacy box is ticked
     const[agreed, setAgreed]=useState(false)
     const supabase = createClient();
     const router = useRouter();
@@ -50,11 +50,11 @@ export default function SignUpPage() {
                     <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="new-password" required minLength={6} />
                     <p className="text-xs text-muted-foreground">At least 6 characters.</p>
                 </div>
-                {/* The terms open in a new tab so the email and password typed here aren't lost */}
+                {/* The terms and privacy policy open in a new tab so the email and password typed here aren't lost */}
                 <div className="flex items-start gap-2">
                     <input checked={agreed} onChange={(e) => setAgreed(e.target.checked)} id="agree" type="checkbox" className="mt-0.5 size-4 accent-primary" />
                     <Label htmlFor="agree" className="text-sm font-normal leading-snug">
-                        <span>I agree to the <Link href="/terms" target="_blank" className="font-medium text-foreground underline underline-offset-4">Terms and Conditions</Link></span>
+                        <span>I agree to the <Link href="/terms" target="_blank" className="font-medium text-foreground underline underline-offset-4">Terms and Conditions</Link> and the <Link href="/privacy" target="_blank" className="font-medium text-foreground underline underline-offset-4">Privacy Policy</Link></span>
                     </Label>
                 </div>
                 {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
