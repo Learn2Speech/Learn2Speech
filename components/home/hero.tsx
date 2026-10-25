@@ -23,11 +23,12 @@ export default function Hero() {
             Upload a practice run of your class presentation, debate case or interview answer. Learn2Speech
             times your pace, finds every &ldquo;um&rdquo; and long pause, and tells you what to fix before the real thing.
           </p>
+          {/* prefetch={false}: these pages need a login, see the note in components/app-sidebar.tsx */}
           <div className="mt-8 flex flex-wrap items-center gap-5">
-            <Link href="/upload" className={cn(buttonVariants({ size: "lg" }), "h-11 px-5 text-base")}>
+            <Link href="/upload" prefetch={false} className={cn(buttonVariants({ size: "lg" }), "h-11 px-5 text-base")}>
               Upload a practice run <ArrowRight />
             </Link>
-            <Link href="/history" className="text-base font-medium text-ink-foreground/80 underline-offset-4 hover:text-ink-foreground hover:underline">
+            <Link href="/history" prefetch={false} className="text-base font-medium text-ink-foreground/80 underline-offset-4 hover:text-ink-foreground hover:underline">
               See your past recordings
             </Link>
           </div>
