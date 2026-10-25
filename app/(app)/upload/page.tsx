@@ -79,7 +79,7 @@ export default function UploadPage() {
         setBusy(false)
     }
 
-    // Akshith's messages decide which box to show: done (green), still working (orange, spinning), or an error (red).
+    // Akshith's messages decide which box to show: done (green), still working (teal, spinning), or an error (red).
     const done = message === "Analysis complete!";
     const working = message.startsWith("Analyzing");
 

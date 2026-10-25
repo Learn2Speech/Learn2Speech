@@ -39,7 +39,7 @@ function NavLinks({ activePath }: { activePath: string | null }) {
             // /history/123 still highlights History, but / only highlights Home on the home page
             isActive={page.href === "/" ? activePath === "/" : activePath?.startsWith(page.href) ?? false}
             tooltip={page.title}
-            // the page you're on becomes a solid orange pill; the rest stay quiet until hovered
+            // the page you're on becomes a solid teal pill; the rest stay quiet until hovered
             className="h-10 gap-3 rounded-lg px-3 text-[0.95rem] data-active:bg-sidebar-primary data-active:text-sidebar-primary-foreground data-active:hover:bg-sidebar-primary [&_svg]:size-[1.15rem]"
           >
             <page.icon />

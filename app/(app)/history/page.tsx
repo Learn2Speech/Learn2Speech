@@ -49,7 +49,7 @@ async function RecordingsList() {
                 <li key={row.id}>
                     {/* the whole row is a link to that recording's full results */}
                     <Link href={`/history/${row.id}`} className="group block rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none">
-                    {/* orange stripe on the left marks the row as a recording; hover lifts it */}
+                    {/* teal stripe on the left marks the row as a recording; hover lifts it */}
                     <Card size="sm" className="flex-row items-start gap-4 border-l-4 border-l-primary px-4 transition-colors group-hover:border-l-brand">
                         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                             <FileAudio className="size-5" />
