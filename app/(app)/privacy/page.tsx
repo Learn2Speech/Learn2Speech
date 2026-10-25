@@ -55,7 +55,7 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "How long we keep it, and deleting it",
-    body: "We keep your recordings and results until you delete them. You can delete any recording yourself with the Delete recording button on its results page: this permanently removes the audio file, transcript, measurements and feedback from our storage and database. To delete your whole account, contact the Learn2Speech team and we'll remove it and everything in it.",
+    body: "We keep your recordings and results until you delete them. You can delete any recording yourself with the Delete recording button on its results page: this permanently removes the audio file, transcript, measurements and feedback from our storage and database. To delete your whole account, email learn2speechteam@gmail.com from the address you signed up with and we'll remove it and everything in it.",
   },
   {
     heading: "Age",
@@ -63,8 +63,7 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "Changes and contact",
-    // TODO(team): add a contact email here and on /terms
-    body: "If we change what we collect or who we share it with, we'll update this page and the date at the top. Questions or deletion requests: contact the Learn2Speech team.",
+    body: "If we change what we collect or who we share it with, we'll update this page and the date at the top. Questions or deletion requests: email learn2speechteam@gmail.com.",
   },
 ];
 
@@ -85,7 +84,8 @@ export default function PrivacyPage() {
           </section>
         ))}
         <p className="text-sm text-muted-foreground">
-          See also our <Link href="/terms" className="font-medium text-foreground underline underline-offset-4">Terms and Conditions</Link>.
+          Contact: <a href="mailto:learn2speechteam@gmail.com" className="font-medium text-foreground underline underline-offset-4">learn2speechteam@gmail.com</a>
+          {" · "}See also our <Link href="/terms" className="font-medium text-foreground underline underline-offset-4">Terms and Conditions</Link>.
         </p>
       </div>
     </main>
