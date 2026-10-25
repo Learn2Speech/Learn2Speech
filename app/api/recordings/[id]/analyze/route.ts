@@ -19,6 +19,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (error) {
         return Response.json({error: "Unauthorized user."}, {status: 404});
     }
+    // Repeat guard: transcription and feedback cost money on every call, so a recording that is
+    // already being analyzed or is finished can't be sent again. "failed" is allowed so it can be retried.
+    if (data.status === "analyzing" || data.status === "done") {
+        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
+    }
     // Basically if every gard runs well, change the status of the recording (identified with ID) to analyzing
     const {error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id)
     if (updateError) {

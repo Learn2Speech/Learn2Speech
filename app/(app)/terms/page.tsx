@@ -10,12 +10,16 @@ const SECTIONS = [
     body: "Learn2Speech helps you practice speaking by measuring your pace, filler words and pauses, and giving you coaching tips. It is a learning tool, not professional speech therapy.",
   },
   {
+    heading: "Who can use it",
+    body: "You must be 13 or older to use Learn2Speech.",
+  },
+  {
     heading: "Your recordings",
     body: "When you upload audio, we store the file and its transcript in your account. Only you can see your recordings and results. Please only upload recordings of your own voice, or of people who have agreed to be recorded.",
   },
   {
     heading: "How we use AI",
-    body: "Your audio is sent to AssemblyAI to be turned into text. The transcript and your speaking stats are sent to Anthropic's Claude to write your coaching feedback. AI feedback can be wrong, so treat it as suggestions, not facts.",
+    body: "Your audio is sent to AssemblyAI to be turned into text. The transcript and your speaking stats are sent to Anthropic's Claude to write your coaching feedback. Both companies handle that data under their own privacy policies. AI feedback can be wrong, so treat it as suggestions, not facts.",
   },
   {
     heading: "Using the app fairly",
