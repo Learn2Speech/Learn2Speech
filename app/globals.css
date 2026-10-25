@@ -54,8 +54,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Ink + orange palette. Cool white surfaces and near-black "ink" text, with our
-   logo orange used sparingly (buttons, highlights) instead of warm cream everywhere. */
+/* Ink + teal palette. Cool white surfaces and near-black "ink" text, with our
+   logo teal/cyan used sparingly (buttons, highlights) instead of warm cream everywhere. */
 :root {
   --background: #FFFFFF;
   --foreground: #0E1525;
@@ -63,8 +63,8 @@
   --card-foreground: #0E1525;
   --popover: #FFFFFF;
   --popover-foreground: #0E1525;
-  /* a bit deeper than the logo orange so white button text passes contrast (4.76:1) */
-  --primary: #C24E28;
+  /* a deeper teal than the logo cyan so white button text passes contrast (5.4:1) */
+  --primary: #0E7490;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F3F6;
   --secondary-foreground: #0E1525;
@@ -75,36 +75,36 @@
   --destructive: #C0262D;
   --border: #E4E7EC;
   --input: #D9DDE4;
-  --ring: #D85B32;
-  --chart-1: #D85B32;
+  --ring: #06B6D4;
+  --chart-1: #0891B2;
   --chart-2: #0E1525;
   --chart-3: #5B6474;
   --chart-4: #9AA3B2;
   --chart-5: #E4E7EC;
   --radius: 0.5rem;
-  /* dark "ink" sidebar: navy panel, soft white text, orange for the active page */
+  /* dark "ink" sidebar: navy panel, soft white text, teal for the active page */
   --sidebar: #0E1525;
   --sidebar-foreground: #C9D0DC;
-  --sidebar-primary: #D85B32;
+  --sidebar-primary: #0E7490;
   --sidebar-primary-foreground: #FFFFFF;
   --sidebar-accent: #1B2538;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #243049;
-  --sidebar-ring: #E8704A;
-  /* the exact logo color, for decoration only (too light for white text) */
-  --brand: #D85B32;
+  --sidebar-ring: #22D3EE;
+  /* the logo cyan, for decoration only (too light for white text) */
+  --brand: #06B6D4;
   /* dark "ink" sections (home page top) and the text/accent used on them */
   --ink: #0E1525;
   --ink-foreground: #F5F3EF;
-  --ink-accent: #E8704A;
+  --ink-accent: #22D3EE;
   /* filler-word marks in the transcript and timeline */
-  --highlight: #D85B32;
+  --highlight: #0891B2;
   /* long-pause blocks on the speech timeline: 3.3:1 against the bar so they're easy to spot */
   --pause: #7D8798;
 }
 
 
-/* Dark mode: the same ink + orange look, with the light surfaces swapped for deep navy.
+/* Dark mode: the same ink + teal look, with the light surfaces swapped for deep navy.
    Sidebar colors aren't repeated here because the sidebar is already dark in both themes. */
 .dark {
   --background: #0A0F1A;
@@ -113,7 +113,7 @@
   --card-foreground: #E8ECF2;
   --popover: #121A2B;
   --popover-foreground: #E8ECF2;
-  --primary: #C24E28;
+  --primary: #0E7490;
   --primary-foreground: #FFFFFF;
   --secondary: #1B2538;
   --secondary-foreground: #E8ECF2;
@@ -124,15 +124,15 @@
   --destructive: #E5484D;
   --border: #243049;
   --input: #2E3A55;
-  --ring: #E8704A;
-  --chart-1: #E8704A;
+  --ring: #22D3EE;
+  --chart-1: #22D3EE;
   --chart-2: #E8ECF2;
   --chart-3: #9AA3B2;
   --chart-4: #5B6474;
   --chart-5: #243049;
   /* a bit lighter than the page so the home page's ink band still shows */
   --ink: #1E2A42;
-  --highlight: #E8704A;
+  --highlight: #22D3EE;
   /* long-pause blocks: lighter gray in dark mode, 3.5:1 against the dark bar */
   --pause: #6B7A96;
 }
