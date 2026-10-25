@@ -30,6 +30,9 @@ export default function AuthButton() {
         } else {
             setUser(null);
             router.push("/")
+            // refresh() throws away pages Next.js pre-loaded before the login state changed; without it,
+            // clicking Upload or History can replay an old "go to login" answer until the page is refreshed
+            router.refresh()
         }
     }
 
