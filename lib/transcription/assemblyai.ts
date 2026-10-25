@@ -63,7 +63,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       if (!result.words || result.words.length === 0){
         throw new Error("No speech detected in the recording. Check the mic or try getting closer.");
       }
-      return {
+      const transcript: Transcript = {
         text: result.text ?? "",
         words: (result.words ?? []).map((word) => ({
           text: word.text,
@@ -74,11 +74,30 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
         // AssemblyAI reports the length in seconds but our app uses milliseconds everywhere
         durationMs: (result.audio_duration ?? 0) * 1000,
       };
+      // Privacy: we've copied what we need, so ask AssemblyAI to delete its copy of the audio and text
+      await deleteFromAssemblyAI(jobID, assemblyKey);
+      return transcript;
     }
     if (result.status === "error"){
       console.error(`Transcription failed: ${result.error}`);
       throw new Error("Transcription failed. Please try again.");
     }
     await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+}
+// Asks AssemblyAI to delete a finished transcript (and the audio it was made from) from their
+// servers. Written by Claude at Rian's request for the privacy fixes. A failure here only gets
+// logged: the user already has their transcript, so it shouldn't make the analysis fail.
+async function deleteFromAssemblyAI(jobID: string, assemblyKey: string) {
+  try {
+    const response = await fetch(`https://api.assemblyai.com/v2/transcript/${jobID}`, {
+      method: "DELETE",
+      headers: { authorization: assemblyKey },
+    });
+    if (!response.ok) {
+      console.error(`Deleting transcript ${jobID} from AssemblyAI failed: ${response.status}`);
+    }
+  } catch {
+    console.error(`Deleting transcript ${jobID} from AssemblyAI failed: no response`);
   }
 }

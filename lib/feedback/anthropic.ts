@@ -75,7 +75,8 @@ export function parseFeedback(text: string): CoachingFeedback{
         }
         data = JSON.parse(jsonText);
     } catch{
-        console.error("Claude's reply wasn't valid JSON.", text);
+        // Log only the length, not the reply itself: it can quote the user's speech (privacy)
+        console.error(`Claude's reply wasn't valid JSON (${text.length} characters).`);
         throw new Error("Reply was garbled. Please try again.");
     }
     if (!isCoachingFeedback(data)){
