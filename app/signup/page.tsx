@@ -78,8 +78,8 @@ export default function SignUpPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="new-password" required minLength={6} />
-                    <p className="text-xs text-muted-foreground">At least 6 characters.</p>
+                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="new-password" required minLength={8} />
+                    <p className="text-xs text-muted-foreground">At least 8 characters.</p>
                 </div>
                 {/* Neutral age question: asks the date without hinting at the cutoff (FTC guidance) */}
                 <fieldset className="space-y-2">

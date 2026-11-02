@@ -3,6 +3,7 @@ import createAudioURL from "@/lib/create-audio-url"
 import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
 export const maxDuration = 200;
+const DAILY_LIMIT = 20;
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const {id} = await params
     const supabase = await createServerSupabase();
@@ -19,15 +20,25 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (error) {
         return Response.json({error: "Unauthorized user."}, {status: 404});
     }
-    // Repeat guard: transcription and feedback cost money on every call, so a recording that is
-    // already being analyzed or is finished can't be sent again. "failed" is allowed so it can be retried.
-    if (data.status === "analyzing" || data.status === "done") {
-        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
+    // Server-side check that the file really is in this user's own folder (the browser could send any path)
+    if (!data.file_path.startsWith(`${user.id}/`)) {
+        return Response.json({error: "Recording not found."}, {status: 404});
     }
-    // Basically if every gard runs well, change the status of the recording (identified with ID) to analyzing
-    const {error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id)
+    // Spend cap: transcription and feedback cost money on every call, so each user gets a daily limit.
+    // shortcut: counts rows in the table, so deleting recordings resets it; upgrade to a server-only usage table.
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const {count} = await supabase.from("recordings").select("id", {count: "exact", head: true}).gte("created_at", since)
+    if ((count ?? 0) > DAILY_LIMIT) {
+        return Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
+    }
+    // Repeat guard + claim in ONE step: only a recording that is "uploaded" or "failed" can be switched to
+    // "analyzing", so two requests sent at the same time can't both start a paid analysis.
+    const {data: claimed, error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id).in("status", ["uploaded", "failed"]).select("id")
     if (updateError) {
         return Response.json({error: "Could not update status."}, {status: 500})
+    }
+    if (!claimed || claimed.length === 0) {
+        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
     }
 
     // The try catch below make sit so that the code will do everything in try but acts as a giant error marker
