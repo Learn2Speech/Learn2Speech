@@ -27,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Spend cap: transcription and feedback cost money on every call, so each user gets a daily limit.
     // shortcut: counts rows in the table, so deleting recordings resets it; upgrade to a server-only usage table.
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const {count} = await supabase.from("recordings").select("id", {count: "exact", head: true}).gte("created_at", since)
+    const {count} = await supabase.from("recordings").select("id", {count: "exact", head: true}).eq("user_id", user.id).gte("created_at", since)
     if ((count ?? 0) > DAILY_LIMIT) {
         return Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
     }
