@@ -30,6 +30,9 @@ export default function AuthButton() {
         } else {
             setUser(null);
             router.push("/")
+            // refresh() throws away pages Next.js pre-loaded before the login state changed; without it,
+            // clicking Upload or History can replay an old "go to login" answer until the page is refreshed
+            router.refresh()
         }
     }
 
@@ -41,7 +44,7 @@ export default function AuthButton() {
             <SidebarMenu>
                 <SidebarMenuItem>
                     {/* shows who is logged in; hidden when the sidebar is shrunk to icons */}
-                    <p className="truncate px-2 pb-1 text-xs text-muted-foreground group-data-[collapsible=icon]:hidden">{user.email}</p>
+                    <p className="truncate px-2 pb-1 text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">{user.email}</p>
                     <SidebarMenuButton onClick={() => setShowConfirm(true)} tooltip="Log out">
                         <LogOut />
                         <span>Log out</span>

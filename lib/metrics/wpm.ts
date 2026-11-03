@@ -1,5 +1,8 @@
 import type { TranscriptWord } from "@/lib/transcription/types";
 
+// SUMMARY: words per minute = number of words / minutes spent speaking.
+// Time is measured from the first word's start to the last word's end, so silence before
+// and after the speech doesn't make a fast speaker look slow.
 export function wordsPerMin(words: TranscriptWord[]): number {
   if (words.length === 0) return 0;         
 

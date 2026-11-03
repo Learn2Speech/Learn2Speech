@@ -12,6 +12,7 @@
   --color-ink-foreground: var(--ink-foreground);
   --color-ink-accent: var(--ink-accent);
   --color-highlight: var(--highlight);
+  --color-pause: var(--pause);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-bricolage);
@@ -53,8 +54,8 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Ink + orange palette. Cool white surfaces and near-black "ink" text, with our
-   logo orange used sparingly (buttons, highlights) instead of warm cream everywhere. */
+/* Ink + teal palette. Cool white surfaces and near-black "ink" text, with our
+   logo teal/cyan used sparingly (buttons, highlights) instead of warm cream everywhere. */
 :root {
   --background: #FFFFFF;
   --foreground: #0E1525;
@@ -62,8 +63,8 @@
   --card-foreground: #0E1525;
   --popover: #FFFFFF;
   --popover-foreground: #0E1525;
-  /* a bit deeper than the logo orange so white button text passes contrast (4.76:1) */
-  --primary: #C24E28;
+  /* a deeper teal than the logo cyan so white button text passes contrast (5.4:1) */
+  --primary: #0E7490;
   --primary-foreground: #FFFFFF;
   --secondary: #F1F3F6;
   --secondary-foreground: #0E1525;
@@ -74,64 +75,66 @@
   --destructive: #C0262D;
   --border: #E4E7EC;
   --input: #D9DDE4;
-  --ring: #D85B32;
-  --chart-1: #D85B32;
+  --ring: #06B6D4;
+  --chart-1: #0891B2;
   --chart-2: #0E1525;
   --chart-3: #5B6474;
   --chart-4: #9AA3B2;
   --chart-5: #E4E7EC;
   --radius: 0.5rem;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #0E1525;
-  --sidebar-primary: #C24E28;
+  /* dark "ink" sidebar: navy panel, soft white text, teal for the active page */
+  --sidebar: #0E1525;
+  --sidebar-foreground: #C9D0DC;
+  --sidebar-primary: #0E7490;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F3F6;
-  --sidebar-accent-foreground: #0E1525;
-  --sidebar-border: #E4E7EC;
-  --sidebar-ring: #D85B32;
-  /* the exact logo color, for decoration only (too light for white text) */
-  --brand: #D85B32;
+  --sidebar-accent: #1B2538;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #243049;
+  --sidebar-ring: #22D3EE;
+  /* the logo cyan, for decoration only (too light for white text) */
+  --brand: #06B6D4;
   /* dark "ink" sections (home page top) and the text/accent used on them */
   --ink: #0E1525;
   --ink-foreground: #F5F3EF;
-  --ink-accent: #E8704A;
+  --ink-accent: #22D3EE;
   /* filler-word marks in the transcript and timeline */
-  --highlight: #D85B32;
+  --highlight: #0891B2;
+  /* long-pause blocks on the speech timeline: 3.3:1 against the bar so they're easy to spot */
+  --pause: #7D8798;
 }
 
 
+/* Dark mode: the same ink + teal look, with the light surfaces swapped for deep navy.
+   Sidebar colors aren't repeated here because the sidebar is already dark in both themes. */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0A0F1A;
+  --foreground: #E8ECF2;
+  --card: #121A2B;
+  --card-foreground: #E8ECF2;
+  --popover: #121A2B;
+  --popover-foreground: #E8ECF2;
+  --primary: #0E7490;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1B2538;
+  --secondary-foreground: #E8ECF2;
+  --muted: #1B2538;
+  --muted-foreground: #9AA3B2;
+  --accent: #1B2538;
+  --accent-foreground: #E8ECF2;
+  --destructive: #E5484D;
+  --border: #243049;
+  --input: #2E3A55;
+  --ring: #22D3EE;
+  --chart-1: #22D3EE;
+  --chart-2: #E8ECF2;
+  --chart-3: #9AA3B2;
+  --chart-4: #5B6474;
+  --chart-5: #243049;
+  /* a bit lighter than the page so the home page's ink band still shows */
+  --ink: #1E2A42;
+  --highlight: #22D3EE;
+  /* long-pause blocks: lighter gray in dark mode, 3.5:1 against the dark bar */
+  --pause: #6B7A96;
 }
 
 @layer base {

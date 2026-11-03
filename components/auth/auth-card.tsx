@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Logo from "@/components/brand/logo";
 import Waveform from "@/components/brand/waveform";
+import SiteFooter from "@/components/site-footer";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 type AuthCardProps = {
@@ -27,6 +28,7 @@ export default function AuthCard({ title, subtitle, children, footer }: AuthCard
         <CardContent>{children}</CardContent>
         <CardFooter className="justify-center text-sm text-muted-foreground">{footer}</CardFooter>
       </Card>
+      <SiteFooter className="relative py-0" />
     </main>
   );
 }

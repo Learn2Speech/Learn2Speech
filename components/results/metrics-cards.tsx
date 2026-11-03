@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { describeFillers, describePace, describePauses, type Rating } from "@/lib/metrics/describe";
 import type { SpeechMetrics } from "@/lib/metrics/types";
 
-// Green / amber / red. Amber (not our brand orange) for "okay", so a warning
+// Green / amber / red. Amber (not our brand color) for "okay", so a warning
 // never looks like a normal button or highlight.
 const TONE_COLORS: Record<Rating["tone"], string> = {
   good: "border-green-600/30 bg-green-600/10 text-green-700",

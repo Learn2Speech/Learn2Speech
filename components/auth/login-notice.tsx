@@ -16,9 +16,19 @@ export default function LoginNotice() {
   if (!pageName) return null;
 
   return (
-    <p role="status" className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
-      <LockKeyhole className="size-4 shrink-0" />
-      Log in to use {pageName}.
-    </p>
+    <div className="space-y-2">
+      {/* Known issue: right after logging in, Upload/History can bounce here until the page is reloaded.
+          A plain <a> (not Next's <Link>) makes the browser fully reload, which skips the saved copy. */}
+      <p className="text-sm text-muted-foreground">
+        Already logged in?{" "}
+        <a href={`/${from}`} className="font-medium text-foreground underline underline-offset-4">
+          Try refreshing and open {pageName}
+        </a>
+      </p>
+      <p role="status" className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
+        <LockKeyhole className="size-4 shrink-0" />
+        Log in to use {pageName}.
+      </p>
+    </div>
   );
 }

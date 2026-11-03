@@ -12,6 +12,10 @@ import type { Transcript } from "@/lib/transcription/types";
 //    - words ← the reply's words (each word has text, start, end, confidence)
 //    - durationMs ← reply's audio_duration * 1000 (careful with units!)
 // 5. Return the Transcript
+// SUMMARY: sends an audio link to AssemblyAI and waits for the finished transcript.
+// Transcription isn't instant, so it works in two phases: submit a job (get an id back),
+// then ask for the result every 5 seconds until it is done, fails, or 3 minutes pass.
+// Plain fetch is used instead of an SDK, and only on the server so the key stays secret.
 export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
   if (!assemblyKey){
@@ -24,7 +28,10 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       authorization: assemblyKey,
       "content-type": "application/json",
     },
-    body: JSON.stringify({audio_url: audioURL, disfluencies: true}),
+    // disfluencies: true keeps "um" and "uh" in the transcript. By default AssemblyAI deletes them,
+    // which would make our filler-word counting impossible.
+    // Always English: without this, heavily accented English was guessed as another language (e.g. Tamil)
+    body: JSON.stringify({audio_url: audioURL, disfluencies: true, language_code: "en", language_detection: false}),
   });
   if (!response.ok){
     console.error(`Submitting transcription failed: ${response.status}`);
@@ -34,6 +41,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const jobID = data.id;
   const startedAt = Date.now();
   const limitMs = 3*60*1000;
+  // Polling loop. The time limit stops it from running forever if AssemblyAI never finishes.
   while (true){
     if (Date.now() - startedAt > limitMs){
       throw new Error("Transcription took too long. Try a shorter recording.");
@@ -56,7 +64,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
       if (!result.words || result.words.length === 0){
         throw new Error("No speech detected in the recording. Check the mic or try getting closer.");
       }
-      return {
+      const transcript: Transcript = {
         text: result.text ?? "",
         words: (result.words ?? []).map((word) => ({
           text: word.text,
@@ -64,13 +72,33 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
           end: word.end,
           confidence: word.confidence,
         })),
+        // AssemblyAI reports the length in seconds but our app uses milliseconds everywhere
         durationMs: (result.audio_duration ?? 0) * 1000,
       };
+      // Privacy: we've copied what we need, so ask AssemblyAI to delete its copy of the audio and text
+      await deleteFromAssemblyAI(jobID, assemblyKey);
+      return transcript;
     }
     if (result.status === "error"){
       console.error(`Transcription failed: ${result.error}`);
       throw new Error("Transcription failed. Please try again.");
     }
     await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+}
+// Asks AssemblyAI to delete a finished transcript (and the audio it was made from) from their
+// servers. Written by Claude at Rian's request for the privacy fixes. A failure here only gets
+// logged: the user already has their transcript, so it shouldn't make the analysis fail.
+async function deleteFromAssemblyAI(jobID: string, assemblyKey: string) {
+  try {
+    const response = await fetch(`https://api.assemblyai.com/v2/transcript/${jobID}`, {
+      method: "DELETE",
+      headers: { authorization: assemblyKey },
+    });
+    if (!response.ok) {
+      console.error(`Deleting transcript ${jobID} from AssemblyAI failed: ${response.status}`);
+    }
+  } catch {
+    console.error(`Deleting transcript ${jobID} from AssemblyAI failed: no response`);
   }
 }

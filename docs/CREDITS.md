@@ -16,6 +16,7 @@ Required for Congressional App Challenge disclosure. Add a row whenever we add a
 | [Base UI](https://base-ui.com) (`@base-ui/react`) | The accessible building blocks shadcn/ui components are built on | MIT |
 | [Lucide](https://lucide.dev) (`lucide-react`) | Icons (microphone, upload, history, etc.) | ISC |
 | [class-variance-authority](https://cva.style) | Button and badge style variants (used inside shadcn/ui components) | Apache-2.0 |
+| [next-themes](https://github.com/pacocoursey/next-themes) | Light/dark mode switch: remembers your choice and follows your computer's setting by default | MIT |
 | [tw-animate-css](https://github.com/Wombosvideo/tw-animate-css) | Small animations (sidebar slide-out on phones) | MIT |
 | [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) | Heading font, loaded from Google Fonts with `next/font` | SIL Open Font License 1.1 |
 | [Geist font](https://vercel.com/font) | The app's typeface, loaded with `next/font` | SIL Open Font License 1.1 |

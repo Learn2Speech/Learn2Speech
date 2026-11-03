@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Loader2, Upload } from "lucide-react";
+import DeleteRecordingButton from "@/components/results/delete-recording-button";
 import ResultsView from "@/components/results/results-view";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,12 +34,16 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
           {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
         </p>
       </div>
-      {/* the next step after reading feedback is usually to try again */}
-      {recording.status === "done" && (
-        <Link href="/upload" className={buttonVariants()}>
-          <Upload /> Upload another speech
-        </Link>
-      )}
+      <div className="flex flex-wrap gap-2">
+        {/* the next step after reading feedback is usually to try again */}
+        {recording.status === "done" && (
+          <Link href="/upload" className={buttonVariants()}>
+            <Upload /> Upload another speech
+          </Link>
+        )}
+        {/* available in every state, so users can always erase their own data */}
+        <DeleteRecordingButton id={recording.id} filePath={recording.file_path} />
+      </div>
     </div>
   );
 
