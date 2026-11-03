@@ -12,7 +12,10 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
     if (!data.user) throw new Error("Please log in before attempting an upload!");
     const address = buildAudioPath(data.user.id, file.name);
     const {error: uploadError} = await supabase.storage.from("recordings").upload(address, file);
-    if (uploadError) throw new Error(uploadError.message);
+    if (uploadError) {
+        console.error("Upload failed", uploadError.message);
+        throw new Error("Upload failed. Please try again.");
+    }
     // .select("id").single() sends back the row we just made, because the analyze route's address needs its id
     const {data: newRecording, error: insertError} = await supabase.from("recordings").insert({
         user_id: data.user.id,
@@ -22,7 +25,8 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
     }).select("id").single();
     if (insertError) {
         await supabase.storage.from("recordings").remove([address]);
-        throw new Error(insertError.message);
+        console.error("Saving recording failed", insertError.message);
+        throw new Error("Could not save your recording. Please try again.");
     }
     onAnalyzing?.();
     let response: Response;

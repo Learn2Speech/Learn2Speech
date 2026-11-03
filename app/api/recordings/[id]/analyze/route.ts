@@ -1,4 +1,5 @@
 import {createServerSupabase} from "@/lib/supabase-server"
+import {UserFacingError} from "@/lib/user-error"
 import createAudioURL from "@/lib/create-audio-url"
 import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
@@ -67,13 +68,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .eq("id", id)
 
         if (saveError) {
-            throw new Error("External values not saved properly.")
+            throw new UserFacingError("Could not save your results. Please try again.")
         }
 
         return Response.json({ok: true});
 
     } catch (err) {
-        const message = err instanceof Error ? err.message : "Analysis failed"
+        // only our own friendly messages reach the user; anything unexpected stays in the server log
+        const message = err instanceof UserFacingError ? err.message : "Analysis failed. Please try again."
 
         console.error("Analysis failed for recording", id, err)
 
