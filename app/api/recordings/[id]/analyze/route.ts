@@ -32,9 +32,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if ((count ?? 0) > DAILY_LIMIT) {
         return Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
     }
+    // shortcut: a row stuck on "analyzing" (server timed out) becomes retryable 10 min after upload; upgrade to an analysis_started_at column.
+    const stale = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     // Repeat guard + claim in ONE step: only a recording that is "uploaded" or "failed" can be switched to
     // "analyzing", so two requests sent at the same time can't both start a paid analysis.
-    const {data: claimed, error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id).in("status", ["uploaded", "failed"]).select("id")
+    const {data: claimed, error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id).or(`status.in.(uploaded,failed),and(status.eq.analyzing,created_at.lt.${stale})`).select("id")
     if (updateError) {
         return Response.json({error: "Could not update status."}, {status: 500})
     }

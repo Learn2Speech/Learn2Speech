@@ -21,11 +21,14 @@ import {
 } from "@/components/ui/sidebar";
 
 // Add a page to the sidebar by adding one line here.
+// needsLogin: the page guard sends logged-out visitors to /login, so we don't let Next.js
+// pre-load it. A pre-load made while logged out saves the "go to login" answer, and clicking
+// the link right after logging in would replay it (until a refresh).
 const PAGES = [
-  { title: "Home", href: "/", icon: House },
-  { title: "Upload", href: "/upload", icon: Upload },
-  { title: "Record", href: "/record", icon: Mic },
-  { title: "History", href: "/history", icon: History },
+  { title: "Home", href: "/", icon: House, needsLogin: false },
+  { title: "Upload", href: "/upload", icon: Upload, needsLogin: true },
+  { title: "Record", href: "/record", icon: Mic, needsLogin: true },
+  { title: "History", href: "/history", icon: History, needsLogin: true },
 ];
 
 // The page links. activePath is the page you're on (highlighted), or null while unknown.
@@ -35,7 +38,7 @@ function NavLinks({ activePath }: { activePath: string | null }) {
       {PAGES.map((page) => (
         <SidebarMenuItem key={page.href}>
           <SidebarMenuButton
-            render={<Link href={page.href} />}
+            render={<Link href={page.href} prefetch={!page.needsLogin} />}
             // /history/123 still highlights History, but / only highlights Home on the home page
             isActive={page.href === "/" ? activePath === "/" : activePath?.startsWith(page.href) ?? false}
             tooltip={page.title}
