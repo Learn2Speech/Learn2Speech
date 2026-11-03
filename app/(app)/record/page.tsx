@@ -3,6 +3,7 @@
 // upload + analyze steps as the Upload page. Recording is saved as MP4 audio because
 // that's already an allowed type for the private storage bucket (WebM is not).
 import {useEffect, useRef, useState} from "react";
+import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {Loader2, Mic, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
@@ -102,6 +103,7 @@ export default function RecordPage() {
                             <Square /> Stop recording
                         </Button>
                     )}
+                    <p className="text-center text-sm text-muted-foreground">The microphone is only on while you record. Your audio is sent to AssemblyAI and Anthropic to make your feedback, as described in our <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>. Only record your own voice or people who agreed.</p>
                     {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                     {file && !recording && (
                         <Button onClick={analyze} disabled={busy} className="h-11 w-full text-base">

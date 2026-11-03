@@ -15,7 +15,7 @@ const SECTIONS = [
   },
   {
     heading: "Your recordings",
-    body: "When you upload audio, we store the file and its transcript in your account. Only you can see your recordings and results. Please only upload recordings of your own voice, or of people who have agreed to be recorded.",
+    body: "When you upload audio, we store the file and its transcript in your account. Only you can see your recordings and results. You can upload a file or record with your microphone. Please only record or upload your own voice, or people who have agreed to be recorded. To keep costs under control, each account can analyze a limited number of recordings per day.",
   },
   {
     heading: "How we use AI",
@@ -38,7 +38,7 @@ const SECTIONS = [
 export default function TermsPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <PageHeader title="Terms and Conditions" description="Last updated October 24, 2026" />
+      <PageHeader title="Terms and Conditions" description="Last updated November 3, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
           <section key={section.heading} className="space-y-2">

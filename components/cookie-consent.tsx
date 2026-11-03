@@ -41,7 +41,7 @@ export default function CookieConsent() {
   }
 
   return (
-    <div role="region" aria-label="Cookie notice" className="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-xl rounded-xl border bg-background p-4 shadow-lg">
+    <div role="region" aria-label="Cookie notice" className="fixed inset-x-4 bottom-4 z-50 rounded-xl sm:left-auto sm:max-w-sm border bg-background p-4 shadow-lg">
       <p className="text-sm">
         We always use one cookie to keep you signed in. With your OK we also remember whether your sidebar is open. No ads, no tracking.{" "}
         <Link href="/privacy" className="underline underline-offset-4">Privacy</Link>
