@@ -21,7 +21,7 @@ const SECTIONS: Section[] = [
     heading: "What we collect",
     points: [
       "Account: your email address and password. Your password is stored scrambled (hashed) by our login provider, Supabase; we never see it.",
-      "Recordings: the audio files you upload or record in your browser, their original file names and sizes, and when you uploaded them.",
+      "Recordings: the audio files you upload, their original file names and sizes, and when you uploaded them.",
       "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, and the coaching feedback.",
       "Small browser settings: a login cookie so you stay signed in (always on), and your sidebar preference (only if you accept on our cookie notice). Your light/dark mode is kept in browser storage. We don't use advertising or tracking cookies.",
     ],
@@ -45,7 +45,7 @@ const SECTIONS: Section[] = [
       "Everything is sent over encrypted connections (HTTPS).",
       "Row Level Security rules in our database only return a recording or result to the account that owns it, so even someone who guesses a link can't open your data.",
       "Uploaded files get random names, and the secret keys for our AI services are only used on our server, never in your browser.",
-      "Our pages tell browsers not to let other sites embed them, and they block the camera and location, which the app never uses. The microphone is used only on the Record page, only after you click Start recording and allow it in your browser, and it turns off when you stop. Nothing is recorded in the background.",
+      "Our pages tell browsers not to let other sites embed them, and they block the camera, microphone and location, which the app never uses.",
       "No system is perfectly secure, but we keep the data we hold to what the app needs.",
     ],
   },

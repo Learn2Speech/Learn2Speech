@@ -7,6 +7,7 @@ import Link from "next/link";
 import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import PasswordInput from "@/components/auth/password-input";
 import {Label} from "@/components/ui/label";
 export default function LoginPage() {
     const[email, setEmail] = useState("");
@@ -45,7 +46,7 @@ export default function LoginPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="current-password" required />
+                    <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} id="password" autoComplete="current-password" required />
                 </div>
                 {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
                 <Button type="submit" disabled={loading} className="h-10 w-full">

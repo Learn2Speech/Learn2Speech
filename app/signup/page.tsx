@@ -6,6 +6,7 @@ import {useRouter} from "next/navigation";
 import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import PasswordInput from "@/components/auth/password-input";
 import {Label} from "@/components/ui/label";
 import {isOldEnough} from "@/lib/age-check";
 
@@ -21,6 +22,7 @@ const SELECT_CLASS = "h-8 w-full rounded-lg border border-input bg-transparent p
 export default function SignUpPage() {
     const[email, setEmail]=useState("")
     const[password, setPassword]=useState("")
+    const[confirmPassword, setConfirmPassword]=useState("")
     const[errorMessage, setErrorMessage]=useState("")
     const[confirmMessage, setConfirmMessage]=useState("")
     // true while we wait for Supabase, so the button can't be clicked twice
@@ -36,6 +38,10 @@ export default function SignUpPage() {
         event.preventDefault();
         setErrorMessage("")
         setConfirmMessage("")
+        if (password !== confirmPassword) {
+            setErrorMessage("The two passwords don't match.")
+            return;
+        }
         // Age check (Claude wrote this part at Rian's request): Learn2Speech is 13+ only (COPPA)
         if (!birthMonth || !birthYear) {
             setErrorMessage("Please choose your birth month and year.")
@@ -78,8 +84,12 @@ export default function SignUpPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="new-password" required minLength={8} />
+                    <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} id="password" autoComplete="new-password" required minLength={8} />
                     <p className="text-xs text-muted-foreground">At least 8 characters.</p>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm password</Label>
+                    <PasswordInput value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} id="confirm-password" autoComplete="new-password" required minLength={8} />
                 </div>
                 {/* Neutral age question: asks the date without hinting at the cutoff (FTC guidance) */}
                 <fieldset className="space-y-2">

@@ -15,7 +15,7 @@ const SECTIONS = [
   },
   {
     heading: "Your recordings",
-    body: "When you upload audio, we store the file and its transcript in your account. Only you can see your recordings and results. You can upload a file or record with your microphone. Please only record or upload your own voice, or people who have agreed to be recorded. To keep costs under control, each account can analyze a limited number of recordings per day.",
+    body: "When you upload audio, we store the file and its transcript in your account. Only you can see your recordings and results. Please only upload recordings of your own voice, or people who have agreed to be recorded. To keep costs under control, each account can analyze a limited number of recordings per day.",
   },
   {
     heading: "How we use AI",

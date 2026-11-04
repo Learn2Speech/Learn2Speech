@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { History, House, Mic, Upload } from "lucide-react";
+import { History, House, Upload } from "lucide-react";
 import AuthButton from "@/app/auth-button";
 import Logo, { LogoMark } from "@/components/brand/logo";
 import ThemeToggle from "@/components/theme-toggle";
@@ -27,7 +27,6 @@ import {
 const PAGES = [
   { title: "Home", href: "/", icon: House, needsLogin: false },
   { title: "Upload", href: "/upload", icon: Upload, needsLogin: true },
-  { title: "Record", href: "/record", icon: Mic, needsLogin: true },
   { title: "History", href: "/history", icon: History, needsLogin: true },
 ];
 
