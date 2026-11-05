@@ -70,6 +70,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
                     <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} id="password" autoComplete="current-password" required />
+                    <p className="text-right text-sm"><Link href="/forgot-password" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">Forgot password?</Link></p>
                 </div>
                 {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
                 <Button type="submit" disabled={loading} className="h-10 w-full">
