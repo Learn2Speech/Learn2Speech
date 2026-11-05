@@ -41,14 +41,19 @@ export default function CookieConsent() {
   }
 
   return (
-    <div role="region" aria-label="Cookie notice" className="fixed inset-x-4 bottom-4 z-50 rounded-xl sm:left-auto sm:max-w-sm border bg-background p-4 shadow-lg">
-      <p className="text-sm">
-        We always use one cookie to keep you signed in. With your OK we also remember whether your sidebar is open. No ads, no tracking.{" "}
-        <Link href="/privacy" className="underline underline-offset-4">Privacy</Link>
-      </p>
-      <div className="mt-3 flex gap-2">
-        <Button onClick={() => save("all")}>Accept</Button>
-        <Button variant="outline" onClick={() => save("essential")}>Essential only</Button>
+    // full-screen dim layer: the page stays behind it until a choice is made (like most sites)
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-labelledby="cookie-title" className="w-full max-w-md rounded-2xl border bg-background p-6 shadow-xl">
+        <h2 id="cookie-title" className="text-lg font-semibold">Cookies</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We always use one cookie to keep you signed in. With your OK we also remember whether your sidebar is open. No ads, no tracking.{" "}
+          {/* new tab, so the policy can be read without losing this choice */}
+          <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>
+        </p>
+        <div className="mt-5 flex flex-col gap-2 sm:flex-row-reverse">
+          <Button autoFocus onClick={() => save("all")} className="h-10 sm:flex-1">Accept</Button>
+          <Button variant="outline" onClick={() => save("essential")} className="h-10 sm:flex-1">Essential only</Button>
+        </div>
       </div>
     </div>
   );
