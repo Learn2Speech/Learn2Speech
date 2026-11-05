@@ -7,6 +7,7 @@ import Link from "next/link";
 import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import PasswordInput from "@/components/auth/password-input";
 import {Label} from "@/components/ui/label";
 import VerifyCodeForm from "@/components/auth/verify-code-form";
 export default function LoginPage() {
@@ -68,7 +69,8 @@ export default function LoginPage() {
                 </div>
                 <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
-                    <Input value={password} onChange={(e) => setPassword(e.target.value)} id="password" type="password" autoComplete="current-password" required />
+                    <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} id="password" autoComplete="current-password" required />
+                    <p className="text-right text-sm"><Link href="/forgot-password" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">Forgot password?</Link></p>
                 </div>
                 {errorMessage && <AuthMessage kind="error">{errorMessage}</AuthMessage>}
                 <Button type="submit" disabled={loading} className="h-10 w-full">

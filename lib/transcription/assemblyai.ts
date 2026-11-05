@@ -1,3 +1,4 @@
+import {UserFacingError} from "@/lib/user-error";
 import type { Transcript } from "@/lib/transcription/types";
 // transcribeAudio(audioURL) returns a Transcript
 // 1. Get the API key from .env.local 
@@ -20,7 +21,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
   if (!assemblyKey){
     console.error("ASSEMBLYAI_API_KEY is missing. Add it to .env.local");
-    throw new Error("Transcription isn't available right now. Please try again later.");
+    throw new UserFacingError("Transcription isn't available right now. Please try again later.");
   }
   const response = await fetch("https://api.assemblyai.com/v2/transcript", {
     method: "POST",
@@ -35,23 +36,24 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   });
   if (!response.ok){
     console.error(`Submitting transcription failed: ${response.status}`);
-    throw new Error("Transcription couldn't start. Please try again.");
+    throw new UserFacingError("Transcription couldn't start. Please try again.");
   }
   const data: { id: string } = await response.json();
   const jobID = data.id;
+  try {
   const startedAt = Date.now();
   const limitMs = 3*60*1000;
   // Polling loop. The time limit stops it from running forever if AssemblyAI never finishes.
   while (true){
     if (Date.now() - startedAt > limitMs){
-      throw new Error("Transcription took too long. Try a shorter recording.");
+      throw new UserFacingError("Transcription took too long. Try a shorter recording.");
     }
     const response = await fetch(`https://api.assemblyai.com/v2/transcript/${jobID}`,{
       headers: { authorization: assemblyKey},
     });
     if (!response.ok) {
       console.error(`Checking transcription failed: ${response.status}`);
-      throw new Error("Transcription was interrupted. Please try again.");
+      throw new UserFacingError("Transcription was interrupted. Please try again.");
     }
     const result: {
       status: string;
@@ -62,7 +64,7 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
     } = await response.json();
     if (result.status === "completed"){
       if (!result.words || result.words.length === 0){
-        throw new Error("No speech detected in the recording. Check the mic or try getting closer.");
+        throw new UserFacingError("No speech detected in the recording. Check the mic or try getting closer.");
       }
       const transcript: Transcript = {
         text: result.text ?? "",
@@ -75,15 +77,17 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
         // AssemblyAI reports the length in seconds but our app uses milliseconds everywhere
         durationMs: (result.audio_duration ?? 0) * 1000,
       };
-      // Privacy: we've copied what we need, so ask AssemblyAI to delete its copy of the audio and text
-      await deleteFromAssemblyAI(jobID, assemblyKey);
       return transcript;
     }
     if (result.status === "error"){
       console.error(`Transcription failed: ${result.error}`);
-      throw new Error("Transcription failed. Please try again.");
+      throw new UserFacingError("Transcription failed. Please try again.");
     }
     await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
+  } finally {
+    // Privacy: whatever happened (success, error, timeout), ask AssemblyAI to delete its copy of the audio and text
+    await deleteFromAssemblyAI(jobID, assemblyKey);
   }
 }
 // Asks AssemblyAI to delete a finished transcript (and the audio it was made from) from their

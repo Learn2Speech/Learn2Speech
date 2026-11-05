@@ -1,8 +1,11 @@
 import {createServerSupabase} from "@/lib/supabase-server"
+import {createAdminSupabase} from "@/lib/supabase-admin"
+import {UserFacingError} from "@/lib/user-error"
 import createAudioURL from "@/lib/create-audio-url"
 import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
 export const maxDuration = 200;
+const DAILY_LIMIT = 20;
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const {id} = await params
     const supabase = await createServerSupabase();
@@ -19,16 +22,35 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (error) {
         return Response.json({error: "Unauthorized user."}, {status: 404});
     }
-    // Repeat guard: transcription and feedback cost money on every call, so a recording that is
-    // already being analyzed or is finished can't be sent again. "failed" is allowed so it can be retried.
-    if (data.status === "analyzing" || data.status === "done") {
-        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
+    // Server-side check that the file really is in this user's own folder (the browser could send any path)
+    if (!data.file_path.startsWith(`${user.id}/`)) {
+        return Response.json({error: "Recording not found."}, {status: 404});
     }
-    // Basically if every gard runs well, change the status of the recording (identified with ID) to analyzing
-    const {error: updateError} = await supabase.from("recordings").update({status: "analyzing"}).eq("id", id)
+    // From here on, changes go through the admin client: users can't edit status or results themselves
+    // (the ownership checks above already ran).
+    const admin = createAdminSupabase();
+    // Spend cap: transcription and feedback cost money on every call, so each user gets a daily limit.
+    // Counted in analysis_log, which only the server can write, so deleting recordings doesn't reset it.
+    const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const {count, error: countError} = await admin.from("analysis_log").select("id", {count: "exact", head: true}).eq("user_id", user.id).gte("created_at", since)
+    if (countError) {
+        return Response.json({error: "Could not check your daily limit. Please try again."}, {status: 500})
+    }
+    if ((count ?? 0) >= DAILY_LIMIT) {
+        return Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
+    }
+    // shortcut: a row stuck on "analyzing" (server timed out) becomes retryable 10 min after upload; upgrade to an analysis_started_at column.
+    const stale = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    // Repeat guard + claim in ONE step: only a recording that is "uploaded" or "failed" can be switched to
+    // "analyzing", so two requests sent at the same time can't both start a paid analysis.
+    const {data: claimed, error: updateError} = await admin.from("recordings").update({status: "analyzing"}).eq("id", id).eq("user_id", user.id).or(`status.in.(uploaded,failed),and(status.eq.analyzing,created_at.lt.${stale})`).select("id")
     if (updateError) {
         return Response.json({error: "Could not update status."}, {status: 500})
     }
+    if (!claimed || claimed.length === 0) {
+        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
+    }
+    await admin.from("analysis_log").insert({user_id: user.id})
 
     // The try catch below make sit so that the code will do everything in try but acts as a giant error marker
     // If there is an error in any of these, catch it, end it, and display the error. 
@@ -44,7 +66,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         //  Here we are now taking the values we got from Rian's code and taking them back and updating our table/database with them
         // They are extremely useful so we are giving the audio to Rian and his code doees his thing and then we take the outputs and reorganize them into the table below
         // These form foundations for charts and display  
-        const {error: saveError} = await supabase
+        const {error: saveError} = await admin
             .from("recordings")
             .update({
                 transcript: transcript,
@@ -56,17 +78,18 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         .eq("id", id)
 
         if (saveError) {
-            throw new Error("External values not saved properly.")
+            throw new UserFacingError("Could not save your results. Please try again.")
         }
 
         return Response.json({ok: true});
 
     } catch (err) {
-        const message = err instanceof Error ? err.message : "Analysis failed"
+        // only our own friendly messages reach the user; anything unexpected stays in the server log
+        const message = err instanceof UserFacingError ? err.message : "Analysis failed. Please try again."
 
         console.error("Analysis failed for recording", id, err)
 
-        await supabase.from("recordings").update({status: "failed", error_message: message}).eq("id", id)
+        await admin.from("recordings").update({status: "failed", error_message: message}).eq("id", id)
 
         return Response.json({error: message}, {status: 500})
     }

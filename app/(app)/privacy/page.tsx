@@ -23,7 +23,7 @@ const SECTIONS: Section[] = [
       "Account: your email address and password. Your password is stored scrambled (hashed) by our login provider, Supabase; we never see it.",
       "Recordings: the audio files you upload, their original file names and sizes, and when you uploaded them.",
       "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, and the coaching feedback.",
-      "Small browser settings: a login cookie so you stay signed in, and your light/dark mode and sidebar preferences. We don't use advertising or tracking cookies.",
+      "Small browser settings: a login cookie so you stay signed in (always on), and your sidebar preference (only if you accept on our cookie notice). Your light/dark mode is kept in browser storage. We don't use advertising or tracking cookies.",
     ],
   },
   {
@@ -70,7 +70,7 @@ const SECTIONS: Section[] = [
 export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <PageHeader title="Privacy Policy" description="Last updated October 25, 2026" />
+      <PageHeader title="Privacy Policy" description="Last updated November 3, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
           <section key={section.heading} className="space-y-2">
