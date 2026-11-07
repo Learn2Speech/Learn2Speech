@@ -35,6 +35,11 @@ const nextConfig: NextConfig = {
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
         ],
       },
+      // pages and data that need a login must not be kept by shared caches or the back button
+      {
+        source: "/:path(history|upload|api)/:rest*",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
+      },
     ];
   },
 };

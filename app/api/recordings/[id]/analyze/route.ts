@@ -6,8 +6,12 @@ import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
 export const maxDuration = 200;
 const DAILY_LIMIT = 20;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const {id} = await params
+    if (!UUID.test(id)) {
+        return Response.json({error: "Recording not found."}, {status: 404});
+    }
     const supabase = await createServerSupabase();
     // Checks first if you are trying to access the path that goes from the audio link ot AssemblyAI, you are the user
     // Checks who YOU are first of all. Who is TRYING to access the address (the path to AssemblyAI). Checks if you are a valid, logged in user. Uses server data because it happens fast, immediately and high end, 
@@ -23,7 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return Response.json({error: "Unauthorized user."}, {status: 404});
     }
     // Server-side check that the file really is in this user's own folder (the browser could send any path)
-    if (!data.file_path.startsWith(`${user.id}/`)) {
+    if (!new RegExp(`^${user.id}/[0-9a-f-]{36}\\.[a-zA-Z0-9]{1,5}$`).test(data.file_path)) {
         return Response.json({error: "Recording not found."}, {status: 404});
     }
     // From here on, changes go through the admin client: users can't edit status or results themselves
@@ -31,26 +35,33 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const admin = createAdminSupabase();
     // Spend cap: transcription and feedback cost money on every call, so each user gets a daily limit.
     // Counted in analysis_log, which only the server can write, so deleting recordings doesn't reset it.
+    // The log row is added FIRST and then counted, so 50 requests sent at once can't all read "0 used".
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const {count, error: countError} = await admin.from("analysis_log").select("id", {count: "exact", head: true}).eq("user_id", user.id).gte("created_at", since)
-    if (countError) {
+    const {data: logRow, error: logError} = await admin.from("analysis_log").insert({user_id: user.id}).select("id").single()
+    if (logError || !logRow) {
         return Response.json({error: "Could not check your daily limit. Please try again."}, {status: 500})
     }
-    if ((count ?? 0) >= DAILY_LIMIT) {
-        return Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
+    const {count, error: countError} = await admin.from("analysis_log").select("id", {count: "exact", head: true}).eq("user_id", user.id).gte("created_at", since)
+    if (countError || (count ?? DAILY_LIMIT + 1) > DAILY_LIMIT) {
+        await admin.from("analysis_log").delete().eq("id", logRow.id)
+        return countError
+            ? Response.json({error: "Could not check your daily limit. Please try again."}, {status: 500})
+            : Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
     }
-    // shortcut: a row stuck on "analyzing" (server timed out) becomes retryable 10 min after upload; upgrade to an analysis_started_at column.
+    // a row stuck on "analyzing" (server timed out) becomes retryable 10 min after its analysis started
     const stale = new Date(Date.now() - 10 * 60 * 1000).toISOString();
     // Repeat guard + claim in ONE step: only a recording that is "uploaded" or "failed" can be switched to
     // "analyzing", so two requests sent at the same time can't both start a paid analysis.
-    const {data: claimed, error: updateError} = await admin.from("recordings").update({status: "analyzing"}).eq("id", id).eq("user_id", user.id).or(`status.in.(uploaded,failed),and(status.eq.analyzing,created_at.lt.${stale})`).select("id")
+    const {data: claimed, error: updateError} = await admin.from("recordings").update({status: "analyzing", analysis_started_at: new Date().toISOString()}).eq("id", id).eq("user_id", user.id).or(`status.in.(uploaded,failed),and(status.eq.analyzing,analysis_started_at.lt.${stale})`).select("id")
+    if (updateError || !claimed || claimed.length === 0) {
+        await admin.from("analysis_log").delete().eq("id", logRow.id)
+    }
     if (updateError) {
         return Response.json({error: "Could not update status."}, {status: 500})
     }
     if (!claimed || claimed.length === 0) {
         return Response.json({error: "This recording has already been analyzed."}, {status: 409});
     }
-    await admin.from("analysis_log").insert({user_id: user.id})
 
     // The try catch below make sit so that the code will do everything in try but acts as a giant error marker
     // If there is an error in any of these, catch it, end it, and display the error. 
@@ -75,7 +86,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
                 duration_ms: transcript.durationMs,
                 status: 'done'
         })
-        .eq("id", id)
+        .eq("id", id).eq("user_id", user.id)
 
         if (saveError) {
             throw new UserFacingError("Could not save your results. Please try again.")
@@ -89,7 +100,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         console.error("Analysis failed for recording", id, err)
 
-        await admin.from("recordings").update({status: "failed", error_message: message}).eq("id", id)
+        await admin.from("recordings").update({status: "failed", error_message: message}).eq("id", id).eq("user_id", user.id)
 
         return Response.json({error: message}, {status: 500})
     }
