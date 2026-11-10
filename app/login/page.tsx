@@ -7,6 +7,7 @@ import Link from "next/link";
 import AuthCard, {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import SocialButtons from "@/components/auth/social-buttons";
 import PasswordInput from "@/components/auth/password-input";
 import {Label} from "@/components/ui/label";
 import VerifyCodeForm from "@/components/auth/verify-code-form";
@@ -77,6 +78,7 @@ export default function LoginPage() {
                     {loading ? "Logging in..." : "Log in"}
                 </Button>
             </form>
+            <div className="mt-4"><Suspense fallback={null}><SocialButtons /></Suspense></div>
         </AuthCard>
     );
 
