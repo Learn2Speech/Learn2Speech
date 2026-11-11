@@ -19,7 +19,7 @@ export default function ResultsView({ metrics, feedback, transcript }: ResultsVi
   return (
     <div className="space-y-8">
       <MetricsCards metrics={metrics} durationMs={transcript.durationMs} />
-      <SpeechTimeline metrics={metrics} durationMs={transcript.durationMs} />
+      <SpeechTimeline metrics={metrics} durationMs={transcript.durationMs} words={transcript.words} />
       <FeedbackPanel feedback={feedback} />
       <TranscriptView transcript={transcript} metrics={metrics} />
     </div>

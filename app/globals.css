@@ -7,15 +7,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
-  --color-ink: var(--ink);
-  --color-ink-foreground: var(--ink-foreground);
-  --color-ink-accent: var(--ink-accent);
+  --color-brand: var(--teal-mark);
+  --color-teal: var(--teal);
+  --color-teal-foreground: var(--teal-foreground);
+  --color-orange: var(--orange);
+  --color-teal-mark: var(--teal-mark);
   --color-highlight: var(--highlight);
   --color-pause: var(--pause);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-bricolage);
+  --font-sans: var(--font-schibsted);
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-heading: var(--font-schibsted);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,87 +55,117 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Ink + teal palette. Cool white surfaces and near-black "ink" text, with our
-   logo teal/cyan used sparingly (buttons, highlights) instead of warm cream everywhere. */
+/* 50 / 30 / 20.
+   50 neutral: near-white or near-black, never pure #fff / #000 (page, text, lines).
+   30 teal: deep, desaturated; whole regions (the timeline panel) and the waveform.
+   20 orange: the one action color (buttons) and the filler-word marks. */
 :root {
-  --background: #FFFFFF;
-  --foreground: #0E1525;
-  --card: #FFFFFF;
-  --card-foreground: #0E1525;
-  --popover: #FFFFFF;
-  --popover-foreground: #0E1525;
-  /* a deeper teal than the logo cyan so white button text passes contrast (5.4:1) */
-  --primary: #0E7490;
+  --background: #F3F5F4;
+  --foreground: #0E1314;
+  --card: #FAFBFA;
+  --card-foreground: #0E1314;
+  --popover: #FAFBFA;
+  --popover-foreground: #0E1314;
+  --primary: #C4521C;
   --primary-foreground: #FFFFFF;
-  --secondary: #F1F3F6;
-  --secondary-foreground: #0E1525;
-  --muted: #F4F5F7;
-  --muted-foreground: #5B6474;
-  --accent: #F1F3F6;
-  --accent-foreground: #0E1525;
-  --destructive: #C0262D;
-  --border: #E4E7EC;
-  --input: #D9DDE4;
-  --ring: #06B6D4;
-  --chart-1: #0891B2;
-  --chart-2: #0E1525;
-  --chart-3: #5B6474;
-  --chart-4: #9AA3B2;
-  --chart-5: #E4E7EC;
-  --radius: 0.5rem;
-  /* dark "ink" sidebar: navy panel, soft white text, teal for the active page */
-  --sidebar: #0E1525;
-  --sidebar-foreground: #C9D0DC;
-  --sidebar-primary: #0E7490;
+  --secondary: #E7EBEA;
+  --secondary-foreground: #0E1314;
+  --muted: #E9EDEC;
+  --muted-foreground: #556062;
+  --accent: #E1EBEB;
+  --accent-foreground: #0E1314;
+  --destructive: #B3261E;
+  --border: #D8DEDC;
+  --input: #C2CAC8;
+  --ring: #0F5E68;
+  /* the teal block and the text on it */
+  --teal: #0F5E68;
+  --teal-foreground: #E8F3F3;
+  --teal-mark: #1B8591;
+  --brand: #0F5E68;
+  --teal-on-mark: #8FD3DA;
+  --orange: #C4521C;
+  --highlight: #C4521C;
+  --pause: #8A9795;
+  --radius: 0.25rem;
+  --sidebar: #F3F5F4;
+  --sidebar-foreground: #0E1314;
+  --sidebar-primary: #C4521C;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1B2538;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #243049;
-  --sidebar-ring: #22D3EE;
-  /* the logo cyan, for decoration only (too light for white text) */
-  --brand: #06B6D4;
-  /* dark "ink" sections (home page top) and the text/accent used on them */
-  --ink: #0E1525;
-  --ink-foreground: #F5F3EF;
-  --ink-accent: #22D3EE;
-  /* filler-word marks in the transcript and timeline */
-  --highlight: #0891B2;
-  /* long-pause blocks on the speech timeline: 3.3:1 against the bar so they're easy to spot */
-  --pause: #7D8798;
+  --sidebar-accent: #E7EBEA;
+  --sidebar-accent-foreground: #0E1314;
+  --sidebar-border: #D8DEDC;
+  --sidebar-ring: #0F5E68;
+  --chart-1: #0F5E68;
+  --chart-2: #0E1314;
+  --chart-3: #556062;
+  --chart-4: #8A9795;
+  --chart-5: #D8DEDC;
 }
 
-
-/* Dark mode: the same ink + teal look, with the light surfaces swapped for deep navy.
-   Sidebar colors aren't repeated here because the sidebar is already dark in both themes. */
 .dark {
-  --background: #0A0F1A;
-  --foreground: #E8ECF2;
-  --card: #121A2B;
-  --card-foreground: #E8ECF2;
-  --popover: #121A2B;
-  --popover-foreground: #E8ECF2;
-  --primary: #0E7490;
-  --primary-foreground: #FFFFFF;
-  --secondary: #1B2538;
-  --secondary-foreground: #E8ECF2;
-  --muted: #1B2538;
-  --muted-foreground: #9AA3B2;
-  --accent: #1B2538;
-  --accent-foreground: #E8ECF2;
-  --destructive: #E5484D;
-  --border: #243049;
-  --input: #2E3A55;
-  --ring: #22D3EE;
-  --chart-1: #22D3EE;
-  --chart-2: #E8ECF2;
-  --chart-3: #9AA3B2;
-  --chart-4: #5B6474;
-  --chart-5: #243049;
-  /* a bit lighter than the page so the home page's ink band still shows */
-  --ink: #1E2A42;
-  --highlight: #22D3EE;
-  /* long-pause blocks: lighter gray in dark mode, 3.5:1 against the dark bar */
-  --pause: #6B7A96;
+  --background: #0C0F10;
+  --foreground: #E4EAE9;
+  --card: #12171A;
+  --card-foreground: #E4EAE9;
+  --popover: #12171A;
+  --popover-foreground: #E4EAE9;
+  /* dark text on the lighter orange: white would fail contrast */
+  --primary: #E8793F;
+  --primary-foreground: #1B0D06;
+  --secondary: #182023;
+  --secondary-foreground: #E4EAE9;
+  --muted: #141B1D;
+  --muted-foreground: #8B979A;
+  --accent: #123137;
+  --accent-foreground: #E4EAE9;
+  --destructive: #E5534B;
+  --border: #1F272A;
+  --input: #2C373B;
+  --ring: #4FB3BC;
+  --teal: #0D3A41;
+  --teal-foreground: #DDEEEE;
+  --teal-mark: #4FB3BC;
+  --brand: #4FB3BC;
+  --teal-on-mark: #4FB3BC;
+  --orange: #E8793F;
+  --highlight: #E8793F;
+  --pause: #3E5156;
+  --sidebar: #0C0F10;
+  --sidebar-foreground: #E4EAE9;
+  --sidebar-primary: #E8793F;
+  --sidebar-primary-foreground: #1B0D06;
+  --sidebar-accent: #182023;
+  --sidebar-accent-foreground: #E4EAE9;
+  --sidebar-border: #1F272A;
+  --sidebar-ring: #4FB3BC;
+  --chart-1: #4FB3BC;
+  --chart-2: #E4EAE9;
+  --chart-3: #8B979A;
+  --chart-4: #3E5156;
+  --chart-5: #1F272A;
+}
+
+/* On an orange block: the text color flips to whatever passes contrast on the action color. */
+.on-orange {
+  --foreground: var(--primary-foreground);
+  --muted-foreground: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+  --border: color-mix(in srgb, var(--primary-foreground) 30%, transparent);
+  color: var(--primary-foreground);
+}
+
+/* On a teal block, the components inside it (readouts, timeline) read white-on-teal. */
+.on-teal {
+  --foreground: var(--teal-foreground);
+  --card: transparent;
+  --card-foreground: var(--teal-foreground);
+  --muted-foreground: color-mix(in srgb, var(--teal-foreground) 70%, transparent);
+  --muted: color-mix(in srgb, var(--teal-foreground) 12%, transparent);
+  --border: color-mix(in srgb, var(--teal-foreground) 22%, transparent);
+  --pause: color-mix(in srgb, var(--teal-foreground) 40%, transparent);
+  --highlight: #FF9A6B;
+  --teal-mark: var(--teal-on-mark);
+  color: var(--teal-foreground);
 }
 
 @layer base {
@@ -146,9 +177,29 @@
   }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
   }
-  /* headings get our display font; body text stays Geist for easy reading */
+  button, a, [role="button"] {
+    touch-action: manipulation;
+  }
+  /* one typeface; headings are set tight and medium weight for a calm, confident look */
   h1, h2, h3 {
-    @apply font-heading tracking-tight;
+    @apply font-heading font-medium tracking-[-0.03em] text-balance;
   }
+}
+/* The one moment of motion: a scan line sweeps the timeline once and uncovers it as it goes.
+   Reveal is clip-path, the line is a transform; both run on the compositor and are skipped
+   when someone asks for less motion (the timeline is then simply shown). */
+@keyframes scan-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes scan-line {
+  from { transform: translateX(-100%); opacity: 1; }
+  92% { opacity: 1; }
+  to { transform: translateX(0); opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scan-reveal { animation: scan-reveal 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms backwards; }
+  .scan-line { animation: scan-line 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms both; }
 }

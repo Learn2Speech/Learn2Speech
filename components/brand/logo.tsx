@@ -12,7 +12,7 @@ export function LogoMark({ className }: { className?: string }) {
       <rect width="440" height="300" rx="80" fill={BRAND_COLOR} />
       {/* the little tail at the bottom-left that makes it a speech bubble */}
       <path d="M180 299 L180 360 L240 299 Z" fill={BRAND_COLOR} />
-      <g fill="white">
+      <g fill="var(--background)">
         <rect x="140" y="110" width="24" height="60" rx="12" />
         <rect x="184" y="80" width="24" height="120" rx="12" />
         <rect x="228" y="50" width="24" height="180" rx="12" />
@@ -29,7 +29,7 @@ export default function Logo({ className }: { className?: string }) {
     <span className={cn("inline-flex items-center gap-2 text-2xl tracking-tight", className)}>
       <LogoMark className="h-[1.3em] w-auto" />
       <span>
-        Learn<span style={{ color: BRAND_COLOR }}>2</span>Speech
+        Learn<span style={{ color: "var(--orange)" }}>2</span>Speech
       </span>
     </span>
   );

@@ -1,28 +1,24 @@
-import type { Metadata } from "next";
-import { Bricolage_Grotesque, Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Schibsted_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-// Display font for headings, so the app doesn't look like a default template
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// one typeface for everything; the weight and size carry the hierarchy
+const schibsted = Schibsted_Grotesk({ variable: "--font-schibsted", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Learn2Speech",
   description: "Upload a speech and get coaching on your pace, filler words and pauses.",
+};
+
+// phone status bar matches the page color in each theme; viewport-fit lets pages use the notch area
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#F3F5F4" },
+    { media: "(prefers-color-scheme: dark)", color: "#0C0F10" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // so React would otherwise warn that the server's <html> and the browser's don't match
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} h-full antialiased`}
+      className={`${schibsted.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

@@ -53,7 +53,7 @@ export default function CookieConsent() {
         <p className="mt-3 text-sm leading-relaxed">
           You can read more in our{" "}
           {/* new tab, so the policy can be read without losing this choice */}
-          <Link href="/privacy" target="_blank" className="font-medium text-primary underline underline-offset-4">Privacy Policy</Link>.
+          <Link href="/privacy" target="_blank" className="font-medium text-brand underline underline-offset-4">Privacy Policy</Link>.
         </p>
         <div className="mt-6 flex flex-col gap-3">
           <Button autoFocus onClick={() => save("all")} className="h-12 w-full rounded-full text-base">Accept all</Button>
