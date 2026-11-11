@@ -28,14 +28,14 @@ function Sparkline({ values }: { values: number[] }) {
 export default function ProgressChart({ points }: { points: ProgressPoint[] }) {
   if (points.length < 2) return null; // one recording isn't a trend yet
   return (
-    <section aria-label="Your progress" className="mb-8 grid gap-3 sm:grid-cols-3">
+    <section aria-label="Your progress" className="mb-12 grid gap-3 sm:grid-cols-3">
       {CHARTS.map((chart) => {
         const values = points.map((p) => chart.pick(p.metrics));
         const first = values[0], latest = values[values.length - 1];
         return (
           <div key={chart.label} className="rounded-lg border p-4">
             <p className="text-sm text-muted-foreground">{chart.label}</p>
-            <p className="font-heading text-2xl font-semibold tabular-nums">{latest}</p>
+            <p className="text-4xl font-black text-(--brand) tabular-nums">{latest}</p>
             <div className="text-brand"><Sparkline values={values} /></div>
             <p className="sr-only">Went from {first} to {latest} over {values.length} recordings.</p>
             <p className="text-xs text-muted-foreground">First: {first} · {chart.hint}</p>

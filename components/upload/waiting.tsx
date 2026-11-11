@@ -1,5 +1,5 @@
 "use client"; // runs a clock and rotates the tips
-// What the Upload page shows while a recording is being saved and analyzed, so the wait feels
+// What the Upload and Record pages show while a recording is being saved and analyzed, so the wait feels
 // short: moving sound bars, which of the two stages we're on, a clock counting up, and a tip that
 // changes every few seconds. The stage is real (it comes from the upload code); the bars are
 // decoration. The bar animation is the "wave" rule in globals.css.

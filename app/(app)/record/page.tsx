@@ -6,11 +6,11 @@
 import {useEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
-import {Loader2, Mic, Square} from "lucide-react";
+import {Mic, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import PageHeader from "@/components/page-header";
 import {Button} from "@/components/ui/button";
-import {Card, CardContent} from "@/components/ui/card";
+import Waiting from "@/components/upload/waiting";
 import {createClient} from "@/lib/supabase";
 import uploadRecording from "@/lib/upload-recording";
 import VolumeBars from "@/components/record/volume-bars";
@@ -109,36 +109,40 @@ export default function RecordPage() {
     const clock = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
     return (
-        <main className="mx-auto w-full max-w-2xl px-6 py-10">
-            <PageHeader title="Record a speech" description="Record yourself speaking, listen back, then get feedback." />
-            <Card className="[--card-spacing:--spacing(6)]">
-                <CardContent className="flex flex-col items-center gap-5">
-                    <p className="font-heading text-4xl font-semibold tabular-nums" aria-live="off">{clock}</p>
+        <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+            <div>
+                <PageHeader title="Record a practice run" description="Record yourself speaking, listen back, then get feedback." />
+                <p className="text-sm text-muted-foreground">
+                    Already have a recording? <Link href="/upload" className="font-medium text-foreground underline underline-offset-4">Upload a file</Link> instead.
+                </p>
+            </div>
+            {/* While it's saving and analyzing, the recorder is swapped for the same waiting screen as Upload */}
+            {busy && file ? (
+                <Waiting stage={working ? 1 : 0} fileName={file.name} />
+            ) : (
+                <div className="flex flex-col items-start gap-5 border-t border-foreground pt-6">
+                    {/* the clock is the big teal number on this page */}
+                    <p className="text-[clamp(6rem,18vw,12rem)] leading-[0.8] font-black tracking-[-0.04em] text-(--brand) tabular-nums" aria-live="off">{clock}</p>
                     {!recording ? (
-                        <Button onClick={start} disabled={busy} className="h-11 px-6 text-base">
+                        <Button onClick={start} disabled={busy} className="h-12 px-6 text-base">
                             <Mic /> {file ? "Record again" : "Start recording"}
                         </Button>
                     ) : (
-                        <Button variant="destructive" onClick={() => recorderRef.current?.stop()} className="h-11 px-6 text-base">
+                        <Button variant="destructive" onClick={() => recorderRef.current?.stop()} className="h-12 px-6 text-base">
                             <Square /> Stop recording
                         </Button>
                     )}
                     {recording && stream && <VolumeBars stream={stream} />}
-                    <p className="text-center text-sm text-muted-foreground">The microphone is only on while you record. Your audio is sent to AssemblyAI and Anthropic to make your feedback, as described in our <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>. Only record your own voice or people who agreed.</p>
+                    <p className="max-w-[60ch] text-sm text-muted-foreground">The microphone is only on while you record. Your audio is sent to AssemblyAI and Anthropic to make your feedback, as described in our <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>. Only record your own voice or people who agreed.</p>
                     {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                     {file && !recording && (
-                        <Button onClick={analyze} disabled={busy} className="h-11 w-full text-base">
+                        <Button onClick={analyze} disabled={busy} className="h-12 w-full text-base">
                             {busy ? "Working..." : "Get feedback"}
                         </Button>
                     )}
-                    {message && working && (
-                        <p role="status" className="flex items-center gap-2 rounded-md border border-brand/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
-                            <Loader2 className="size-4 shrink-0 animate-spin" /> {message}
-                        </p>
-                    )}
                     {message && !working && <AuthMessage kind="error">{message}</AuthMessage>}
-                </CardContent>
-            </Card>
+                </div>
+            )}
         </main>
     );
 }
