@@ -4,10 +4,8 @@ import {createClient} from "@/lib/supabase";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import type {User} from "@supabase/supabase-js";
-import {LogIn, LogOut} from "lucide-react";
-import {SidebarMenu, SidebarMenuButton, SidebarMenuItem} from "@/components/ui/sidebar";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
+import {Button, buttonVariants} from "@/components/ui/button";
 export default function AuthButton() {
     const [user, setUser]=useState<User | null>(null);
     const [loading, setLoading]=useState(true);
@@ -41,45 +39,27 @@ export default function AuthButton() {
     }
     if (user) {
         return (
-            <SidebarMenu>
-                <SidebarMenuItem>
-                    {/* shows who is logged in; hidden when the sidebar is shrunk to icons */}
-                    <p className="truncate px-2 pb-1 text-xs text-sidebar-foreground/70 group-data-[collapsible=icon]:hidden">{user.email}</p>
-                    <SidebarMenuButton onClick={() => setShowConfirm(true)} tooltip="Log out">
-                        <LogOut />
-                        <span>Log out</span>
-                    </SidebarMenuButton>
-                    {errorMessage && <p className="px-2 text-xs text-destructive">{errorMessage}</p>}
-
-                    {/* The popup lives here in the code but is drawn on top of the whole page.
-                        It only appears while its "open" prop is true. */}
-                    <Dialog open = {showConfirm} onOpenChange = {(value) => setShowConfirm(false)}>
-                        <DialogContent showCloseButton={false}>
-                            <DialogHeader>
-                                <DialogTitle>Log out?</DialogTitle>
-                                <DialogDescription>
-                                    Are you sure you want to log out of Learn2Speech?
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                                <Button onClick={() => setShowConfirm(false)} variant="outline">Cancel</Button>
-                                <Button onClick={() => { setShowConfirm(false); Logout(); }} variant="destructive">Yes, log out</Button>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>   
-                </SidebarMenuItem>
-            </SidebarMenu>
+            <>
+                <Button variant="ghost" onClick={() => setShowConfirm(true)} title={user.email ?? undefined}>Log out</Button>
+                {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
+                {/* The popup lives here in the code but is drawn on top of the whole page.
+                    It only appears while its "open" prop is true. */}
+                <Dialog open={showConfirm} onOpenChange={() => setShowConfirm(false)}>
+                    <DialogContent showCloseButton={false}>
+                        <DialogHeader>
+                            <DialogTitle>Log out?</DialogTitle>
+                            <DialogDescription>
+                                Are you sure you want to log out of Learn2Speech?
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <Button onClick={() => setShowConfirm(false)} variant="outline">Cancel</Button>
+                            <Button onClick={() => { setShowConfirm(false); Logout(); }} variant="destructive">Yes, log out</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+            </>
         );
     }
-    return (
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton render={<Link href="/login" />} tooltip="Log in"
-                    className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground">
-                    <LogIn />
-                    <span>Log in</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-    );
+    return <Link href="/login" className={buttonVariants()}>Log in</Link>;
 }

@@ -8,14 +8,11 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
-  --color-ink: var(--ink);
-  --color-ink-foreground: var(--ink-foreground);
-  --color-ink-accent: var(--ink-accent);
   --color-highlight: var(--highlight);
   --color-pause: var(--pause);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-bricolage);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,87 +51,84 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Ink + teal palette. Cool white surfaces and near-black "ink" text, with our
-   logo teal/cyan used sparingly (buttons, highlights) instead of warm cream everywhere. */
+/* Calm coach palette: quiet paper surfaces, near-black ink, one indigo accent.
+   Yellow is the "marker" color and only ever marks filler words. */
 :root {
-  --background: #FFFFFF;
-  --foreground: #0E1525;
+  --background: #F6F6F3;
+  --foreground: #15171A;
   --card: #FFFFFF;
-  --card-foreground: #0E1525;
+  --card-foreground: #15171A;
   --popover: #FFFFFF;
-  --popover-foreground: #0E1525;
-  /* a deeper teal than the logo cyan so white button text passes contrast (5.4:1) */
-  --primary: #0E7490;
+  --popover-foreground: #15171A;
+  /* white text on this passes contrast (6.4:1) */
+  --primary: #3B3BF5;
   --primary-foreground: #FFFFFF;
-  --secondary: #F1F3F6;
-  --secondary-foreground: #0E1525;
-  --muted: #F4F5F7;
-  --muted-foreground: #5B6474;
-  --accent: #F1F3F6;
-  --accent-foreground: #0E1525;
+  --secondary: #ECECE7;
+  --secondary-foreground: #15171A;
+  --muted: #EFEFEA;
+  --muted-foreground: #5A5E66;
+  --accent: #ECECE7;
+  --accent-foreground: #15171A;
   --destructive: #C0262D;
-  --border: #E4E7EC;
-  --input: #D9DDE4;
-  --ring: #06B6D4;
-  --chart-1: #0891B2;
-  --chart-2: #0E1525;
-  --chart-3: #5B6474;
-  --chart-4: #9AA3B2;
-  --chart-5: #E4E7EC;
+  --border: #E2E2DC;
+  --input: #D2D2CA;
+  --ring: #3B3BF5;
+  --chart-1: #3B3BF5;
+  --chart-2: #15171A;
+  --chart-3: #5A5E66;
+  --chart-4: #9A9DA4;
+  --chart-5: #E2E2DC;
   --radius: 0.5rem;
-  /* dark "ink" sidebar: navy panel, soft white text, teal for the active page */
-  --sidebar: #0E1525;
-  --sidebar-foreground: #C9D0DC;
-  --sidebar-primary: #0E7490;
+  --sidebar: #F6F6F3;
+  --sidebar-foreground: #15171A;
+  --sidebar-primary: #3B3BF5;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1B2538;
-  --sidebar-accent-foreground: #FFFFFF;
-  --sidebar-border: #243049;
-  --sidebar-ring: #22D3EE;
-  /* the logo cyan, for decoration only (too light for white text) */
-  --brand: #06B6D4;
-  /* dark "ink" sections (home page top) and the text/accent used on them */
-  --ink: #0E1525;
-  --ink-foreground: #F5F3EF;
-  --ink-accent: #22D3EE;
-  /* filler-word marks in the transcript and timeline */
-  --highlight: #0891B2;
-  /* long-pause blocks on the speech timeline: 3.3:1 against the bar so they're easy to spot */
-  --pause: #7D8798;
+  --sidebar-accent: #ECECE7;
+  --sidebar-accent-foreground: #15171A;
+  --sidebar-border: #E2E2DC;
+  --sidebar-ring: #3B3BF5;
+  /* the logo color */
+  --brand: #3B3BF5;
+  /* filler-word marks in the transcript and timeline (a highlighter yellow) */
+  --highlight: #F5C800;
+  /* long-pause blocks on the speech timeline */
+  --pause: #A9ADB6;
 }
 
-
-/* Dark mode: the same ink + teal look, with the light surfaces swapped for deep navy.
-   Sidebar colors aren't repeated here because the sidebar is already dark in both themes. */
+/* Dark mode: same system on near-black neutrals. */
 .dark {
-  --background: #0A0F1A;
-  --foreground: #E8ECF2;
-  --card: #121A2B;
-  --card-foreground: #E8ECF2;
-  --popover: #121A2B;
-  --popover-foreground: #E8ECF2;
-  --primary: #0E7490;
+  --background: #0F1012;
+  --foreground: #ECECEA;
+  --card: #17181B;
+  --card-foreground: #ECECEA;
+  --popover: #17181B;
+  --popover-foreground: #ECECEA;
+  --primary: #5B5BF7;
   --primary-foreground: #FFFFFF;
-  --secondary: #1B2538;
-  --secondary-foreground: #E8ECF2;
-  --muted: #1B2538;
-  --muted-foreground: #9AA3B2;
-  --accent: #1B2538;
-  --accent-foreground: #E8ECF2;
+  --secondary: #202226;
+  --secondary-foreground: #ECECEA;
+  --muted: #1B1C20;
+  --muted-foreground: #9A9DA4;
+  --accent: #202226;
+  --accent-foreground: #ECECEA;
   --destructive: #E5484D;
-  --border: #243049;
-  --input: #2E3A55;
-  --ring: #22D3EE;
-  --chart-1: #22D3EE;
-  --chart-2: #E8ECF2;
-  --chart-3: #9AA3B2;
-  --chart-4: #5B6474;
-  --chart-5: #243049;
-  /* a bit lighter than the page so the home page's ink band still shows */
-  --ink: #1E2A42;
-  --highlight: #22D3EE;
-  /* long-pause blocks: lighter gray in dark mode, 3.5:1 against the dark bar */
-  --pause: #6B7A96;
+  --border: #26282D;
+  --input: #34373D;
+  --ring: #7C7CFF;
+  --chart-1: #7C7CFF;
+  --chart-2: #ECECEA;
+  --chart-3: #9A9DA4;
+  --chart-4: #5A5E66;
+  --chart-5: #26282D;
+  --sidebar: #0F1012;
+  --sidebar-foreground: #ECECEA;
+  --sidebar-accent: #202226;
+  --sidebar-accent-foreground: #ECECEA;
+  --sidebar-border: #26282D;
+  --sidebar-ring: #7C7CFF;
+  --brand: #5B5BF7;
+  --highlight: #F5C800;
+  --pause: #50545C;
 }
 
 @layer base {
@@ -147,8 +141,22 @@
   html {
     @apply font-sans;
   }
-  /* headings get our display font; body text stays Geist for easy reading */
+  /* one typeface; headings are set tight and medium weight for a calm, confident look */
   h1, h2, h3 {
-    @apply font-heading tracking-tight;
+    @apply font-heading font-medium tracking-[-0.03em];
   }
+}
+/* The one moment of motion: timeline marks drop in once, left to right, when a result appears.
+   The delay is set per mark in speech-timeline.tsx. Skipped for people who ask for less motion. */
+@keyframes mark-in {
+  from { opacity: 0; transform: translateX(-50%) scaleY(0.2); }
+  to { opacity: 1; transform: translateX(-50%) scaleY(1); }
+}
+@keyframes block-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .mark-in { animation: mark-in 450ms cubic-bezier(0.23, 1, 0.32, 1) backwards; }
+  .block-in { animation: block-in 450ms ease-out backwards; }
 }

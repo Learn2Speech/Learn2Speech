@@ -1,49 +1,33 @@
-// Top of the home page: a dark "ink" band with who the app is for and what it shows,
-// then a real example result (our actual results components with sample data)
-// overlapping the bottom edge, so visitors see the product instead of a slogan.
+// Top of the home page: a plain headline and one button, then a real example result
+// (our actual results components with sample data) so visitors see the product, not a slogan.
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import Waveform from "@/components/brand/waveform";
 import { sampleMetrics, sampleTranscript } from "@/components/home/sample-result";
 import MetricsCards from "@/components/results/metrics-cards";
 import SpeechTimeline from "@/components/results/speech-timeline";
 import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function Hero() {
   return (
-    <section>
-      <div className="relative overflow-hidden bg-ink text-ink-foreground">
-        <Waveform className="absolute inset-x-0 bottom-0 h-28 opacity-40" barClassName="bg-ink-accent/30" />
-        <div className="relative mx-auto max-w-5xl px-6 pt-16 pb-40 md:pt-24">
-          <h1 className="max-w-2xl text-4xl leading-[1.05] font-bold sm:text-6xl">
-            See exactly where your speech <span className="text-ink-accent">stumbles</span>.
-          </h1>
-          <p className="mt-6 max-w-xl text-lg text-ink-foreground/75">
-            Upload a practice run of your class presentation, debate case or interview answer. Learn2Speech
-            times your pace, finds every &ldquo;um&rdquo; and long pause, and tells you what to fix before the real thing.
-          </p>
-          {/* prefetch={false}: these pages need a login, see the note in components/app-sidebar.tsx */}
-          <div className="mt-8 flex flex-wrap items-center gap-5">
-            <Link href="/upload" prefetch={false} className={cn(buttonVariants({ size: "lg" }), "h-11 px-5 text-base")}>
-              Upload a practice run <ArrowRight />
-            </Link>
-            <Link href="/history" prefetch={false} className="text-base font-medium text-ink-foreground/80 underline-offset-4 hover:text-ink-foreground hover:underline">
-              See your past recordings
-            </Link>
-          </div>
-        </div>
+    <section className="mx-auto max-w-5xl px-6 pt-16 md:pt-24">
+      <h1 className="max-w-3xl text-4xl leading-[1.05] sm:text-6xl">Hear what your audience hears.</h1>
+      <p className="mt-6 max-w-xl text-lg text-muted-foreground">
+        Upload a practice run of your presentation, debate case or interview answer. Learn2Speech times your pace,
+        finds every &ldquo;um&rdquo; and long pause, and tells you the three things to fix.
+      </p>
+      {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
+      <div className="mt-8 flex flex-wrap items-center gap-6">
+        <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg" })}>
+          Upload a practice run
+        </Link>
+        <Link href="/history" prefetch={false} className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          Past recordings
+        </Link>
       </div>
 
-      {/* the real results components with made-up data, pulled up over the dark band */}
-      <div className="relative mx-auto -mt-28 max-w-5xl px-6">
-        <div className="space-y-4 rounded-xl border bg-background p-4 shadow-xl sm:p-6">
-          <p className="text-sm text-muted-foreground">
-            <span className="font-medium text-foreground">Example result</span> · an 18-second practice run about sleep
-          </p>
-          <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
-          <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
-        </div>
+      <div className="mt-14 space-y-3">
+        <p className="text-sm text-muted-foreground">An example result, from an 18-second practice run about sleep.</p>
+        <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
+        <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
       </div>
     </section>
   );

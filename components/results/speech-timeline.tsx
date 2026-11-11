@@ -40,16 +40,16 @@ export default function SpeechTimeline({ metrics, durationMs }: { metrics: Speec
             <span
               key={`p${i}`}
               title={`${(pause.durationMs / 1000).toFixed(1)}s pause at ${formatTime(pause.startMs)}`}
-              className="absolute inset-y-0 bg-pause"
-              style={{ left: toPercent(pause.startMs), width: toPercent(pause.durationMs) }}
+              className="block-in absolute inset-y-0 bg-pause"
+              style={{ left: toPercent(pause.startMs), width: toPercent(pause.durationMs), animationDelay: `${(pause.startMs / durationMs) * 600}ms` }}
             />
           ))}
           {metrics.fillers.map((filler, i) => (
             <span
               key={`f${i}`}
               title={`“${filler.word}” at ${formatTime(filler.startMs)}`}
-              className="absolute inset-y-2 w-1 -translate-x-1/2 rounded-full bg-highlight"
-              style={{ left: toPercent(filler.startMs) }}
+              className="mark-in absolute inset-y-2 w-1 -translate-x-1/2 rounded-full bg-highlight"
+              style={{ left: toPercent(filler.startMs), animationDelay: `${(filler.startMs / durationMs) * 600}ms` }}
             />
           ))}
         </div>
