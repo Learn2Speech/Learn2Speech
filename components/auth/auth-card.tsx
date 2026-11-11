@@ -20,7 +20,7 @@ export default function AuthCard({ title, subtitle, children, footer }: AuthCard
       </Link>
       <Card className="relative w-full max-w-sm [--card-spacing:--spacing(6)]">
         <CardHeader>
-          <CardTitle className="font-heading text-2xl">{title}</CardTitle>
+          <CardTitle className="font-heading text-3xl font-semibold">{title}</CardTitle>
           <CardDescription>{subtitle}</CardDescription>
         </CardHeader>
         <CardContent>{children}</CardContent>
@@ -36,7 +36,7 @@ export function AuthMessage({ kind, children }: { kind: "error" | "success"; chi
   const colors =
     kind === "error"
       ? "border-destructive/30 bg-destructive/10 text-destructive"
-      : "border-green-600/30 bg-green-600/10 text-green-700";
+      : "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400";
   // role="alert" makes screen readers announce the message as soon as it appears
   return (
     <p role="alert" className={`rounded-md border px-3 py-2 text-sm ${colors}`}>

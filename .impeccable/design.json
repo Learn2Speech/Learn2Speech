@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-11T15:16:14.462771+00:00",
+  "title": "Design System: Learn2Speech",
+  "extensions": {
+    "colorMeta": {
+      "orange": {
+        "role": "primary",
+        "displayName": "Action Orange",
+        "canonical": "#C4521C"
+      },
+      "teal": {
+        "role": "secondary",
+        "displayName": "Specimen Teal",
+        "canonical": "#0F5E68"
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#F3F5F4"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#0E1314"
+      }
+    },
+    "typographyMeta": {
+      "specimen": {
+        "displayName": "Specimen",
+        "purpose": "The one giant word or number per screen."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page and section headings."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Explanations, up to about 60ch."
+      }
+    },
+    "shadows": [],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Every entrance and press."
+      },
+      {
+        "name": "entrance",
+        "value": "600ms",
+        "purpose": "Load-in and scroll reveals."
+      },
+      {
+        "name": "press",
+        "value": "150ms",
+        "purpose": "Buttons and the slider handle."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action on a screen.",
+      "html": "<button class=\"ds-btn-primary\">Upload a practice run</button>",
+      "css": ".ds-btn-primary{background:var(--primary,#C4521C);color:var(--primary-foreground,#fff);height:48px;padding:0 24px;border:0;border-radius:8px;font:500 16px Archivo,sans-serif;transition:background-color 150ms cubic-bezier(0.23, 1, 0.32, 1),transform 150ms cubic-bezier(0.23, 1, 0.32, 1)}.ds-btn-primary:hover{background:color-mix(in srgb,var(--primary,#C4521C) 80%,transparent)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:3px solid color-mix(in srgb,#0F5E68 50%,transparent)}"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "The secondary action beside a primary.",
+      "html": "<button class=\"ds-btn-outline\">Try the tutorial</button>",
+      "css": ".ds-btn-outline{background:var(--background,#F3F5F4);color:var(--foreground,#0E1314);height:48px;padding:0 24px;border:1px solid color-mix(in srgb,var(--foreground,#0E1314) 30%,transparent);border-radius:8px;font:500 16px Archivo,sans-serif;transition:background-color 150ms cubic-bezier(0.23, 1, 0.32, 1)}.ds-btn-outline:hover{background:var(--muted,#E9EDEC)}.ds-btn-outline:focus-visible{outline:3px solid color-mix(in srgb,#0F5E68 50%,transparent)}"
+    },
+    {
+      "name": "Specimen",
+      "kind": "custom",
+      "description": "The giant teal word that leads a screen.",
+      "html": "<p class=\"ds-specimen\">um</p>",
+      "css": ".ds-specimen{margin:0;font:900 160px/0.62 Archivo,sans-serif;letter-spacing:-0.04em;color:var(--brand,#0F5E68)}"
+    },
+    {
+      "name": "Teal Block",
+      "kind": "card",
+      "refersTo": "teal-block",
+      "description": "The one full field of color on a screen.",
+      "html": "<div class=\"ds-teal\"><h3>Where it happened</h3><p>The recording from start to finish.</p></div>",
+      "css": ".ds-teal{background:var(--teal,#0F5E68);color:var(--teal-foreground,#E8F3F3);border-radius:8px;padding:32px;font-family:Archivo,sans-serif}.ds-teal h3{margin:0 0 8px;font-size:28px;font-weight:600;letter-spacing:-0.03em}.ds-teal p{margin:0;opacity:.7}"
+    },
+    {
+      "name": "Example Box",
+      "kind": "card",
+      "description": "A small labeled example beside a step.",
+      "html": "<figure class=\"ds-example\"><figcaption>Example</figcaption><div><b>practice-run.m4a</b><span>Uploaded</span></div></figure>",
+      "css": ".ds-example{margin:0;font-family:Archivo,sans-serif}.ds-example figcaption{font-size:14px;color:var(--muted-foreground,#556062);margin-bottom:12px}.ds-example div{display:flex;justify-content:space-between;border:1px solid var(--border,#D8DEDC);border-radius:8px;padding:20px}.ds-example span{color:var(--muted-foreground,#556062)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Your voice as a typeface",
+    "overview": "Learn2Speech is laid out like a type foundry's specimen page. Each screen leads with one thing set very large (a filler word, a number) and lets plain ink on a quiet ground do the rest. The type itself carries the data: the example speech gets narrower when the pace goes up and wider when it slows, because the one typeface, Archivo, has a width axis.\n\nThe system is flat. There are no shadows, gradients or decorative cards; structure comes from hairline rules, generous space and big changes in type size. Color follows a 50/30/20 split the product owner asked for: about half neutral, teal for fields and big marks, and orange kept for things you can press or drag.\n\nIt has to work for a ninth grader and still look professional to an adult, so copy is short and literal, and every example is labeled as an example.",
+    "keyCharacteristics": [
+      "One giant word or number per screen, in teal.",
+      "One typeface (Archivo), using weight and width for hierarchy and for data.",
+      "Flat surfaces, hairline rules, no shadows.",
+      "Orange means \"you can press or drag this\".",
+      "Light and dark themes with the same roles."
+    ],
+    "rules": [
+      {
+        "name": "The 50/30/20 Rule",
+        "body": "About half of any screen is neutral, about a third teal, and the rest orange. Orange is never a background field.",
+        "section": "colors"
+      },
+      {
+        "name": "The Press Rule",
+        "body": "If it is orange and bigger than a word, it can be pressed or dragged.",
+        "section": "colors"
+      },
+      {
+        "name": "The Width Is Data Rule",
+        "body": "`font-stretch` only changes to show pace. Never use condensed or extended type for style alone.",
+        "section": "typography"
+      },
+      {
+        "name": "The Thin Filler Rule",
+        "body": "A filler word inside large running text is set thin (weight 100) and orange; in small text it gets a soft orange highlight instead.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Rule",
+        "body": "Nothing floats. The only layer above the page is the tutorial bar and dialogs, and those use a rule or the dialog's own backdrop, not a shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** lead each new screen with one very large teal word or number that comes from the data.",
+      "**Do** keep orange for things that can be pressed or dragged, plus the small filler marks.",
+      "**Do** label every made-up result as an example.",
+      "**Do** check both themes; every color has a light and a dark value in `app/globals.css`."
+    ],
+    "donts": [
+      "**Don't** add shadows, gradients or blurred glass.",
+      "**Don't** use orange as a section background.",
+      "**Don't** add testimonials, user counts or prices that are not real.",
+      "**Don't** add a second typeface."
+    ]
+  }
+}

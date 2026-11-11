@@ -41,3 +41,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# impeccable design tool: scratch sketches and review screenshots (the brief, config and design.json are kept)
+.impeccable/mocks/
+.impeccable/decision/
+.impeccable/review/
+.impeccable/questions/
