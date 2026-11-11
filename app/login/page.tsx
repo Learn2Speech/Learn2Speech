@@ -1,6 +1,6 @@
  "use client";
 import {useState, Suspense} from "react";
-import LoginNotice from "@/components/auth/login-notice";
+import LoginNotice, {PAGE_NAMES} from "@/components/auth/login-notice";
 import {createClient} from "@/lib/supabase";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
@@ -40,7 +40,9 @@ export default function LoginPage() {
             setErrorMessage(error.message);
         } else {
             setLoading(false);
-            router.push("/")
+            // back to the page that sent them here (only pages we know, so ?from= can't point anywhere else)
+            const from = new URLSearchParams(window.location.search).get("from") ?? "";
+            router.push(Object.hasOwn(PAGE_NAMES, from) ? `/${from}` : "/")
             // refresh() throws away pages Next.js pre-loaded before the login state changed; without it,
             // clicking Upload or History can replay an old "go to login" answer until the page is refreshed
             router.refresh()

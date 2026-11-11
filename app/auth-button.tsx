@@ -6,6 +6,8 @@ import Link from "next/link";
 import type {User} from "@supabase/supabase-js";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button, buttonVariants} from "@/components/ui/button";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {LogOut} from "lucide-react";
 export default function AuthButton() {
     const [user, setUser]=useState<User | null>(null);
     const [loading, setLoading]=useState(true);
@@ -40,7 +42,20 @@ export default function AuthButton() {
     if (user) {
         return (
             <>
-                <Button variant="ghost" onClick={() => setShowConfirm(true)} title={user.email ?? undefined}>Log out</Button>
+                {/* account menu: a round button with your first letter; shows who's signed in, since phones have no hover tooltips */}
+                <DropdownMenu>
+                    <DropdownMenuTrigger aria-label="Account menu" className="flex size-11 items-center justify-center rounded-full outline-none focus-visible:ring-3 focus-visible:ring-ring/50 sm:size-9">
+                        <span className="flex size-8 items-center justify-center rounded-full bg-brand text-sm font-semibold text-white uppercase">{user.email?.[0] ?? "?"}</span>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-60">
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel>Signed in as</DropdownMenuLabel>
+                            <p className="px-1.5 pb-1 text-sm font-medium break-all">{user.email}</p>
+                        </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem variant="destructive" onClick={() => setShowConfirm(true)}><LogOut /> Log out</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 {errorMessage && <p className="text-xs text-destructive">{errorMessage}</p>}
                 {/* The popup lives here in the code but is drawn on top of the whole page.
                     It only appears while its "open" prop is true. */}
@@ -61,5 +76,5 @@ export default function AuthButton() {
             </>
         );
     }
-    return <Link href="/login" className={buttonVariants()}>Log in</Link>;
+    return <Link href="/login" className={buttonVariants({className: "max-sm:h-11"})}>Log in</Link>;
 }
