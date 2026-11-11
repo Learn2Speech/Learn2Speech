@@ -8,6 +8,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand);
+  --color-teal: var(--teal);
+  --color-teal-foreground: var(--teal-foreground);
+  --color-orange: var(--orange);
   --color-highlight: var(--highlight);
   --color-pause: var(--pause);
   --font-sans: var(--font-geist-sans);
@@ -51,84 +54,110 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Calm coach palette: quiet paper surfaces, near-black ink, one indigo accent.
-   Yellow is the "marker" color and only ever marks filler words. */
+/* 50 / 30 / 20 palette.
+   50: neutral, white in light mode and black in dark mode (page, cards, text).
+   30: teal, for big color blocks, the logo, focus rings and tints.
+   20: orange, for buttons, the filler-word marks and small accents. */
 :root {
-  --background: #F6F6F3;
-  --foreground: #15171A;
+  --background: #FFFFFF;
+  --foreground: #0B0F14;
   --card: #FFFFFF;
-  --card-foreground: #15171A;
+  --card-foreground: #0B0F14;
   --popover: #FFFFFF;
-  --popover-foreground: #15171A;
-  /* white text on this passes contrast (6.4:1) */
-  --primary: #3B3BF5;
+  --popover-foreground: #0B0F14;
+  /* buttons are orange; white text on this passes contrast (4.8:1) */
+  --primary: #C24E28;
   --primary-foreground: #FFFFFF;
-  --secondary: #ECECE7;
-  --secondary-foreground: #15171A;
-  --muted: #EFEFEA;
-  --muted-foreground: #5A5E66;
-  --accent: #ECECE7;
-  --accent-foreground: #15171A;
+  --secondary: #F1F3F4;
+  --secondary-foreground: #0B0F14;
+  --muted: #F4F5F6;
+  --muted-foreground: #566069;
+  --accent: #E3F1F4;
+  --accent-foreground: #0B0F14;
   --destructive: #C0262D;
-  --border: #E2E2DC;
-  --input: #D2D2CA;
-  --ring: #3B3BF5;
-  --chart-1: #3B3BF5;
-  --chart-2: #15171A;
-  --chart-3: #5A5E66;
-  --chart-4: #9A9DA4;
-  --chart-5: #E2E2DC;
+  --border: #E2E5E8;
+  --input: #CBD0D5;
+  --ring: #0E7490;
+  --chart-1: #0E7490;
+  --chart-2: #0B0F14;
+  --chart-3: #566069;
+  --chart-4: #98A1A9;
+  --chart-5: #E2E5E8;
   --radius: 0.5rem;
-  --sidebar: #F6F6F3;
-  --sidebar-foreground: #15171A;
-  --sidebar-primary: #3B3BF5;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0B0F14;
+  --sidebar-primary: #C24E28;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #ECECE7;
-  --sidebar-accent-foreground: #15171A;
-  --sidebar-border: #E2E2DC;
-  --sidebar-ring: #3B3BF5;
-  /* the logo color */
-  --brand: #3B3BF5;
-  /* filler-word marks in the transcript and timeline (a highlighter yellow) */
-  --highlight: #F5C800;
+  --sidebar-accent: #F1F3F4;
+  --sidebar-accent-foreground: #0B0F14;
+  --sidebar-border: #E2E5E8;
+  --sidebar-ring: #0E7490;
+  /* teal blocks (white text on it passes: 5.4:1) and the logo bubble */
+  --teal: #0E7490;
+  --teal-foreground: #FFFFFF;
+  --brand: #0E7490;
+  /* the logo orange, for decoration (too light for white text) */
+  --orange: #D85B32;
+  /* filler-word marks in the transcript and timeline */
+  --highlight: #D85B32;
   /* long-pause blocks on the speech timeline */
-  --pause: #A9ADB6;
+  --pause: #8FC3CF;
 }
 
-/* Dark mode: same system on near-black neutrals. */
+/* Dark mode: black page, brighter teal and orange so they hold up on it. */
 .dark {
-  --background: #0F1012;
-  --foreground: #ECECEA;
-  --card: #17181B;
-  --card-foreground: #ECECEA;
-  --popover: #17181B;
-  --popover-foreground: #ECECEA;
-  --primary: #5B5BF7;
-  --primary-foreground: #FFFFFF;
-  --secondary: #202226;
-  --secondary-foreground: #ECECEA;
-  --muted: #1B1C20;
-  --muted-foreground: #9A9DA4;
-  --accent: #202226;
-  --accent-foreground: #ECECEA;
+  --background: #0A0B0C;
+  --foreground: #F2F4F5;
+  --card: #121416;
+  --card-foreground: #F2F4F5;
+  --popover: #121416;
+  --popover-foreground: #F2F4F5;
+  /* dark text on the lighter orange, since white would fail contrast */
+  --primary: #F0805A;
+  --primary-foreground: #1A0B05;
+  --secondary: #1C1F22;
+  --secondary-foreground: #F2F4F5;
+  --muted: #16181A;
+  --muted-foreground: #9AA3AB;
+  --accent: #12333B;
+  --accent-foreground: #F2F4F5;
   --destructive: #E5484D;
-  --border: #26282D;
-  --input: #34373D;
-  --ring: #7C7CFF;
-  --chart-1: #7C7CFF;
-  --chart-2: #ECECEA;
-  --chart-3: #9A9DA4;
-  --chart-4: #5A5E66;
-  --chart-5: #26282D;
-  --sidebar: #0F1012;
-  --sidebar-foreground: #ECECEA;
-  --sidebar-accent: #202226;
-  --sidebar-accent-foreground: #ECECEA;
-  --sidebar-border: #26282D;
-  --sidebar-ring: #7C7CFF;
-  --brand: #5B5BF7;
-  --highlight: #F5C800;
-  --pause: #50545C;
+  --border: #25292D;
+  --input: #33393E;
+  --ring: #22C7DE;
+  --chart-1: #22C7DE;
+  --chart-2: #F2F4F5;
+  --chart-3: #9AA3AB;
+  --chart-4: #566069;
+  --chart-5: #25292D;
+  --sidebar: #0A0B0C;
+  --sidebar-foreground: #F2F4F5;
+  --sidebar-primary: #F0805A;
+  --sidebar-primary-foreground: #1A0B05;
+  --sidebar-accent: #1C1F22;
+  --sidebar-accent-foreground: #F2F4F5;
+  --sidebar-border: #25292D;
+  --sidebar-ring: #22C7DE;
+  --teal: #0E6377;
+  --teal-foreground: #FFFFFF;
+  --brand: #1AA7C4;
+  --orange: #F0805A;
+  --highlight: #F0805A;
+  --pause: #3E7A89;
+}
+
+/* Put this on a teal block: the results components inside it (cards, timeline, text)
+   switch to white-on-teal without needing a variant each. */
+.on-teal {
+  --foreground: #FFFFFF;
+  --card: transparent;
+  --card-foreground: #FFFFFF;
+  --muted-foreground: rgb(255 255 255 / 0.78);
+  --muted: rgb(255 255 255 / 0.16);
+  --border: rgb(255 255 255 / 0.25);
+  --pause: rgb(255 255 255 / 0.5);
+  --highlight: #FF9B73;
+  color: #FFFFFF;
 }
 
 @layer base {
@@ -140,10 +169,14 @@
   }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+  }
+  button, a, [role="button"] {
+    touch-action: manipulation;
   }
   /* one typeface; headings are set tight and medium weight for a calm, confident look */
   h1, h2, h3 {
-    @apply font-heading font-medium tracking-[-0.03em];
+    @apply font-heading font-medium tracking-[-0.03em] text-balance;
   }
 }
 /* The one moment of motion: timeline marks drop in once, left to right, when a result appears.

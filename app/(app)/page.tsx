@@ -12,16 +12,16 @@ const STEPS = [
 
 export default function Home() {
   return (
-    <main className="flex-1 pb-24">
+    <main className="flex-1">
       <Hero />
 
-      <section className="mx-auto mt-24 grid max-w-5xl gap-8 px-6 md:grid-cols-[1fr_2fr] md:gap-16">
+      <section className="mx-auto mt-24 grid max-w-5xl gap-8 px-6 md:grid-cols-[1fr_2fr] md:gap-16 mb-24">
         <h2 className="text-2xl sm:text-3xl">How it works</h2>
         {/* a real sequence, so the steps are numbered; a plain list, not three boxes */}
         <ol className="divide-y border-y">
           {STEPS.map((step, i) => (
             <li key={step.title} className="grid grid-cols-[2rem_1fr] gap-x-4 py-5">
-              <span className="pt-0.5 text-sm tabular-nums text-muted-foreground">{i + 1}</span>
+              <span className="pt-0.5 text-sm font-medium tabular-nums text-brand">{i + 1}</span>
               <div>
                 <h3 className="text-lg">{step.title}</h3>
                 <p className="mt-1 text-muted-foreground">{step.text}</p>
@@ -31,17 +31,20 @@ export default function Home() {
         </ol>
       </section>
 
-      <section className="mx-auto mt-24 flex max-w-5xl flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-xl">
-          <h2 className="text-2xl sm:text-3xl">Your recordings stay yours.</h2>
-          <p className="mt-2 text-muted-foreground">
-            Every recording, transcript and piece of feedback is locked to your account at the database level,
-            so not even someone who guesses a link can see it.
-          </p>
+      {/* closing teal block with the one orange button */}
+      <section className="on-teal bg-teal py-16">
+        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-xl">
+            <h2 className="text-2xl sm:text-3xl">Your recordings stay yours.</h2>
+            <p className="mt-2 text-teal-foreground/80">
+              Every recording, transcript and piece of feedback is locked to your account at the database level,
+              so not even someone who guesses a link can see it.
+            </p>
+          </div>
+          <Link href="/signup" className={buttonVariants({ size: "lg" })}>
+            Create a free account
+          </Link>
         </div>
-        <Link href="/signup" className={buttonVariants({ size: "lg" })}>
-          Create a free account
-        </Link>
       </section>
     </main>
   );

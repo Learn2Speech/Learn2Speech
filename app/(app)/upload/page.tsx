@@ -46,8 +46,8 @@ export default function UploadPage() {
                     <form onSubmit={handleUpload} className="space-y-5">
                         {/* the whole dashed box is the label, so clicking anywhere in it opens the file picker */}
                         <label htmlFor="audio"
-                            className="flex cursor-pointer flex-col items-start gap-3 rounded-lg border border-dashed border-input px-6 py-12 transition-colors hover:border-primary hover:bg-muted has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50 sm:items-center sm:text-center">
-                            {file ? <FileAudio className="size-6 text-primary" /> : <UploadIcon className="size-6 text-muted-foreground" />}
+                            className="flex cursor-pointer flex-col items-start gap-3 rounded-lg border border-dashed border-input px-6 py-12 transition-colors hover:border-brand hover:bg-muted has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50 sm:items-center sm:text-center">
+                            {file ? <FileAudio className="size-6 text-brand" /> : <UploadIcon className="size-6 text-muted-foreground" />}
                             {file ? (
                                 <span>
                                     <span className="block font-medium break-all">{file.name}</span>
@@ -66,7 +66,7 @@ export default function UploadPage() {
                             onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                             className="sr-only" />
                         {message && working && (
-                            <p role="status" className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
+                            <p role="status" className="flex items-center gap-2 rounded-md border border-brand/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
                                 <Loader2 className="size-4 shrink-0 animate-spin" /> {message}
                             </p>
                         )}

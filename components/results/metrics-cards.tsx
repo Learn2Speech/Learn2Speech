@@ -24,7 +24,7 @@ function Metric({ label, value, unit, hint, rating }: MetricProps) {
         <span className="text-base font-normal tracking-normal whitespace-nowrap text-muted-foreground">{unit}</span>
       </p>
       <p className="mt-3 flex items-center gap-2 text-sm font-medium">
-        <span aria-hidden="true" className={`size-2 rounded-full ${TONE_DOT[rating.tone]}`} />
+        <span aria-hidden="true" className={`size-2.5 rounded-full ring-2 ring-white ${TONE_DOT[rating.tone]}`} />
         {rating.label}
       </p>
       <p className="mt-1 text-sm text-muted-foreground">{hint}</p>

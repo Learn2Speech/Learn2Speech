@@ -25,7 +25,7 @@ export default function LoginNotice() {
           Try refreshing and open {pageName}
         </a>
       </p>
-      <p role="status" className="flex items-center gap-2 rounded-md border border-primary/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
+      <p role="status" className="flex items-center gap-2 rounded-md border border-brand/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
         <LockKeyhole className="size-4 shrink-0" />
         Log in to use {pageName}.
       </p>

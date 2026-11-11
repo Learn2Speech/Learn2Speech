@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
@@ -17,6 +17,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Learn2Speech",
   description: "Upload a speech and get coaching on your pace, filler words and pauses.",
+};
+
+// phone status bar matches the page color in each theme; viewport-fit lets pages use the notch area
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0A0B0C" },
+  ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

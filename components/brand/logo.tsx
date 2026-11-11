@@ -29,7 +29,7 @@ export default function Logo({ className }: { className?: string }) {
     <span className={cn("inline-flex items-center gap-2 text-2xl tracking-tight", className)}>
       <LogoMark className="h-[1.3em] w-auto" />
       <span>
-        Learn<span style={{ color: BRAND_COLOR }}>2</span>Speech
+        Learn<span style={{ color: "var(--orange)" }}>2</span>Speech
       </span>
     </span>
   );

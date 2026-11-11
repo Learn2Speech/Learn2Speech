@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             <h2 className="text-lg font-semibold">{section.heading}</h2>
             {section.body && <p className="leading-relaxed text-muted-foreground">{section.body}</p>}
             {section.points && (
-              <ul className="list-disc space-y-1.5 pl-5 leading-relaxed text-muted-foreground marker:text-primary">
+              <ul className="list-disc space-y-1.5 pl-5 leading-relaxed text-muted-foreground marker:text-brand">
                 {section.points.map((point) => <li key={point}>{point}</li>)}
               </ul>
             )}

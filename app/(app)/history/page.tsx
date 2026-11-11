@@ -43,7 +43,7 @@ async function RecordingsList() {
                     {/* the whole row is a link to that recording's full results */}
                     <Link href={`/history/${row.id}`} className="block py-5 transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3">
                         <div className="flex items-start justify-between gap-3">
-                            <p className="truncate font-medium">{row.original_name}</p>
+                            <p className="min-w-0 truncate font-medium" title={row.original_name}>{row.original_name}</p>
                             <StatusBadge status={row.status} />
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -82,7 +82,7 @@ function StatusBadge({ status }: { status: Recording["status"] }) {
     const labels: Record<Recording["status"], string> = { uploaded: "Waiting", analyzing: "Analyzing", done: "Done", failed: "Failed" };
     const colors: Record<Recording["status"], string> = {
         uploaded: "",
-        analyzing: "border-primary/30 bg-accent text-accent-foreground",
+        analyzing: "border-brand/30 bg-accent text-accent-foreground",
         done: "border-green-600/30 bg-green-600/10 text-green-700",
         failed: "border-destructive/30 bg-destructive/10 text-destructive",
     };
