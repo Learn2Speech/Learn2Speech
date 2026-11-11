@@ -7,6 +7,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Loader2, Upload } from "lucide-react";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
 import ResultsView from "@/components/results/results-view";
+import SinceLastTime from "@/components/results/since-last-time";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,9 +49,15 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
   );
 
   if (recording.status === "done" && recording.metrics && recording.feedback && recording.transcript) {
+    // the newest finished recording made before this one (RLS keeps it to this user's own rows)
+    const { data: prev } = await supabase.from("recordings").select("metrics")
+      .eq("status", "done").lt("created_at", recording.created_at)
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+    const previous = (prev as Pick<Recording, "metrics"> | null)?.metrics;
     return (
       <>
         {header}
+        {previous && <SinceLastTime current={recording.metrics} previous={previous} />}
         <ResultsView metrics={recording.metrics} feedback={recording.feedback} transcript={recording.transcript} />
       </>
     );

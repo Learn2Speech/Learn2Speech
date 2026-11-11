@@ -45,6 +45,9 @@ npm install
    - `0001_recordings_bucket.sql`: the private storage bucket for audio files and its access rules
    - `0002_recordings_table.sql`: the `recordings` table with Row Level Security
    - `0003_recordings_results.sql`: columns for the status, transcript, metrics and feedback
+   - `0004_server_only_status.sql`: only the server can change a recording's status and results; daily analysis log
+   - `0005_insert_limits.sql`: limits on what users can insert, and at most 200 recordings per account
+   - `0006_allow_webm_recordings.sql`: lets the bucket accept WebM audio, which Firefox records on the Record page
 3. Open **Authentication → URL Configuration** and set **Site URL** to `http://localhost:3000`, so the email confirmation link brings new users back to your local app.
 4. Open **Project Settings → API** / **API Keys** and keep it open for the next step.
 

@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 // the link right after logging in would replay it (until a refresh).
 const PAGES = [
   { title: "Upload", href: "/upload", needsLogin: true },
+  { title: "Record", href: "/record", needsLogin: true },
   { title: "History", href: "/history", needsLogin: true },
 ];
 
