@@ -1,13 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Onest, Sora } from "next/font/google";
+import { Schibsted_Grotesk } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
 import "./globals.css";
 
-const onest = Onest({ variable: "--font-onest", subsets: ["latin"] });
-
-// display face for headings and readout numbers
-const sora = Sora({ variable: "--font-sora", subsets: ["latin"] });
+// one typeface for everything; the weight and size carry the hierarchy
+const schibsted = Schibsted_Grotesk({ variable: "--font-schibsted", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Learn2Speech",
@@ -29,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // so React would otherwise warn that the server's <html> and the browser's don't match
     <html
       lang="en"
-      className={`${onest.variable} ${sora.variable} h-full antialiased`}
+      className={`${schibsted.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

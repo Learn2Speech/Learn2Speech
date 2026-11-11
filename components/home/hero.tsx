@@ -1,45 +1,34 @@
-// Top of the home page. The first thing you see is the product's own output (a real timeline and
-// transcript from sample data), with a short headline beside it, not a slogan on its own.
+// Top of the home page: a full-width teal block. The headline and the one orange button sit above
+// a live demo of the product (the example speech playing back on its timeline), so the first
+// screen shows what the app does instead of describing it.
 import Link from "next/link";
+import LiveDemo from "@/components/home/live-demo";
 import { sampleMetrics, sampleTranscript } from "@/components/home/sample-result";
 import MetricsCards from "@/components/results/metrics-cards";
-import SpeechTimeline from "@/components/results/speech-timeline";
 import { buttonVariants } from "@/components/ui/button";
-
-// the sample words with the fillers marked, as a single readable line
-function SampleLine() {
-  const fillerStarts = new Set(sampleMetrics.fillers.map((f) => f.startMs));
-  return (
-    <p className="max-w-prose text-pretty leading-relaxed text-muted-foreground">
-      {sampleTranscript.words.map((word, i) => (
-        <span key={i}>
-          {fillerStarts.has(word.start) ? <mark className="bg-highlight/25 px-0.5 text-foreground">{word.text}</mark> : word.text}{" "}
-        </span>
-      ))}
-    </p>
-  );
-}
 
 export default function Hero() {
   return (
     <section>
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 pt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:pt-24">
-        <div className="self-end">
-          <h1 className="text-4xl leading-[1.04] sm:text-5xl lg:text-6xl">Hear your speech the way the room does.</h1>
-          <p className="mt-6 max-w-md text-lg text-muted-foreground">
-            Upload a practice run. You get your pace, every filler word and every long pause, placed on a timeline.
-          </p>
-          {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
-          <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg", className: "mt-8" })}>
-            Upload a practice run
-          </Link>
-        </div>
+      <div className="on-teal bg-teal">
+        <div className="mx-auto max-w-6xl px-6 py-14 sm:py-20">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-end lg:gap-16">
+            <h1 className="text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">Hear your speech the way the room does.</h1>
+            <div>
+              <p className="text-lg text-muted-foreground">
+                Upload a practice run. You get your pace, every filler word and every long pause, placed on a timeline.
+              </p>
+              {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
+              <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg", className: "mt-6" })}>
+                Upload a practice run
+              </Link>
+            </div>
+          </div>
 
-        {/* the one big block of teal: a real result, labeled as an example */}
-        <div className="on-teal space-y-6 bg-teal p-6 sm:p-8">
-          <p className="text-sm text-muted-foreground">Example: an 18-second run about sleep</p>
-          <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} words={sampleTranscript.words} />
-          <SampleLine />
+          <div className="mt-14 sm:mt-20">
+            <p className="mb-5 text-sm text-muted-foreground">Example: an 18-second practice run about sleep, played back</p>
+            <LiveDemo metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} words={sampleTranscript.words} />
+          </div>
         </div>
       </div>
 

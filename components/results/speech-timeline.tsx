@@ -12,15 +12,11 @@ function formatTime(ms: number) {
   return `${Math.floor(totalSeconds / 60)}:${(totalSeconds % 60).toString().padStart(2, "0")}`;
 }
 
-const BINS = 72;
+export const BINS = 72;
 
-type Props = { metrics: SpeechMetrics; durationMs: number; words?: TranscriptWord[] };
-
-export default function SpeechTimeline({ metrics, durationMs, words = [] }: Props) {
-  if (!durationMs) return null; // nothing to draw for an empty recording
-
+// how much of each slice of the recording had a word being spoken, 0 to 1
+export function voicedBins(words: TranscriptWord[], durationMs: number) {
   const binMs = durationMs / BINS;
-  // how much of each slice had a word being spoken, 0 to 1
   const voiced = new Array<number>(BINS).fill(0);
   for (const word of words) {
     const first = Math.floor(word.start / binMs);
@@ -30,6 +26,16 @@ export default function SpeechTimeline({ metrics, durationMs, words = [] }: Prop
       voiced[i] = Math.min(1, voiced[i] + Math.max(0, overlap) / binMs);
     }
   }
+  return voiced;
+}
+
+type Props = { metrics: SpeechMetrics; durationMs: number; words?: TranscriptWord[] };
+
+export default function SpeechTimeline({ metrics, durationMs, words = [] }: Props) {
+  if (!durationMs) return null; // nothing to draw for an empty recording
+
+  const binMs = durationMs / BINS;
+  const voiced = voicedBins(words, durationMs);
   const fillerBins = new Set(metrics.fillers.map((f) => Math.min(BINS - 1, Math.floor(f.startMs / binMs))));
   const toPercent = (ms: number) => `${Math.min(100, (ms / durationMs) * 100)}%`;
 

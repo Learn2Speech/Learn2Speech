@@ -43,7 +43,7 @@ function Readout({ label, value, unit, rating, target, gauge }: ReadoutProps) {
     <div className="py-6 sm:px-6 sm:first:pl-0 sm:last:pr-0">
       <p className="text-sm text-muted-foreground">{label}</p>
       {/* flex-wrap lets the unit drop below the number when the column is narrow */}
-      <p className="mt-2 flex flex-wrap items-baseline gap-x-2 font-heading text-5xl font-light tracking-[-0.04em] tabular-nums">
+      <p className="mt-2 flex flex-wrap items-baseline gap-x-2 font-heading text-5xl font-medium tracking-[-0.04em]"> 
         {value}
         <span className="text-sm font-normal tracking-normal whitespace-nowrap text-muted-foreground">{unit}</span>
       </p>
