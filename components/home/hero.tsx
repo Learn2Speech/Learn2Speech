@@ -11,7 +11,7 @@ export default function Hero() {
   return (
     <section>
       <div className="on-teal bg-teal">
-        <div className="mx-auto max-w-6xl px-6 py-14 sm:py-20">
+        <div className="mx-auto max-w-6xl px-6 py-10 sm:py-10">
           <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-end lg:gap-16">
             <h1 className="text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">Hear your speech the way the room does.</h1>
             <div>
@@ -25,7 +25,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="mt-14 sm:mt-20">
+          <div className="mt-8 sm:mt-8">
             <p className="mb-5 text-sm text-muted-foreground">Example: an 18-second practice run about sleep, played back</p>
             <LiveDemo metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} words={sampleTranscript.words} />
           </div>

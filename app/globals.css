@@ -146,6 +146,14 @@
   --chart-5: #1F272A;
 }
 
+/* On an orange block: the text color flips to whatever passes contrast on the action color. */
+.on-orange {
+  --foreground: var(--primary-foreground);
+  --muted-foreground: color-mix(in srgb, var(--primary-foreground) 80%, transparent);
+  --border: color-mix(in srgb, var(--primary-foreground) 30%, transparent);
+  color: var(--primary-foreground);
+}
+
 /* On a teal block, the components inside it (readouts, timeline) read white-on-teal. */
 .on-teal {
   --foreground: var(--teal-foreground);

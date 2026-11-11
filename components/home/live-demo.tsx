@@ -69,7 +69,7 @@ export default function LiveDemo({ metrics, durationMs, words }: Props) {
 
       <div aria-hidden="true">
         <div className="relative">
-          <div className="flex h-40 items-end gap-[3px] sm:h-56">
+          <div className="flex h-28 items-end gap-[3px] sm:h-28">
             {voiced.map((level, i) => (
               <span
                 key={i}
@@ -85,7 +85,7 @@ export default function LiveDemo({ metrics, durationMs, words }: Props) {
         </div>
 
         {/* live counters */}
-        <div className="mt-8 flex flex-wrap items-end gap-x-10 gap-y-4 border-t pt-5">
+        <div className="mt-5 flex flex-wrap items-end gap-x-10 gap-y-4 border-t pt-5">
           <p className="text-sm text-muted-foreground">
             Fillers <span className="ml-1 text-3xl font-medium inline-block min-w-[1ch] text-foreground">{fillersSoFar}</span>
           </p>
@@ -98,7 +98,7 @@ export default function LiveDemo({ metrics, durationMs, words }: Props) {
         </div>
 
         {/* the transcript lights up as the playhead passes each word */}
-        <p className="mt-6 max-w-3xl text-lg leading-relaxed text-pretty sm:text-xl">
+        <p className="mt-4 max-w-3xl text-lg leading-relaxed text-pretty sm:text-xl">
           {words.map((word, i) => {
             const lit = seen(word.start);
             const filler = fillerStarts.has(word.start);

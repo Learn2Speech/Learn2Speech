@@ -15,7 +15,7 @@ export default function Home() {
     <main className="flex-1">
       <Hero />
 
-      <section className="mx-auto mt-28 grid max-w-6xl gap-8 px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+      <section className="mx-auto my-32 grid max-w-6xl gap-8 px-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
         <h2 className="text-2xl sm:text-3xl">How it works</h2>
         {/* a real sequence, so numbered; a plain list, not boxes */}
         <ol className="divide-y border-y">
@@ -31,17 +31,20 @@ export default function Home() {
         </ol>
       </section>
 
-      <section className="mx-auto my-28 flex max-w-6xl flex-col gap-6 px-6 md:flex-row md:items-end md:justify-between">
-        <div className="max-w-xl">
-          <h2 className="text-2xl sm:text-3xl">Your recordings stay yours.</h2>
-          <p className="mt-3 text-muted-foreground">
-            Every recording, transcript and piece of feedback is locked to your account at the database level,
-            so not even someone who guesses a link can see it.
-          </p>
+      {/* the orange block: the one place the action color is a whole region, and its one button */}
+      <section className="on-orange bg-primary">
+        <div className="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-24 md:flex-row md:py-40 md:items-end md:justify-between">
+          <div className="max-w-xl">
+            <h2 className="text-3xl sm:text-4xl">Your recordings stay yours.</h2>
+            <p className="mt-3 text-muted-foreground">
+              Every recording, transcript and piece of feedback is locked to your account at the database level,
+              so not even someone who guesses a link can see it.
+            </p>
+          </div>
+          <Link href="/signup" className={buttonVariants({ size: "lg", className: "bg-card! text-card-foreground! hover:bg-card/90!" })}>
+            Create a free account
+          </Link>
         </div>
-        <Link href="/signup" className={buttonVariants({ size: "lg", variant: "outline" })}>
-          Create a free account
-        </Link>
       </section>
     </main>
   );
