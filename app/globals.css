@@ -7,15 +7,16 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-brand: var(--brand);
+  --color-brand: var(--teal-mark);
   --color-teal: var(--teal);
   --color-teal-foreground: var(--teal-foreground);
   --color-orange: var(--orange);
+  --color-teal-mark: var(--teal-mark);
   --color-highlight: var(--highlight);
   --color-pause: var(--pause);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
+  --font-sans: var(--font-onest);
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-heading: var(--font-sora);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -54,110 +55,109 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* 50 / 30 / 20 palette.
-   50: neutral, white in light mode and black in dark mode (page, cards, text).
-   30: teal, for big color blocks, the logo, focus rings and tints.
-   20: orange, for buttons, the filler-word marks and small accents. */
+/* 50 / 30 / 20.
+   50 neutral: near-white or near-black, never pure #fff / #000 (page, text, lines).
+   30 teal: deep, desaturated; whole regions (the timeline panel) and the waveform.
+   20 orange: the one action color (buttons) and the filler-word marks. */
 :root {
-  --background: #FFFFFF;
-  --foreground: #0B0F14;
-  --card: #FFFFFF;
-  --card-foreground: #0B0F14;
-  --popover: #FFFFFF;
-  --popover-foreground: #0B0F14;
-  /* buttons are orange; white text on this passes contrast (4.8:1) */
-  --primary: #C24E28;
+  --background: #F3F5F4;
+  --foreground: #0E1314;
+  --card: #FAFBFA;
+  --card-foreground: #0E1314;
+  --popover: #FAFBFA;
+  --popover-foreground: #0E1314;
+  --primary: #C4521C;
   --primary-foreground: #FFFFFF;
-  --secondary: #F1F3F4;
-  --secondary-foreground: #0B0F14;
-  --muted: #F4F5F6;
-  --muted-foreground: #566069;
-  --accent: #E3F1F4;
-  --accent-foreground: #0B0F14;
-  --destructive: #C0262D;
-  --border: #E2E5E8;
-  --input: #CBD0D5;
-  --ring: #0E7490;
-  --chart-1: #0E7490;
-  --chart-2: #0B0F14;
-  --chart-3: #566069;
-  --chart-4: #98A1A9;
-  --chart-5: #E2E5E8;
-  --radius: 0.5rem;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #0B0F14;
-  --sidebar-primary: #C24E28;
+  --secondary: #E7EBEA;
+  --secondary-foreground: #0E1314;
+  --muted: #E9EDEC;
+  --muted-foreground: #556062;
+  --accent: #E1EBEB;
+  --accent-foreground: #0E1314;
+  --destructive: #B3261E;
+  --border: #D8DEDC;
+  --input: #C2CAC8;
+  --ring: #0F5E68;
+  /* the teal block and the text on it */
+  --teal: #0F5E68;
+  --teal-foreground: #E8F3F3;
+  --teal-mark: #1B8591;
+  --brand: #0F5E68;
+  --teal-on-mark: #8FD3DA;
+  --orange: #C4521C;
+  --highlight: #C4521C;
+  --pause: #8A9795;
+  --radius: 0.25rem;
+  --sidebar: #F3F5F4;
+  --sidebar-foreground: #0E1314;
+  --sidebar-primary: #C4521C;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F3F4;
-  --sidebar-accent-foreground: #0B0F14;
-  --sidebar-border: #E2E5E8;
-  --sidebar-ring: #0E7490;
-  /* teal blocks (white text on it passes: 5.4:1) and the logo bubble */
-  --teal: #0E7490;
-  --teal-foreground: #FFFFFF;
-  --brand: #0E7490;
-  /* the logo orange, for decoration (too light for white text) */
-  --orange: #D85B32;
-  /* filler-word marks in the transcript and timeline */
-  --highlight: #D85B32;
-  /* long-pause blocks on the speech timeline */
-  --pause: #8FC3CF;
+  --sidebar-accent: #E7EBEA;
+  --sidebar-accent-foreground: #0E1314;
+  --sidebar-border: #D8DEDC;
+  --sidebar-ring: #0F5E68;
+  --chart-1: #0F5E68;
+  --chart-2: #0E1314;
+  --chart-3: #556062;
+  --chart-4: #8A9795;
+  --chart-5: #D8DEDC;
 }
 
-/* Dark mode: black page, brighter teal and orange so they hold up on it. */
 .dark {
-  --background: #0A0B0C;
-  --foreground: #F2F4F5;
-  --card: #121416;
-  --card-foreground: #F2F4F5;
-  --popover: #121416;
-  --popover-foreground: #F2F4F5;
-  /* dark text on the lighter orange, since white would fail contrast */
-  --primary: #F0805A;
-  --primary-foreground: #1A0B05;
-  --secondary: #1C1F22;
-  --secondary-foreground: #F2F4F5;
-  --muted: #16181A;
-  --muted-foreground: #9AA3AB;
-  --accent: #12333B;
-  --accent-foreground: #F2F4F5;
-  --destructive: #E5484D;
-  --border: #25292D;
-  --input: #33393E;
-  --ring: #22C7DE;
-  --chart-1: #22C7DE;
-  --chart-2: #F2F4F5;
-  --chart-3: #9AA3AB;
-  --chart-4: #566069;
-  --chart-5: #25292D;
-  --sidebar: #0A0B0C;
-  --sidebar-foreground: #F2F4F5;
-  --sidebar-primary: #F0805A;
-  --sidebar-primary-foreground: #1A0B05;
-  --sidebar-accent: #1C1F22;
-  --sidebar-accent-foreground: #F2F4F5;
-  --sidebar-border: #25292D;
-  --sidebar-ring: #22C7DE;
-  --teal: #0E6377;
-  --teal-foreground: #FFFFFF;
-  --brand: #1AA7C4;
-  --orange: #F0805A;
-  --highlight: #F0805A;
-  --pause: #3E7A89;
+  --background: #0C0F10;
+  --foreground: #E4EAE9;
+  --card: #12171A;
+  --card-foreground: #E4EAE9;
+  --popover: #12171A;
+  --popover-foreground: #E4EAE9;
+  /* dark text on the lighter orange: white would fail contrast */
+  --primary: #E8793F;
+  --primary-foreground: #1B0D06;
+  --secondary: #182023;
+  --secondary-foreground: #E4EAE9;
+  --muted: #141B1D;
+  --muted-foreground: #8B979A;
+  --accent: #123137;
+  --accent-foreground: #E4EAE9;
+  --destructive: #E5534B;
+  --border: #1F272A;
+  --input: #2C373B;
+  --ring: #4FB3BC;
+  --teal: #0D3A41;
+  --teal-foreground: #DDEEEE;
+  --teal-mark: #4FB3BC;
+  --brand: #4FB3BC;
+  --teal-on-mark: #4FB3BC;
+  --orange: #E8793F;
+  --highlight: #E8793F;
+  --pause: #3E5156;
+  --sidebar: #0C0F10;
+  --sidebar-foreground: #E4EAE9;
+  --sidebar-primary: #E8793F;
+  --sidebar-primary-foreground: #1B0D06;
+  --sidebar-accent: #182023;
+  --sidebar-accent-foreground: #E4EAE9;
+  --sidebar-border: #1F272A;
+  --sidebar-ring: #4FB3BC;
+  --chart-1: #4FB3BC;
+  --chart-2: #E4EAE9;
+  --chart-3: #8B979A;
+  --chart-4: #3E5156;
+  --chart-5: #1F272A;
 }
 
-/* Put this on a teal block: the results components inside it (cards, timeline, text)
-   switch to white-on-teal without needing a variant each. */
+/* On a teal block, the components inside it (readouts, timeline) read white-on-teal. */
 .on-teal {
-  --foreground: #FFFFFF;
+  --foreground: var(--teal-foreground);
   --card: transparent;
-  --card-foreground: #FFFFFF;
-  --muted-foreground: rgb(255 255 255 / 0.78);
-  --muted: rgb(255 255 255 / 0.16);
-  --border: rgb(255 255 255 / 0.25);
-  --pause: rgb(255 255 255 / 0.5);
-  --highlight: #FF9B73;
-  color: #FFFFFF;
+  --card-foreground: var(--teal-foreground);
+  --muted-foreground: color-mix(in srgb, var(--teal-foreground) 70%, transparent);
+  --muted: color-mix(in srgb, var(--teal-foreground) 12%, transparent);
+  --border: color-mix(in srgb, var(--teal-foreground) 22%, transparent);
+  --pause: color-mix(in srgb, var(--teal-foreground) 40%, transparent);
+  --highlight: #FF9A6B;
+  --teal-mark: var(--teal-on-mark);
+  color: var(--teal-foreground);
 }
 
 @layer base {
@@ -176,20 +176,22 @@
   }
   /* one typeface; headings are set tight and medium weight for a calm, confident look */
   h1, h2, h3 {
-    @apply font-heading font-medium tracking-[-0.03em] text-balance;
+    @apply font-heading font-normal tracking-[-0.035em] text-balance;
   }
 }
-/* The one moment of motion: timeline marks drop in once, left to right, when a result appears.
-   The delay is set per mark in speech-timeline.tsx. Skipped for people who ask for less motion. */
-@keyframes mark-in {
-  from { opacity: 0; transform: translateX(-50%) scaleY(0.2); }
-  to { opacity: 1; transform: translateX(-50%) scaleY(1); }
+/* The one moment of motion: a scan line sweeps the timeline once and uncovers it as it goes.
+   Reveal is clip-path, the line is a transform; both run on the compositor and are skipped
+   when someone asks for less motion (the timeline is then simply shown). */
+@keyframes scan-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
 }
-@keyframes block-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes scan-line {
+  from { transform: translateX(-100%); opacity: 1; }
+  92% { opacity: 1; }
+  to { transform: translateX(0); opacity: 0; }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .mark-in { animation: mark-in 450ms cubic-bezier(0.23, 1, 0.32, 1) backwards; }
-  .block-in { animation: block-in 450ms ease-out backwards; }
+  .scan-reveal { animation: scan-reveal 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms backwards; }
+  .scan-line { animation: scan-line 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms both; }
 }

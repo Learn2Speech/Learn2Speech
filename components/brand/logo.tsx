@@ -12,7 +12,7 @@ export function LogoMark({ className }: { className?: string }) {
       <rect width="440" height="300" rx="80" fill={BRAND_COLOR} />
       {/* the little tail at the bottom-left that makes it a speech bubble */}
       <path d="M180 299 L180 360 L240 299 Z" fill={BRAND_COLOR} />
-      <g fill="white">
+      <g fill="var(--background)">
         <rect x="140" y="110" width="24" height="60" rx="12" />
         <rect x="184" y="80" width="24" height="120" rx="12" />
         <rect x="228" y="50" width="24" height="180" rx="12" />

@@ -1,38 +1,50 @@
-// Top of the home page: a plain headline and one button on white, then a full-width teal block
-// with a real example result (our actual results components with sample data), so visitors
-// see the product, not a slogan.
+// Top of the home page. The first thing you see is the product's own output (a real timeline and
+// transcript from sample data), with a short headline beside it, not a slogan on its own.
 import Link from "next/link";
 import { sampleMetrics, sampleTranscript } from "@/components/home/sample-result";
 import MetricsCards from "@/components/results/metrics-cards";
 import SpeechTimeline from "@/components/results/speech-timeline";
 import { buttonVariants } from "@/components/ui/button";
 
+// the sample words with the fillers marked, as a single readable line
+function SampleLine() {
+  const fillerStarts = new Set(sampleMetrics.fillers.map((f) => f.startMs));
+  return (
+    <p className="max-w-prose text-pretty leading-relaxed text-muted-foreground">
+      {sampleTranscript.words.map((word, i) => (
+        <span key={i}>
+          {fillerStarts.has(word.start) ? <mark className="bg-highlight/25 px-0.5 text-foreground">{word.text}</mark> : word.text}{" "}
+        </span>
+      ))}
+    </p>
+  );
+}
+
 export default function Hero() {
   return (
     <section>
-      <div className="mx-auto max-w-5xl px-6 pt-16 md:pt-24">
-        <h1 className="max-w-3xl text-4xl leading-[1.05] sm:text-6xl">Hear what your audience hears.</h1>
-        <p className="mt-6 max-w-xl text-lg text-muted-foreground">
-          Upload a practice run of your presentation, debate case or interview answer. Learn2Speech times your pace,
-          finds every &ldquo;um&rdquo; and long pause, and tells you the three things to fix.
-        </p>
-        {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
-        <div className="mt-8 flex flex-wrap items-center gap-6">
-          <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg" })}>
+      <div className="mx-auto grid max-w-6xl gap-10 px-6 pt-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:pt-24">
+        <div className="self-end">
+          <h1 className="text-4xl leading-[1.04] sm:text-5xl lg:text-6xl">Hear your speech the way the room does.</h1>
+          <p className="mt-6 max-w-md text-lg text-muted-foreground">
+            Upload a practice run. You get your pace, every filler word and every long pause, placed on a timeline.
+          </p>
+          {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
+          <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg", className: "mt-8" })}>
             Upload a practice run
           </Link>
-          <Link href="/history" prefetch={false} className="text-sm font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
-            Past recordings
-          </Link>
+        </div>
+
+        {/* the one big block of teal: a real result, labeled as an example */}
+        <div className="on-teal space-y-6 bg-teal p-6 sm:p-8">
+          <p className="text-sm text-muted-foreground">Example: an 18-second run about sleep</p>
+          <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} words={sampleTranscript.words} />
+          <SampleLine />
         </div>
       </div>
 
-      <div className="on-teal mt-16 bg-teal py-12 md:py-16">
-        <div className="mx-auto max-w-5xl space-y-4 px-6">
-          <p className="text-sm text-muted-foreground">An example result, from an 18-second practice run about sleep.</p>
-          <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
-          <SpeechTimeline metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
-        </div>
+      <div className="mx-auto mt-14 max-w-6xl px-6">
+        <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
       </div>
     </section>
   );

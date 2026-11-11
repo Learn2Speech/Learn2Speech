@@ -49,7 +49,7 @@ function NavLinksWithActive() {
 export default function SiteNav() {
   return (
     <header className="sticky top-0 z-20 border-b bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-5xl items-center gap-2 px-4 sm:gap-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-4 sm:px-6">
         <Link href="/" aria-label="Learn2Speech home" className="mr-auto text-lg font-medium">
           {/* just the bubble on phones, so the links and buttons fit */}
           <Logo className="text-lg max-sm:hidden" />
