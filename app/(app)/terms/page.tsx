@@ -31,7 +31,7 @@ const SECTIONS = [
   },
   {
     heading: "Changes and questions",
-    body: "We may update these terms as the app changes. If you have questions or want your data removed, email learn2speechteam@gmail.com.",
+    body: "We may update these terms as the app changes. If you have questions or want your data removed, email learn2speechproject@gmail.com.",
   },
 ];
 
