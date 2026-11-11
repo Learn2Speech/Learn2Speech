@@ -82,6 +82,9 @@ export default function UploadPage() {
                     </form>
                 </CardContent>
             </Card>
+            <p className="mt-4 text-sm text-muted-foreground">
+                No recording yet? <Link href="/record" className="font-medium text-foreground underline underline-offset-4">Record with your microphone</Link> instead.
+            </p>
             {/* what happens after you press Upload, so the wait doesn't feel like a mystery */}
             <ol className="mt-8 space-y-2 text-sm text-muted-foreground">
                 <li><span className="font-medium text-foreground">Upload.</span> Your recording is saved privately to your account.</li>
