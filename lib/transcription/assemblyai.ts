@@ -4,7 +4,7 @@ import type { Transcript } from "@/lib/transcription/types";
 // 1. Get the API key from .env.local 
 //if it is missing, give me the error and i will readd it
 // 2. Submit: send a post request to /v2/transcript with the { audio_url: audioURL } ; save the job id from the reply
-// 3. Poll: every 5 seconds, send a check in request to /v2/transcript/{id}, give up after 3 minutes
+// 3. Poll: every 5 seconds, send a check in request to /v2/transcript/{id}, give up after 2.5 minutes
 //    - if status is completed → stop and go to step 4
 //    - if status is error → stop and throw an error
 //    - otherwise → wait and check again
@@ -15,7 +15,7 @@ import type { Transcript } from "@/lib/transcription/types";
 // 5. Return the Transcript
 // SUMMARY: sends an audio link to AssemblyAI and waits for the finished transcript.
 // Transcription isn't instant, so it works in two phases: submit a job (get an id back),
-// then ask for the result every 5 seconds until it is done, fails, or 3 minutes pass.
+// then ask for the result every 5 seconds until it is done, fails, or 2.5 minutes pass.
 // Plain fetch is used instead of an SDK, and only on the server so the key stays secret.
 export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const assemblyKey = process.env.ASSEMBLYAI_API_KEY;
@@ -42,7 +42,8 @@ export async function transcribeAudio(audioURL: string): Promise<Transcript> {
   const jobID = data.id;
   try {
   const startedAt = Date.now();
-  const limitMs = 3*60*1000;
+  // 2.5 minutes, so the Claude feedback call still fits in the route's 200-second maxDuration
+  const limitMs = 150*1000;
   // Polling loop. The time limit stops it from running forever if AssemblyAI never finishes.
   while (true){
     if (Date.now() - startedAt > limitMs){

@@ -1,5 +1,5 @@
 "use client"; // needs usePathname to mark the page you're on
-// Top bar on every main page: logo on the left, page links, theme switch and account on the right.
+// Top bar on every main page: logo on the left, page links, theme switch and account menu on the right.
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,9 +12,10 @@ import { cn } from "@/lib/utils";
 // pre-load it. A pre-load made while logged out saves the "go to login" answer, and clicking
 // the link right after logging in would replay it (until a refresh).
 const PAGES = [
-  { title: "Upload", href: "/upload", needsLogin: true },
-  { title: "Record", href: "/record", needsLogin: true },
-  { title: "History", href: "/history", needsLogin: true },
+  // Practice = Record or Upload; both pages have a switch at the top, so either counts as "on Practice"
+  { title: "Practice", href: "/record", matches: ["/record", "/upload"], needsLogin: true },
+  { title: "History", href: "/history", matches: ["/history"], needsLogin: true },
+  { title: "Tutorial", href: "/demo", matches: ["/demo"], needsLogin: false },
 ];
 
 // activePath is the page you're on, or null while unknown.
@@ -22,7 +23,7 @@ function NavLinks({ activePath }: { activePath: string | null }) {
   return (
     <nav aria-label="Main" className="flex items-center sm:gap-1">
       {PAGES.map((page) => {
-        const active = activePath?.startsWith(page.href) ?? false;
+        const active = page.matches.some((path) => activePath?.startsWith(path));
         return (
           <Link
             key={page.href}
@@ -30,7 +31,7 @@ function NavLinks({ activePath }: { activePath: string | null }) {
             prefetch={!page.needsLogin}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-md px-1.5 py-1.5 text-sm font-medium sm:px-3 transition-colors hover:text-foreground",
+              "flex items-center rounded-md px-1.5 text-sm font-medium max-sm:h-11 sm:px-3 sm:py-1.5 transition-colors hover:text-foreground",
               active ? "bg-secondary text-foreground" : "text-muted-foreground",
             )}
           >

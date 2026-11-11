@@ -12,6 +12,7 @@ export default function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
+      className="max-sm:size-11"
       aria-label="Switch theme"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >

@@ -14,7 +14,7 @@ import { buttonVariants } from "@/components/ui/button";
 const STEPS = [
   {
     title: "Record a run-through",
-    text: "Use your phone or laptop's voice recorder. Even 30 seconds shows your habits.",
+    text: "Record right here in your browser, or use your phone's voice recorder. Even 30 seconds shows your habits.",
     example: (
       <div className="flex items-center gap-4">
         <span className="size-3 shrink-0 rounded-full bg-(--brand)" />
@@ -24,8 +24,8 @@ const STEPS = [
     ),
   },
   {
-    title: "Upload the file",
-    text: "mp3, wav or m4a, up to 50 MB. It's stored privately in your account.",
+    title: "Send it in",
+    text: "Recorded here? One click. Otherwise upload an mp3, wav or m4a, up to 50 MB. It's stored privately in your account.",
     example: (
       <div>
         <p className="flex justify-between gap-4 font-medium">

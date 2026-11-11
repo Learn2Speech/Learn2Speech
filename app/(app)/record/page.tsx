@@ -9,6 +9,7 @@ import {useRouter} from "next/navigation";
 import {Mic, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import PageHeader from "@/components/page-header";
+import PracticeSwitch from "@/components/practice-switch";
 import {Button} from "@/components/ui/button";
 import Waiting from "@/components/upload/waiting";
 import {createClient} from "@/lib/supabase";
@@ -44,13 +45,24 @@ export default function RecordPage() {
     // the live microphone, kept while recording so the volume bars can listen to it
     const [stream, setStream] = useState<MediaStream | null>(null);
 
+    // true once the user has left the page, so a mic allowed after leaving gets switched straight off
+    const leftRef = useRef(false);
+    // when recording started, so the clock is right even if a background tab slows the timer down
+    const startedAtRef = useRef(0);
+
     // turn the microphone off if the user leaves the page mid-recording
-    useEffect(() => () => recorderRef.current?.stream.getTracks().forEach((t) => t.stop()), []);
+    useEffect(() => {
+        leftRef.current = false;
+        return () => {
+            leftRef.current = true;
+            recorderRef.current?.stream.getTracks().forEach((t) => t.stop());
+        };
+    }, []);
     useEffect(() => () => { if (previewUrl) URL.revokeObjectURL(previewUrl); }, [previewUrl]);
     // count up while recording and stop at the limit
     useEffect(() => {
         if (!recording) return;
-        const timer = setInterval(() => setSeconds((s) => s + 1), 1000);
+        const timer = setInterval(() => setSeconds(Math.floor((Date.now() - startedAtRef.current) / 1000)), 1000);
         return () => clearInterval(timer);
     }, [recording]);
     useEffect(() => {
@@ -73,7 +85,19 @@ export default function RecordPage() {
             setMessage("We couldn't use your microphone. Allow microphone access in your browser and try again.");
             return;
         }
-        const recorder = new MediaRecorder(stream, {mimeType: format.type});
+        // they left while the "allow microphone?" prompt was open: don't leave the mic on
+        if (leftRef.current) {
+            stream.getTracks().forEach((t) => t.stop());
+            return;
+        }
+        let recorder: MediaRecorder;
+        try {
+            recorder = new MediaRecorder(stream, {mimeType: format.type});
+        } catch {
+            stream.getTracks().forEach((t) => t.stop());
+            setMessage("This browser can't record audio. Try the latest Chrome, Safari, Edge or Firefox, or upload a file instead.");
+            return;
+        }
         const chunks: Blob[] = [];
         recorder.ondataavailable = (e) => chunks.push(e.data);
         recorder.onstop = () => {
@@ -87,6 +111,7 @@ export default function RecordPage() {
         };
         recorderRef.current = recorder;
         setSeconds(0);
+        startedAtRef.current = Date.now();
         recorder.start();
         setStream(stream);
         setRecording(true);
@@ -111,10 +136,8 @@ export default function RecordPage() {
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
             <div>
+                <PracticeSwitch current="/record" />
                 <PageHeader title="Record a practice run" description="Record yourself speaking, listen back, then get feedback." />
-                <p className="text-sm text-muted-foreground">
-                    Already have a recording? <Link href="/upload" className="font-medium text-foreground underline underline-offset-4">Upload a file</Link> instead.
-                </p>
             </div>
             {/* While it's saving and analyzing, the recorder is swapped for the same waiting screen as Upload */}
             {busy && file ? (

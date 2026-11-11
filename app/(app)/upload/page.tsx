@@ -8,6 +8,7 @@ import {useRouter} from "next/navigation";
 import {FileAudio, LockKeyhole, Upload as UploadIcon} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import Waiting from "@/components/upload/waiting";
+import PracticeSwitch from "@/components/practice-switch";
 import {Button} from "@/components/ui/button";
 export default function UploadPage() {
     const supabase = createClient();
@@ -40,6 +41,7 @@ export default function UploadPage() {
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
             <div>
+                <PracticeSwitch current="/upload" />
                 <h1 className="text-4xl leading-[1.02] font-semibold sm:text-5xl">Upload a practice run</h1>
                 <p className="mt-4 max-w-[40ch] text-lg text-muted-foreground">
                     Choose a recording of yourself speaking. Shorter clips give faster feedback.
@@ -49,9 +51,6 @@ export default function UploadPage() {
                 </p>
                 <p className="mt-2 text-sm text-muted-foreground">
                     Not sure what you&apos;ll get? <Link href="/demo" className="font-medium text-foreground underline underline-offset-4">Try the tutorial</Link>
-                </p>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    No recording yet? <Link href="/record" className="font-medium text-foreground underline underline-offset-4">Record with your microphone</Link> instead.
                 </p>
             </div>
 

@@ -1,20 +1,12 @@
 "use client";
-// Asks before we save optional preferences. The login cookie is strictly necessary (without it nobody
-// can sign in), so it is always on; the sidebar-position cookie only gets written after "Accept".
+// A small notice at the bottom of the screen. We only use the login cookie, which is strictly
+// necessary (without it nobody can sign in), so there is nothing to accept or refuse: we just tell people.
 import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import Logo from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 
-export const CONSENT_KEY = "l2s_cookie_choice";
-
-export function hasCookieConsent(): boolean {
-  try {
-    return localStorage.getItem(CONSENT_KEY) === "all";
-  } catch {
-    return false;
-  }
-}
+// same key as the old full-screen banner, so people who already chose don't see this again
+const CONSENT_KEY = "l2s_cookie_choice";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("l2s-consent", onChange);
@@ -30,35 +22,25 @@ function getChoice() {
 }
 
 export default function CookieConsent() {
-  // server snapshot "x" = hide during SSR so the banner never flashes for people who already chose
+  // server snapshot "x" = hide during SSR so the notice never flashes for people who already closed it
   const choice = useSyncExternalStore(subscribe, getChoice, () => "x");
   if (choice) return null;
 
-  function save(value: "all" | "essential") {
+  function close() {
     try {
-      localStorage.setItem(CONSENT_KEY, value);
+      localStorage.setItem(CONSENT_KEY, "seen");
     } catch {}
     window.dispatchEvent(new Event("l2s-consent"));
   }
 
   return (
-    // full-screen dim layer: the page stays behind it until a choice is made (like BBC, Reddit, Spotify)
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div role="dialog" aria-modal="true" aria-labelledby="cookie-title" className="max-h-full w-full max-w-lg overflow-y-auto rounded-md bg-background px-6 py-8 text-center shadow-xl sm:px-10">
-        <Logo className="justify-center text-3xl" />
-        <h2 id="cookie-title" className="mt-5 text-base font-semibold">Cookies and your privacy</h2>
-        <p className="mt-3 text-sm leading-relaxed">
-          We always use one cookie to keep you signed in. With your OK, we also use a cookie to remember whether your sidebar is open. We don&apos;t use ads or tracking.
+    <div role="region" aria-label="Cookie notice" className="fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="mx-auto flex max-w-2xl flex-col gap-3 rounded-md border bg-background p-4 text-sm shadow-lg sm:flex-row sm:items-center">
+        <p className="flex-1 leading-relaxed">
+          We use one cookie to keep you signed in. No ads or tracking.{" "}
+          <Link href="/privacy" className="font-medium text-brand underline underline-offset-4">Privacy Policy</Link>
         </p>
-        <p className="mt-3 text-sm leading-relaxed">
-          You can read more in our{" "}
-          {/* new tab, so the policy can be read without losing this choice */}
-          <Link href="/privacy" target="_blank" className="font-medium text-brand underline underline-offset-4">Privacy Policy</Link>.
-        </p>
-        <div className="mt-6 flex flex-col gap-3">
-          <Button autoFocus onClick={() => save("all")} className="h-12 w-full rounded-full text-base">Accept all</Button>
-          <Button variant="outline" onClick={() => save("essential")} className="h-12 w-full rounded-full text-base">Essential cookies only</Button>
-        </div>
+        <Button onClick={close} className="h-11 sm:h-9">OK</Button>
       </div>
     </div>
   );
