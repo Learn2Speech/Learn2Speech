@@ -28,22 +28,22 @@ async function RecordingsList() {
     }
     if (data.length === 0) {
         return (
-            <div className="rounded-lg border border-dashed py-14 text-center">
-                <p className="font-heading text-lg font-medium">No recordings yet</p>
-                <p className="mt-1 text-sm text-muted-foreground">Upload a speech and it will show up here.</p>
-                <Link href="/upload" className={buttonVariants({ className: "mt-5" })}>Upload your first recording</Link>
+            <div className="border-y border-foreground py-14">
+                <p className="text-3xl font-semibold">No recordings yet</p>
+                <p className="mt-2 text-lg text-muted-foreground">Upload a practice run and it will show up here. Want to see what you get first? <Link href="/demo" className="font-medium text-foreground underline underline-offset-4">Try the tutorial</Link></p>
+                <Link href="/upload" className={buttonVariants({ size: "lg", className: "mt-6 h-12 px-6" })}>Upload your first recording</Link>
             </div>
         );
     }
     return (
-        <ul className="divide-y border-y">
+        <ul className="divide-y border-y border-foreground">
             {/* map returns one <li> per row; key lets React tell the items apart */}
             {data.map((row) => (
                 <li key={row.id}>
                     {/* the whole row is a link to that recording's full results */}
-                    <Link href={`/history/${row.id}`} className="block py-5 transition-colors hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3">
+                    <Link href={`/history/${row.id}`} className="block py-6 transition-colors duration-150 hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3">
                         <div className="flex items-start justify-between gap-3">
-                            <p className="min-w-0 truncate font-medium" title={row.original_name}>{row.original_name}</p>
+                            <p className="min-w-0 truncate text-xl font-semibold sm:text-2xl" title={row.original_name}>{row.original_name}</p>
                             <StatusBadge status={row.status} />
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -61,13 +61,13 @@ async function RecordingsList() {
                         )}
                         {/* metrics and feedback can be null, so check they exist before reading them */}
                         {row.status === "done" && row.metrics && row.feedback && (
-                            <div className="mt-3 space-y-2 text-sm">
-                                <p className="flex flex-wrap gap-x-5 gap-y-1 tabular-nums">
-                                    <span><span className="font-medium">{row.metrics.wordsPerMinute}</span> <span className="text-muted-foreground">words/min</span></span>
-                                    <span><span className="font-medium">{row.metrics.fillerCount}</span> <span className="text-muted-foreground">fillers</span></span>
-                                    <span><span className="font-medium">{row.metrics.pauses.length}</span> <span className="text-muted-foreground">long pauses</span></span>
+                            <div className="mt-4 space-y-3">
+                                <p className="flex flex-wrap items-baseline gap-x-8 gap-y-1 tabular-nums">
+                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.wordsPerMinute}</span> <span className="text-muted-foreground">words/min</span></span>
+                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.fillerCount}</span> <span className="text-muted-foreground">fillers</span></span>
+                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.pauses.length}</span> <span className="text-muted-foreground">long pauses</span></span>
                                 </p>
-                                <p className="line-clamp-2 text-muted-foreground">{row.feedback.summary}</p>
+                                <p className="line-clamp-2 max-w-[75ch] text-muted-foreground">{row.feedback.summary}</p>
                             </div>
                         )}
                     </Link>
@@ -83,7 +83,7 @@ function StatusBadge({ status }: { status: Recording["status"] }) {
     const colors: Record<Recording["status"], string> = {
         uploaded: "",
         analyzing: "border-brand/30 bg-accent text-accent-foreground",
-        done: "border-green-600/30 bg-green-600/10 text-green-700",
+        done: "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400",
         failed: "border-destructive/30 bg-destructive/10 text-destructive",
     };
     return <Badge variant="outline" className={`shrink-0 ${colors[status]}`}>{labels[status]}</Badge>;
@@ -93,14 +93,14 @@ function StatusBadge({ status }: { status: Recording["status"] }) {
 function ListSkeleton() {
     return (
         <div className="space-y-3">
-            {[0, 1, 2].map((i) => <Skeleton key={i} className="h-[68px] w-full rounded-md" />)}
+            {[0, 1, 2].map((i) => <Skeleton key={i} className="h-28 w-full rounded-md" />)}
         </div>
     );
 }
 
 export default function HistoryPage() {
     return (
-        <main className="mx-auto w-full max-w-2xl px-6 py-10">
+        <main className="mx-auto w-full max-w-7xl px-6 py-12">
             <PageHeader title="Your recordings" description="Every speech you've uploaded, newest first." />
             <Suspense fallback={<ListSkeleton />}>
                 <RecordingsList />

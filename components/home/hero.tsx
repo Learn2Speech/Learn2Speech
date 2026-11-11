@@ -1,39 +1,47 @@
-// Top of the home page: a full-width teal block. The headline and the one orange button sit above
-// a live demo of the product (the example speech playing back on its timeline), so the first
-// screen shows what the app does instead of describing it.
+// Top of the home page, laid out like a type specimen: one giant filler word (the eye-catcher),
+// a short headline saying what was measured, one button, and a pace slider over the example speech.
+// Colors follow 50/30/20: the page is the neutral 50, the giant word is teal (30), and orange (20)
+// is only on things you can press or drag.
 import Link from "next/link";
-import LiveDemo from "@/components/home/live-demo";
+import PaceSpecimen from "@/components/home/pace-specimen";
 import { sampleMetrics, sampleTranscript } from "@/components/home/sample-result";
-import MetricsCards from "@/components/results/metrics-cards";
 import { buttonVariants } from "@/components/ui/button";
 
 export default function Hero() {
+  const seconds = Math.round(sampleTranscript.durationMs / 1000);
   return (
-    <section>
-      <div className="on-teal bg-teal">
-        <div className="mx-auto max-w-6xl px-6 py-10 sm:py-10">
-          <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-end lg:gap-16">
-            <h1 className="text-5xl leading-[1.02] sm:text-6xl lg:text-7xl">Hear your speech the way the room does.</h1>
-            <div>
-              <p className="text-lg text-muted-foreground">
-                Upload a practice run. You get your pace, every filler word and every long pause, placed on a timeline.
-              </p>
-              {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
-              <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg", className: "mt-6" })}>
-                Upload a practice run
-              </Link>
-            </div>
-          </div>
-
-          <div className="mt-8 sm:mt-8">
-            <p className="mb-5 text-sm text-muted-foreground">Example: an 18-second practice run about sleep, played back</p>
-            <LiveDemo metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} words={sampleTranscript.words} />
+    <section className="mx-auto w-full max-w-7xl px-6 pt-10 pb-16 sm:pt-14">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-center lg:gap-12">
+        {/* decoration: the headline next to it says the same thing in words */}
+        <p
+          aria-hidden="true"
+          className="um-in -ml-[0.04em] text-[55vw] leading-[0.62] font-black tracking-[-0.04em] text-(--brand) select-none lg:text-[clamp(11rem,36vw,31rem)]"
+        >
+          um
+        </p>
+        <div className="rise-in">
+          <h1 className="text-4xl leading-[1.02] font-semibold sm:text-5xl">
+            {sampleMetrics.fillerCount} filler words in {seconds} seconds.
+          </h1>
+          <p className="mt-4 max-w-[38ch] text-lg text-muted-foreground">
+            That&apos;s an example. Upload a practice run and Learn2Speech finds every um, uh and long pause in yours,
+            and measures your pace.
+          </p>
+          {/* prefetch={false}: these pages need a login, see the note in components/site-nav.tsx */}
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/upload" prefetch={false} className={buttonVariants({ size: "lg", className: "h-12 px-6" })}>
+              Upload a practice run
+            </Link>
+            {/* the tutorial needs no account: it walks through a sample result */}
+            <Link href="/demo" className={buttonVariants({ size: "lg", variant: "outline", className: "h-12 border-foreground/30! px-6" })}>
+              Try the tutorial
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto mt-14 max-w-6xl px-6">
-        <MetricsCards metrics={sampleMetrics} durationMs={sampleTranscript.durationMs} />
+      <div className="mt-10 sm:mt-14">
+        <PaceSpecimen metrics={sampleMetrics} words={sampleTranscript.words} />
       </div>
     </section>
   );

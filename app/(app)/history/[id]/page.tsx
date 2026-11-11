@@ -26,9 +26,9 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
   const recording = data as Recording;
 
   const header = (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+    <div className="mb-12 flex flex-wrap items-end justify-between gap-4 border-b border-foreground pb-6">
       <div className="min-w-0 space-y-1">
-        <h1 className="text-3xl font-semibold tracking-tight break-all">{recording.original_name}</h1>
+        <h1 className="text-3xl leading-[1.05] font-semibold break-all sm:text-4xl">{recording.original_name}</h1>
         <p className="text-muted-foreground">
           {new Date(recording.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
           {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
@@ -93,7 +93,7 @@ function ResultsSkeleton() {
 
 export default function RecordingPage({ params }: { params: Promise<{ id: string }> }) {
   return (
-    <main className="mx-auto w-full max-w-4xl px-6 py-10">
+    <main className="mx-auto w-full max-w-7xl px-6 py-10">
       <Link href="/history" className="mb-6 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" /> All recordings
       </Link>

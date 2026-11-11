@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Schibsted_Grotesk } from "next/font/google";
+import { Archivo } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
 import "./globals.css";
 
-// one typeface for everything; the weight and size carry the hierarchy
-const schibsted = Schibsted_Grotesk({ variable: "--font-schibsted", subsets: ["latin"] });
+// one typeface for everything. Archivo is a variable font: besides weight it has a width axis
+// ("wdth"), which the home page uses to squeeze and stretch the example speech with its pace
+const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
   title: "Learn2Speech",
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // so React would otherwise warn that the server's <html> and the browser's don't match
     <html
       lang="en"
-      className={`${schibsted.variable} h-full antialiased`}
+      className={`${archivo.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

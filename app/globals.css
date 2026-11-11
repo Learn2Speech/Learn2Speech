@@ -14,9 +14,9 @@
   --color-teal-mark: var(--teal-mark);
   --color-highlight: var(--highlight);
   --color-pause: var(--pause);
-  --font-sans: var(--font-schibsted);
+  --font-sans: var(--font-archivo);
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
-  --font-heading: var(--font-schibsted);
+  --font-heading: var(--font-archivo);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -202,4 +202,49 @@
 @media (prefers-reduced-motion: no-preference) {
   .scan-reveal { animation: scan-reveal 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms backwards; }
   .scan-line { animation: scan-line 1500ms cubic-bezier(0.23, 1, 0.32, 1) 200ms both; }
+}
+
+/* text you select is marked in the brand orange instead of the browser's blue */
+::selection { background: var(--primary); color: var(--primary-foreground); }
+
+/* Home page: the giant "um" grows from hairline to heavy once, like someone leaning on the word.
+   font-weight is animatable on a variable font. Skipped for reduced motion. */
+@keyframes um-in {
+  from { font-weight: 100; opacity: 0.4; }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(0.75rem); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .um-in { animation: um-in 1100ms cubic-bezier(0.23, 1, 0.32, 1) 150ms backwards; }
+  /* the headline, text and button follow the word in */
+  .rise-in { animation: rise-in 600ms cubic-bezier(0.23, 1, 0.32, 1) 450ms backwards; }
+  /* scroll reveal (components/reveal.tsx): the text slides up, then the example after it */
+  .reveal > * { opacity: 0; transform: translateY(1.5rem); transition: opacity 600ms cubic-bezier(0.23, 1, 0.32, 1), transform 600ms cubic-bezier(0.23, 1, 0.32, 1); }
+  .reveal > :nth-child(2) { transition-delay: 150ms; }
+  .reveal.is-in > * { opacity: 1; transform: none; }
+}
+
+/* Home page: the pace slider. A hairline track with a round orange handle (orange = things you can press or drag); the input itself is
+   44px tall so it is easy to grab on a phone. Chrome/Safari and Firefox need separate rules. */
+.pace-range { appearance: none; height: 2.75rem; background: transparent; cursor: ew-resize; touch-action: pan-y; }
+.pace-range::-webkit-slider-runnable-track { height: 2px; background: var(--foreground); }
+.pace-range::-moz-range-track { height: 2px; background: var(--foreground); }
+.pace-range::-webkit-slider-thumb { appearance: none; width: 1.75rem; height: 1.75rem; margin-top: calc(-0.875rem + 1px); border: 0; border-radius: 50%; background: var(--primary); transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1); }
+.pace-range::-moz-range-thumb { width: 1.75rem; height: 1.75rem; border: 0; border-radius: 50%; background: var(--primary); transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1); }
+.pace-range:active::-webkit-slider-thumb { transform: scale(1.15); }
+.pace-range:active::-moz-range-thumb { transform: scale(1.15); }
+.pace-range:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
+
+/* Tutorial (components/tour.tsx): the part of the results being explained gets an orange outline */
+[data-tour-active] { outline: 2px solid var(--primary); outline-offset: 0.75rem; border-radius: 0.25rem; }
+
+/* Upload page: the bars move while your recording is being analyzed, so the wait feels alive.
+   transform only (cheap to animate). With reduced motion the bars simply stand still. */
+@keyframes wave {
+  from { transform: scaleY(0.2); }
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wave-bar { animation: wave 900ms cubic-bezier(0.77, 0, 0.175, 1) infinite alternate; }
 }
