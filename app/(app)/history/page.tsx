@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import type {Recording} from "@/lib/recording-types"
+import ProgressChart from "@/components/history/progress-chart"
 
 // Only the columns the list shows. We leave out the full transcript on purpose:
 // it holds every word with timestamps, which is too heavy to load for every row.
@@ -35,7 +36,13 @@ async function RecordingsList() {
             </div>
         );
     }
+    // finished recordings only, oldest first, so the chart reads left → right over time
+    // ([...data] copies first, because reverse() would also flip the list below)
+    const points = [...data].reverse().flatMap((row) =>
+        row.status === "done" && row.metrics ? [{createdAt: row.created_at, metrics: row.metrics}] : []);
     return (
+        <>
+        <ProgressChart points={points} />
         <ul className="divide-y border-y">
             {/* map returns one <li> per row; key lets React tell the items apart */}
             {data.map((row) => (
@@ -74,6 +81,7 @@ async function RecordingsList() {
                 </li>
             ))}
         </ul>
+        </>
     );
 }
 

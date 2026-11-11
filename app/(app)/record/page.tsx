@@ -13,6 +13,7 @@ import {Button} from "@/components/ui/button";
 import {Card, CardContent} from "@/components/ui/card";
 import {createClient} from "@/lib/supabase";
 import uploadRecording from "@/lib/upload-recording";
+import VolumeBars from "@/components/record/volume-bars";
 
 // stop automatically so a forgotten recording can't grow past the 50 MB upload limit
 const MAX_SECONDS = 10 * 60;
@@ -40,6 +41,8 @@ export default function RecordPage() {
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false);
     const recorderRef = useRef<MediaRecorder | null>(null);
+    // the live microphone, kept while recording so the volume bars can listen to it
+    const [stream, setStream] = useState<MediaStream | null>(null);
 
     // turn the microphone off if the user leaves the page mid-recording
     useEffect(() => () => recorderRef.current?.stream.getTracks().forEach((t) => t.stop()), []);
@@ -75,6 +78,7 @@ export default function RecordPage() {
         recorder.ondataavailable = (e) => chunks.push(e.data);
         recorder.onstop = () => {
             stream.getTracks().forEach((t) => t.stop());
+            setStream(null);
             // plain type (no ";codecs=..." suffix) so it matches validateAudio's allowed list
             const recorded = new File(chunks, `recording-${new Date().toISOString().slice(0, 16).replace("T", " ")}.${format.extension}`, {type: format.type});
             setFile(recorded);
@@ -84,6 +88,7 @@ export default function RecordPage() {
         recorderRef.current = recorder;
         setSeconds(0);
         recorder.start();
+        setStream(stream);
         setRecording(true);
     }
 
@@ -118,6 +123,7 @@ export default function RecordPage() {
                             <Square /> Stop recording
                         </Button>
                     )}
+                    {recording && stream && <VolumeBars stream={stream} />}
                     <p className="text-center text-sm text-muted-foreground">The microphone is only on while you record. Your audio is sent to AssemblyAI and Anthropic to make your feedback, as described in our <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>. Only record your own voice or people who agreed.</p>
                     {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                     {file && !recording && (
