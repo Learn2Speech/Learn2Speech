@@ -20,14 +20,6 @@ const SECTIONS: { heading: string; body?: string; points?: string[] }[] = [
     body: "In our 3-minute submission video, we explain the problem Learn2Speech solves, who it's for and how it's built, then demo it live. We sign up, record a short test speech on a phone, upload it, and walk through the results: the metrics, the coaching feedback and the transcript. We finish on the History page, which lists every past recording and only ever shows your own.",
   },
   {
-    heading: "The problem, by the numbers",
-    points: [
-      "77% of people have some fear of public speaking, making it the number one phobia in the world (Crown Counseling).",
-      "Only 8% of them ever get professional help, because of cost and access: private speech coaching costs hundreds of dollars.",
-      "Most speaking anxiety comes from not being prepared, and that's the part anyone can fix with practice.",
-    ],
-  },
-  {
     heading: "Who it's for",
     points: [
       "High schoolers and adults heading into jobs and programs. Many academies and companies in our district rely on strong public speaking.",
@@ -61,41 +53,60 @@ const SECTIONS: { heading: string; body?: string; points?: string[] }[] = [
   },
 ];
 
+// The page follows the rest of the site: a 5/7 split, one giant teal number from the content (the specimen),
+// and sections that open with an ink rule, heading on the left and text on the right.
 export default function AboutPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <PageHeader title="About Learn2Speech" description="A speech coach that listens to your practice runs and tells you what to fix." />
+    <main className="mx-auto w-full max-w-7xl px-6 py-12">
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+        <div>
+          <PageHeader title="About Learn2Speech" description="A speech coach that listens to your practice runs and tells you what to fix." />
+          <a
+            href={VIDEO_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-lg border border-foreground p-4 transition-colors hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          >
+            {/* orange: this is the thing to press on the page */}
+            <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform duration-150 group-active:scale-95">
+              <Play aria-hidden="true" className="size-6 translate-x-0.5 fill-current" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block font-semibold">Watch our Congressional App Challenge video</span>
+              <span className="block text-sm text-muted-foreground">Learn2Speech, Congressional App Challenge 2026 (VA-02), on YouTube</span>
+            </span>
+            <ExternalLink aria-hidden="true" className="size-5 shrink-0 text-muted-foreground" />
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        </div>
 
-      <a
-        href={VIDEO_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group mb-10 flex items-center gap-4 rounded-lg border border-foreground p-4 transition-colors hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
-      >
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-full bg-brand text-white">
-          <Play aria-hidden="true" className="size-6 translate-x-0.5 fill-current" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block font-semibold">Watch our Congressional App Challenge video</span>
-          <span className="block text-sm text-muted-foreground">Learn2Speech, Congressional App Challenge 2026 (VA-02), on YouTube</span>
-        </span>
-        <ExternalLink aria-hidden="true" className="size-5 shrink-0 text-muted-foreground" />
-        <span className="sr-only">(opens in a new tab)</span>
-      </a>
+        {/* the specimen: the problem, set as one giant number */}
+        <section aria-labelledby="problem" className="border-t border-foreground pt-6">
+          <h2 id="problem" className="text-sm font-medium text-muted-foreground">The problem, by the numbers</h2>
+          <p aria-hidden="true" className="mt-4 text-[clamp(6rem,18vw,12rem)] leading-[0.8] font-black tracking-[-0.04em] text-(--brand) tabular-nums">77%</p>
+          <ul className="mt-6 max-w-[60ch] space-y-3 text-lg leading-snug">
+            <li>77% of people have some fear of public speaking, making it the number one phobia in the world (Crown Counseling).</li>
+            <li className="text-muted-foreground">Only 8% of them ever get professional help, because of cost and access: private speech coaching costs hundreds of dollars.</li>
+            <li className="text-muted-foreground">Most speaking anxiety comes from not being prepared, and that&apos;s the part anyone can fix with practice.</li>
+          </ul>
+        </section>
+      </div>
 
-      <div className="space-y-6">
+      <div className="mt-20 space-y-14">
         {SECTIONS.map((section) => (
-          <section key={section.heading} className="space-y-2">
-            <h2 className="text-lg font-semibold">{section.heading}</h2>
-            {section.body && <p className="leading-relaxed text-muted-foreground">{section.body}</p>}
-            {section.points && (
-              <ul className="list-disc space-y-1.5 pl-5 leading-relaxed text-muted-foreground marker:text-brand">
-                {section.points.map((point) => <li key={point}>{point}</li>)}
-              </ul>
-            )}
+          <section key={section.heading} className="grid gap-3 border-t border-foreground pt-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+            <h2 className="text-2xl leading-tight font-semibold">{section.heading}</h2>
+            <div className="max-w-[65ch] text-lg leading-relaxed text-muted-foreground">
+              {section.body && <p>{section.body}</p>}
+              {section.points && (
+                <ul className="list-disc space-y-2 pl-5 marker:text-(--brand)">
+                  {section.points.map((point) => <li key={point}>{point}</li>)}
+                </ul>
+              )}
+            </div>
           </section>
         ))}
-        <p className="text-sm text-muted-foreground">
+        <p className="border-t pt-6 text-sm text-muted-foreground">
           Want to try it without an account? Open the <Link href="/demo" className="font-medium text-foreground underline underline-offset-4">Tutorial</Link>.
           {" "}More detail in our <Link href="/privacy" className="font-medium text-foreground underline underline-offset-4">Privacy Policy</Link>.
           {" "}Questions: <a href="mailto:learn2speechteam@gmail.com" className="font-medium text-foreground underline underline-offset-4">learn2speechteam@gmail.com</a>

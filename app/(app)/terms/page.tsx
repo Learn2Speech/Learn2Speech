@@ -49,7 +49,7 @@ const SECTIONS = [
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
+    <main className="mx-auto w-full max-w-[70ch] px-6 py-10">
       <PageHeader title="Terms and Conditions" description="Last updated November 11, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (

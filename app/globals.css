@@ -159,7 +159,7 @@
   --foreground: var(--teal-foreground);
   --card: transparent;
   --card-foreground: var(--teal-foreground);
-  --muted-foreground: color-mix(in srgb, var(--teal-foreground) 70%, transparent);
+  --muted-foreground: color-mix(in srgb, var(--teal-foreground) 80%, transparent); /* 80%: keeps small text above 4.5:1 on teal */
   --muted: color-mix(in srgb, var(--teal-foreground) 12%, transparent);
   --border: color-mix(in srgb, var(--teal-foreground) 22%, transparent);
   --pause: color-mix(in srgb, var(--teal-foreground) 40%, transparent);
