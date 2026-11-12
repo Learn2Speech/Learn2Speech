@@ -6,8 +6,11 @@ import {useEffect, useRef} from "react";
 
 const BARS = 16;
 
-export default function VolumeBars({stream}: {stream: MediaStream}) {
+// onHeard fires once, after the voice bands have been clearly loud for ~half a second (the mic check uses it)
+export default function VolumeBars({stream, onHeard}: {stream: MediaStream; onHeard?: () => void}) {
     const barsRef = useRef<(HTMLSpanElement | null)[]>([]);
+    const onHeardRef = useRef(onHeard);
+    useEffect(() => { onHeardRef.current = onHeard; });
 
     useEffect(() => {
         const audio = new AudioContext();
@@ -17,6 +20,7 @@ export default function VolumeBars({stream}: {stream: MediaStream}) {
         audio.createMediaStreamSource(stream).connect(analyser);
         const levels = new Uint8Array(analyser.frequencyBinCount);
         let frame = 0;
+        let loudFrames = 0;
         // ~60 times a second: read the levels and resize the bars directly
         // (no React state, so the page doesn't re-render 60 times a second)
         const draw = () => {
@@ -24,6 +28,8 @@ export default function VolumeBars({stream}: {stream: MediaStream}) {
             barsRef.current.forEach((bar, i) => {
                 if (bar) bar.style.transform = `scaleY(${Math.max(0.08, levels[i + 1] / 255)})`;
             });
+            // 30 loud frames (~0.5 s, not necessarily in a row) so a single click or bump doesn't count as a voice
+            if (onHeardRef.current && loudFrames < 30 && Math.max(...levels.subarray(1, BARS + 1)) > 140 && ++loudFrames === 30) onHeardRef.current();
             frame = requestAnimationFrame(draw);
         };
         draw();
