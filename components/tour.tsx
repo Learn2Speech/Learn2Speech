@@ -53,7 +53,7 @@ export default function Tour() {
           <p className="text-muted-foreground">{current.text}</p>
         </div>
         <div className="flex shrink-0 gap-2">
-          <Button variant="outline" size="lg" disabled={step === 0} onClick={() => setStep(step - 1)}>
+          <Button variant="outline" size="lg" disabled={step === 0} data-sound="tick" onClick={() => setStep(step - 1)}>
             Back
           </Button>
           {last ? (
@@ -62,7 +62,7 @@ export default function Tour() {
               Upload your own
             </Link>
           ) : (
-            <Button size="lg" onClick={() => setStep(step + 1)}>
+            <Button size="lg" data-sound="tick" onClick={() => setStep(step + 1)}>
               Next
             </Button>
           )}

@@ -1,6 +1,6 @@
 ---
 name: home-screen
-description: /home-screen — how to design and change the Learn2Speech home page (and other big marketing-style screens) so they stay great: research-backed hero rules, our committed look, and a log of every big design change. Use before any home page or hero work, any big visual change, or when asked what makes a good home screen. After a big design change ships, add it to the Design log below.
+description: /home-screen — how to design and change the Learn2Speech home page (and other big marketing-style screens) so they stay great: research-backed hero rules, button feel and interface sound rules, our committed look, and a log of every big design change. Use before any home page or hero work, any big visual change, or when asked what makes a good home screen. After a big design change ships, add it to the Design log below.
 ---
 
 # /home-screen
@@ -34,6 +34,35 @@ StudioMeyer "Kinetic typography"; Framer text-animation guide; Awwwards variable
 Omniconvert "Hero section examples 2026"; saasui.design ElevenLabs pattern; Contra voice-AI landing concepts.
 These are trend/vendor sources, not controlled studies; treat numbers in them as directional.
 
+## Button feel and interface sound (research, Nov 2026)
+
+Buttons:
+- Feedback within 100 ms of the press; animate the control itself (press-in, label change such as
+  "Working..."), not a separate toast. Scale the feedback to how big the action is.
+- Press = scale to about 0.97 on `:active` over ~150 ms (our `Button` already does this). Disabled
+  controls don't animate. A button that seems dead invites double presses.
+
+Sound:
+- Sounds should be felt more than heard: 30–150 ms, very quiet, only on meaningful actions (presses,
+  slider moves, steps, start/stop). Never on hover, typing, scrolling or keyboard focus moves.
+- Every sound sits on a visual change; nothing may depend on hearing it (accessibility).
+- Always give a mute switch, remembered on the device. WCAG 1.4.2 only requires control for audio over
+  3 s, but an off switch is the expected courtesy.
+- Browsers only allow sound after a click/tap/key press, so nothing can play on page load (the "um" rings
+  are silent on purpose).
+- Synthesize short tones with the Web Audio API instead of shipping sound files: no downloads, no package,
+  and many quick sounds can overlap without cutting each other off. Check on headphones too: what is fine on
+  laptop speakers can be harsh in ears.
+- Throttle anything that can fire fast (sliders): we tick at most every 50 ms and every 4 steps.
+
+Our decision (product owner): sounds ON by default, kept subconscious and never overwhelming, with the
+speaker button in the top bar to mute. Code: `components/ui-sounds.tsx` (one site-wide listener; a button
+can pick `data-sound="start" | "stop" | "tick"`, everything else gets "tap").
+
+Sources: raphaelsalaja userinterface-wiki "Sounds on the web"; Readymag "Sound on the web"; freeCodeCamp
+"Web audio for the user interface"; Josh Comeau "use-sound"; W3C Understanding SC 1.4.2 Audio Control;
+Deque axe no-autoplay-audio; htmlburger micro-interactions guide.
+
 ## Our committed look (do not drift)
 
 - **Type specimen.** One giant teal word or number per screen (home: "um"), one typeface (Archivo).
@@ -57,6 +86,11 @@ These are trend/vendor sources, not controlled studies; treat numbers in them as
 ## Design log
 
 Newest first. One entry per big design change: date, what changed, why, where.
+
+- **2026-11-12: Interface sounds.** Quiet synthesized "tap" on every button press, rising/falling two-note
+  tones on Start/Stop recording, a soft "tick" on tutorial Back/Next and on the pace slider (pitch follows
+  the pace). On by default, mute with the speaker button in the top bar. Why: user wanted subtle sound to
+  make interactions feel smooth. `components/ui-sounds.tsx`, `app/layout.tsx`, `components/site-nav.tsx`.
 
 - **2026-11-12: Sound rings behind "um".** Replaced the soft teal glow with three hairline teal rings that
   pulse out from the word three times as it lands, then stop. Why: user wanted a different style/animation;

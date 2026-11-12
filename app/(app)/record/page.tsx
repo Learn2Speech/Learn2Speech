@@ -146,11 +146,11 @@ export default function RecordPage() {
                     {/* the clock is the big teal number on this page */}
                     <p className="text-[clamp(6rem,18vw,12rem)] leading-[0.8] font-black tracking-[-0.04em] text-(--brand) tabular-nums" aria-live="off">{clock}</p>
                     {!recording ? (
-                        <Button onClick={start} disabled={busy} className="h-12 px-6 text-base">
+                        <Button onClick={start} disabled={busy} data-sound="start" className="h-12 px-6 text-base">
                             <Mic /> {file ? "Record again" : "Start recording"}
                         </Button>
                     ) : (
-                        <Button variant="destructive" onClick={() => recorderRef.current?.stop()} className="h-12 px-6 text-base">
+                        <Button variant="destructive" onClick={() => recorderRef.current?.stop()} data-sound="stop" className="h-12 px-6 text-base">
                             <Square /> Stop recording
                         </Button>
                     )}

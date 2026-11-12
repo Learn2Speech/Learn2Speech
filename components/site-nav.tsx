@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import AuthButton from "@/app/auth-button";
 import Logo, { LogoMark } from "@/components/brand/logo";
 import ThemeToggle from "@/components/theme-toggle";
+import { SoundToggle } from "@/components/ui-sounds";
 import { cn } from "@/lib/utils";
 
 // needsLogin: the page guard sends logged-out visitors to /login, so we don't let Next.js
@@ -61,6 +62,7 @@ export default function SiteNav() {
           <NavLinksWithActive />
         </Suspense>
         <div className="flex items-center gap-1">
+          <SoundToggle />
           <ThemeToggle />
           <AuthButton />
         </div>

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
+import UiSounds from "@/components/ui-sounds";
 import "./globals.css";
 
 // one typeface for everything. Archivo is a variable font: besides weight it has a width axis
@@ -37,6 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <CookieConsent />
+          <UiSounds />
         </ThemeProvider>
       </body>
     </html>
