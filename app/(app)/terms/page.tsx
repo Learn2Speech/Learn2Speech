@@ -1,6 +1,9 @@
 // Terms and conditions. Plain text only, so it stays a Server Component (no "use client").
 // It lives in (app) so it gets the sidebar, but nothing here checks login: anyone can read it.
+import type { Metadata } from "next";
 import PageHeader from "@/components/page-header";
+
+export const metadata: Metadata = { title: "Terms and Conditions" };
 
 // Each section is a heading + paragraph. Add a section by adding one entry here.
 // Keep these honest: they should describe what the app actually does.

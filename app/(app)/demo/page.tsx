@@ -7,7 +7,7 @@ import { sampleFeedback, sampleMetrics, sampleTranscript } from "@/components/ho
 import ResultsView from "@/components/results/results-view";
 import Tour from "@/components/tour";
 
-export const metadata: Metadata = { title: "Tutorial | Learn2Speech" };
+export const metadata: Metadata = { title: "Tutorial" };
 
 export default function DemoPage() {
   return (

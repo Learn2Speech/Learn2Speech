@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ExternalLink, Play } from "lucide-react";
 import PageHeader from "@/components/page-header";
 
-export const metadata: Metadata = { title: "About | Learn2Speech" };
+export const metadata: Metadata = { title: "About" };
 
 const VIDEO_URL = "https://www.youtube.com/watch?v=4IKF0R3xr6Y";
 

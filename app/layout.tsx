@@ -10,7 +10,8 @@ import "./globals.css";
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
-  title: "Learn2Speech",
+  // pages set a short title ("History") and the template adds the name: "History | Learn2Speech"
+  title: { default: "Learn2Speech", template: "%s | Learn2Speech" },
   description: "Upload a speech and get coaching on your pace, filler words and pauses.",
 };
 

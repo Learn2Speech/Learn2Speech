@@ -2,8 +2,11 @@
 // Like /terms it lives in (app) for the sidebar layout, and anyone can read it without logging in.
 // Keep it honest: every line should match what the app really does. If the code changes
 // (new data, new service, new way to delete), update this page and the date below.
+import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/page-header";
+
+export const metadata: Metadata = { title: "Privacy Policy" };
 
 type Section = { heading: string; body?: string; points?: string[] };
 
