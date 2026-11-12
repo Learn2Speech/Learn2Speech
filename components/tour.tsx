@@ -40,6 +40,12 @@ export default function Tour() {
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-8">
         {/* aria-live: screen readers read the new step when it changes */}
         <div aria-live="polite" className="min-w-0 flex-1">
+          {/* one segment per step, joined into a single bar so the steps read as one path */}
+          <div aria-hidden="true" className="mb-2 flex max-w-48 gap-1">
+            {STEPS.map((s, i) => (
+              <span key={s.target} className={`h-1 flex-1 rounded-full transition-colors ${i <= step ? "bg-primary" : "bg-foreground/20"}`} />
+            ))}
+          </div>
           <p className="text-sm text-muted-foreground tabular-nums">
             Step {step + 1} of {STEPS.length}
           </p>

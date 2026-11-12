@@ -4,7 +4,6 @@
 // browser can (Chrome, Edge, Safari), otherwise as WebM (Firefox). Both are allowed by
 // validateAudio and the storage bucket (WebM needs migration 0006).
 import {useEffect, useRef, useState} from "react";
-import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {Mic, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
@@ -156,7 +155,6 @@ export default function RecordPage() {
                         </Button>
                     )}
                     {recording && stream && <VolumeBars stream={stream} />}
-                    <p className="max-w-[60ch] text-sm text-muted-foreground">The microphone is only on while you record. Your audio is sent to AssemblyAI and Anthropic to make your feedback, as described in our <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>. Only record your own voice or people who agreed.</p>
                     {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                     {file && !recording && (
                         <Button onClick={analyze} disabled={busy} className="h-12 w-full text-base">

@@ -10,12 +10,13 @@ import { buttonVariants } from "@/components/ui/button";
 export default function Hero() {
   const seconds = Math.round(sampleTranscript.durationMs / 1000);
   return (
-    <section className="mx-auto w-full max-w-7xl px-6 pt-10 pb-16 sm:pt-14">
+    // overflow-x-clip: the glow behind "um" spills past the edge on phones; don't let it add a sideways scroll
+    <section className="mx-auto w-full max-w-7xl overflow-x-clip px-6 pt-10 pb-16 sm:pt-14">
       <div className="grid gap-8 lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)] lg:items-center lg:gap-12">
         {/* decoration: the headline next to it says the same thing in words */}
         <p
           aria-hidden="true"
-          className="um-in -ml-[0.04em] text-[55vw] leading-[0.62] font-black tracking-[-0.04em] text-(--brand) select-none lg:text-[clamp(11rem,36vw,31rem)]"
+          className="um-in um-glow -ml-[0.04em] text-[55vw] leading-[0.62] font-black tracking-[-0.04em] text-(--brand) select-none lg:text-[clamp(11rem,36vw,31rem)]"
         >
           um
         </p>

@@ -215,6 +215,14 @@
 @keyframes rise-in {
   from { opacity: 0; transform: translateY(0.75rem); }
 }
+/* ...and sits on a soft teal glow, so the flat page gets a bit of depth ("tactile" style). Teal only:
+   orange stays for things you can press. A gradient, not a blur filter, so it costs nothing to draw. */
+.um-glow { position: relative; isolation: isolate; }
+.um-glow::before {
+  content: ""; position: absolute; inset: -40% -20%; z-index: -1; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--teal-mark) 30%, transparent), transparent);
+}
+.dark .um-glow::before { background: radial-gradient(closest-side, color-mix(in oklab, var(--teal-mark) 42%, transparent), transparent); }
 @media (prefers-reduced-motion: no-preference) {
   .um-in { animation: um-in 1100ms cubic-bezier(0.23, 1, 0.32, 1) 150ms backwards; }
   /* the headline, text and button follow the word in */
@@ -238,6 +246,9 @@
 
 /* Tutorial (components/tour.tsx): the part of the results being explained gets an orange outline */
 [data-tour-active] { outline: 2px solid var(--primary); outline-offset: 0.75rem; border-radius: 0.25rem; }
+/* ...and the other parts fade back so the outlined one stands out (figure-ground) */
+[data-tour] { transition: opacity 200ms ease-out; }
+body:has([data-tour-active]) [data-tour]:not([data-tour-active]) { opacity: 0.3; }
 
 /* Upload page: the bars move while your recording is being analyzed, so the wait feels alive.
    transform only (cheap to animate). With reduced motion the bars simply stand still. */
