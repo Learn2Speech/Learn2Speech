@@ -17,7 +17,7 @@ const SECTIONS: { heading: string; body?: string; points?: string[] }[] = [
   },
   {
     heading: "What the video covers",
-    body: "In our 3-minute submission video, we explain the problem Learn2Speech solves, who it's for and how it's built, then demo it live. We sign up, record a short test speech on a phone, upload it, and walk through the results: the metrics, the coaching feedback and the transcript. We finish on the History page, which lists every past recording and only ever shows your own. The app has been redesigned since we filmed it, so it looks a little different now, but it works the same way.",
+    body: "In our 3-minute submission video, we explain the problem Learn2Speech solves, who it's for and how it's built, then demo it live. We sign up, record a short test speech on a phone, upload it, and walk through the results: the metrics, the coaching feedback and the transcript. We finish on the History page, which lists every past recording and only ever shows your own.",
   },
   {
     heading: "The problem, by the numbers",
