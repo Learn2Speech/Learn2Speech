@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 const LINKS = [
+  { title: "About", href: "/about" },
   { title: "Terms and Conditions", href: "/terms" },
   { title: "Privacy Policy", href: "/privacy" },
 ];

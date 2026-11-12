@@ -1,5 +1,6 @@
 // /history/<id>: the full results for one recording (opened by clicking a row on /history).
 // [id] in the folder name means "any value here"; Next.js passes it to us as params.id.
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -13,6 +14,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createServerSupabase } from "@/lib/supabase-server";
 import type { Recording } from "@/lib/recording-types";
+
+// Tab title = the recording's file name, or "Page not found" when the row doesn't exist or isn't yours
+// (Row Level Security hides other people's). One small extra query; the page below already loads at request time.
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createServerSupabase();
+  const { data } = await supabase.from("recordings").select("original_name").eq("id", id).maybeSingle();
+  return { title: data?.original_name ?? "Page not found" };
+}
 
 async function RecordingResults({ params }: { params: Promise<{ id: string }> }) {
   // read the id in here, inside <Suspense>, because it's only known when someone visits

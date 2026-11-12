@@ -2,8 +2,11 @@
 // Like /terms it lives in (app) for the sidebar layout, and anyone can read it without logging in.
 // Keep it honest: every line should match what the app really does. If the code changes
 // (new data, new service, new way to delete), update this page and the date below.
+import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/page-header";
+
+export const metadata: Metadata = { title: "Privacy Policy" };
 
 type Section = { heading: string; body?: string; points?: string[] };
 
@@ -59,7 +62,7 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "How long we keep it, and deleting it",
-    body: "We keep your recordings and results until you delete them. You can delete any recording yourself with the Delete recording button on its results page: this permanently removes the audio file, transcript, measurements and feedback from our storage and database. To delete your whole account, email learn2speechproject@gmail.com from the address you signed up with and we'll remove it and everything in it.",
+    body: "We keep your recordings and results until you delete them. You can delete any recording yourself with the Delete recording button on its results page: this permanently removes the audio file, transcript, measurements and feedback from our storage and database. To delete your whole account, email learn2speechteam@gmail.com from the address you signed up with and we'll remove it and everything in it.",
   },
   {
     heading: "Age",
@@ -67,14 +70,14 @@ const SECTIONS: Section[] = [
   },
   {
     heading: "Changes and contact",
-    body: "If we change what we collect or who we share it with, we'll update this page and the date at the top. Questions or deletion requests: email learn2speechproject@gmail.com.",
+    body: "If we change what we collect or who we share it with, we'll update this page and the date at the top. Questions or deletion requests: email learn2speechteam@gmail.com.",
   },
 ];
 
 export default function PrivacyPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <PageHeader title="Privacy Policy" description="Last updated November 10, 2026" />
+    <main className="mx-auto w-full max-w-[70ch] px-6 py-10">
+      <PageHeader title="Privacy Policy" description="Last updated November 11, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
           <section key={section.heading} className="space-y-2">
@@ -88,7 +91,7 @@ export default function PrivacyPage() {
           </section>
         ))}
         <p className="text-sm text-muted-foreground">
-          Contact: <a href="mailto:learn2speechproject@gmail.com" className="font-medium text-foreground underline underline-offset-4">learn2speechproject@gmail.com</a>
+          Contact: <a href="mailto:learn2speechteam@gmail.com" className="font-medium text-foreground underline underline-offset-4">learn2speechteam@gmail.com</a>
           {" · "}See also our <Link href="/terms" className="font-medium text-foreground underline underline-offset-4">Terms and Conditions</Link>.
         </p>
       </div>

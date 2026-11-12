@@ -1,6 +1,9 @@
 // Terms and conditions. Plain text only, so it stays a Server Component (no "use client").
 // It lives in (app) so it gets the sidebar, but nothing here checks login: anyone can read it.
+import type { Metadata } from "next";
 import PageHeader from "@/components/page-header";
+
+export const metadata: Metadata = { title: "Terms and Conditions" };
 
 // Each section is a heading + paragraph. Add a section by adding one entry here.
 // Keep these honest: they should describe what the app actually does.
@@ -23,7 +26,7 @@ const SECTIONS = [
   },
   {
     heading: "Copyright",
-    body: "Don't upload audio you don't have the right to use, such as songs, or other people's speeches, lectures or recordings that you weren't given permission to use. If you believe something stored on Learn2Speech infringes your copyright, email learn2speechproject@gmail.com with what the work is, where you found it, your name and contact details, and a statement that you own the work or are allowed to act for the owner. We will review it and remove content that infringes, and we may close accounts that repeatedly upload it.",
+    body: "Don't upload audio you don't have the right to use, such as songs, or other people's speeches, lectures or recordings that you weren't given permission to use. If you believe something stored on Learn2Speech infringes your copyright, email learn2speechteam@gmail.com with what the work is, where you found it, your name and contact details, and a statement that you own the work or are allowed to act for the owner. We will review it and remove content that infringes, and we may close accounts that repeatedly upload it.",
   },
   {
     heading: "How we use AI",
@@ -43,14 +46,14 @@ const SECTIONS = [
   },
   {
     heading: "Changes and questions",
-    body: "We may update these terms as the app changes. If you have questions or want your data removed, email learn2speechproject@gmail.com.",
+    body: "We may update these terms as the app changes. If you have questions or want your data removed, email learn2speechteam@gmail.com.",
   },
 ];
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <PageHeader title="Terms and Conditions" description="Last updated November 10, 2026" />
+    <main className="mx-auto w-full max-w-[70ch] px-6 py-10">
+      <PageHeader title="Terms and Conditions" description="Last updated November 11, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
           <section key={section.heading} className="space-y-2">

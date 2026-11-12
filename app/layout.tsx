@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
+import UiSounds from "@/components/ui-sounds";
 import "./globals.css";
 
 // one typeface for everything. Archivo is a variable font: besides weight it has a width axis
@@ -9,7 +10,8 @@ import "./globals.css";
 const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], axes: ["wdth"] });
 
 export const metadata: Metadata = {
-  title: "Learn2Speech",
+  // pages set a short title ("History") and the template adds the name: "History | Learn2Speech"
+  title: { default: "Learn2Speech", template: "%s | Learn2Speech" },
   description: "Upload a speech and get coaching on your pace, filler words and pauses.",
 };
 
@@ -37,6 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           {children}
           <CookieConsent />
+          <UiSounds />
         </ThemeProvider>
       </body>
     </html>

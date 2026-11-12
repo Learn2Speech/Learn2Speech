@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { connection } from "next/server";
 import Link from "next/link";
 import formatSize from "@/lib/format-size";
@@ -9,6 +10,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import type {Recording} from "@/lib/recording-types"
 import ProgressChart from "@/components/history/progress-chart"
+
+export const metadata: Metadata = { title: "History" };
 
 // Only the columns the list shows. We leave out the full transcript on purpose:
 // it holds every word with timestamps, which is too heavy to load for every row.
