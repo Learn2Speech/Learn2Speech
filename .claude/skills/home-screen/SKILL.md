@@ -42,6 +42,20 @@ Buttons:
 - Press = scale to about 0.97 on `:active` over ~150 ms (our `Button` already does this). Disabled
   controls don't animate. A button that seems dead invites double presses.
 
+From the "20 Principles of UX & Animation" reel (Charles Liu, Nov 2026), the ones we use on buttons:
+- **Squash and follow-through:** a press squishes a touch past its rest size and the release overshoots a hair
+  before settling. One spring curve `cubic-bezier(0.34, 1.56, 0.64, 1)` on `transform` only (never on colors,
+  which would overshoot into odd shades). Class `press-spring` on the default, outline and destructive
+  `Button` variants.
+- **Frequency of use:** the more often a control is used, the less it should move. Ghost/icon buttons in the
+  top bar (sound, theme, account) keep the plain press with no bounce.
+- **Exaggerated feedback:** errors shake once, 4 px for 320 ms, as they appear (`shake` class on
+  `AuthMessage` errors). Small enough to read as "no", not a wobble.
+- **Snappy timing:** UI motion under 300 ms; respond to a press within 400 ms (Doherty threshold), e.g. the
+  button label switches to "Working..." at once.
+- Also in the reel and worth reaching for later: anticipation (a tiny wind-up before a big move), secondary
+  action (a small check flourish after Save), bigger hit areas (44 px), staging (dim everything but the focus).
+
 Sound:
 - Sounds should be felt more than heard: 30–150 ms, very quiet, only on meaningful actions (presses,
   slider moves, steps, start/stop). Never on hover, typing, scrolling or keyboard focus moves.
@@ -70,7 +84,7 @@ Deque axe no-autoplay-audio; htmlburger micro-interactions guide.
   drag (plus tiny filler marks). Never an orange background.
 - **Flat.** Hairline rules, no shadows, no glass, no decorative gradients (the one gradient we tried behind
   "um" was replaced by hairline rings, see the log).
-- **Motion.** One ease `cubic-bezier(0.23, 1, 0.32, 1)`; entrances 600ms, presses 150ms.
+- **Motion.** One ease `cubic-bezier(0.23, 1, 0.32, 1)`; entrances 600ms, presses 150ms (main buttons: 220ms spring, see Button feel).
 
 ## Before you ship a home screen change
 
@@ -86,6 +100,11 @@ Deque axe no-autoplay-audio; htmlburger micro-interactions guide.
 ## Design log
 
 Newest first. One entry per big design change: date, what changed, why, where.
+
+- **2026-11-12: Button spring and error shake** (from the "20 Principles of UX & Animation" reel). Main
+  buttons squish and bounce back on press; top-bar icon buttons stay plain; error messages shake once.
+  All off with reduced motion. `.press-spring` and `.shake` in `app/globals.css`,
+  `components/ui/button.tsx`, `components/auth/auth-card.tsx`.
 
 - **2026-11-12: Interface sounds.** Quiet synthesized "tap" on every button press, rising/falling two-note
   tones on Start/Stop recording, a soft "tick" on tutorial Back/Next and on the pace slider (pitch follows
