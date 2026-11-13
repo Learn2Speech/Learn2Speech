@@ -7,7 +7,7 @@ import type {User} from "@supabase/supabase-js";
 import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import {Button, buttonVariants} from "@/components/ui/button";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
-import {LogOut} from "lucide-react";
+import {Accessibility, LifeBuoy, LogOut} from "lucide-react";
 export default function AuthButton() {
     const [user, setUser]=useState<User | null>(null);
     const [loading, setLoading]=useState(true);
@@ -52,6 +52,11 @@ export default function AuthButton() {
                             <DropdownMenuLabel>Signed in as</DropdownMenuLabel>
                             <p className="px-1.5 pb-1 text-sm font-medium break-all">{user.email}</p>
                         </DropdownMenuGroup>
+                        <DropdownMenuSeparator />
+                        {/* render as a real link, so it works like any other link (new tab, right-click) */}
+                        <DropdownMenuItem render={<Link href="/accessibility" />}><Accessibility /> Accessibility</DropdownMenuItem>
+                        {/* opens their email app with our address filled in */}
+                        <DropdownMenuItem render={<a href="mailto:learn2speechteam@gmail.com?subject=Learn2Speech%20help" />}><LifeBuoy /> Help</DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem variant="destructive" onClick={() => setShowConfirm(true)}><LogOut /> Log out</DropdownMenuItem>
                     </DropdownMenuContent>

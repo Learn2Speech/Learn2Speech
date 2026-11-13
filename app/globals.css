@@ -237,6 +237,26 @@
   .reveal > * { opacity: 0; transform: translateY(1.5rem); transition: opacity 600ms cubic-bezier(0.23, 1, 0.32, 1), transform 600ms cubic-bezier(0.23, 1, 0.32, 1); }
   .reveal > :nth-child(2) { transition-delay: 150ms; }
   .reveal.is-in > * { opacity: 1; transform: none; }
+  /* Main buttons (components/ui/button.tsx): one springy curve on the press scale, so pressing squishes a
+     touch past 0.97 and letting go overshoots a hair before settling (squash and follow-through).
+     Colors keep a plain ease so they never overshoot. Under 300 ms. */
+  .press-spring { transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out; }
+  /* Error messages shake once as they appear: small (4 px), quick, so it reads as "no", not as a wobble */
+  .shake { animation: shake 320ms cubic-bezier(0.36, 0.07, 0.19, 0.97); }
+}
+/* Mic check (components/record/mic-check.tsx): the green check pops in once with the button spring,
+   a small flourish on success (secondary action). transform/opacity only; with reduced motion it just appears. */
+@keyframes pop-in {
+  from { transform: scale(0.4); opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .pop-in { animation: pop-in 260ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+}
+@keyframes shake {
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
 }
 
 /* Home page: the pace slider. A hairline track with a round orange handle (orange = things you can press or drag); the input itself is
@@ -252,9 +272,10 @@
 
 /* Tutorial (components/tour.tsx): the part of the results being explained gets an orange outline */
 [data-tour-active] { outline: 2px solid var(--primary); outline-offset: 0.75rem; border-radius: 0.25rem; }
-/* ...and the other parts fade back so the outlined one stands out (figure-ground) */
-[data-tour] { transition: opacity 200ms ease-out; }
-body:has([data-tour-active]) [data-tour]:not([data-tour-active]) { opacity: 0.3; }
+/* ...and the other parts lose their colour so the outlined one stands out (figure-ground). Grey, not faded:
+   fading dropped their text below 4.5:1 contrast (WCAG 1.4.3); greyscale keeps every word fully readable. */
+[data-tour] { transition: filter 200ms ease-out; }
+body:has([data-tour-active]) [data-tour]:not([data-tour-active]) { filter: grayscale(1); }
 
 /* Upload page: the bars move while your recording is being analyzed, so the wait feels alive.
    transform only (cheap to animate). With reduced motion the bars simply stand still. */

@@ -14,6 +14,7 @@ import Waiting from "@/components/upload/waiting";
 import {createClient} from "@/lib/supabase";
 import uploadRecording from "@/lib/upload-recording";
 import VolumeBars from "@/components/record/volume-bars";
+import MicCheck from "@/components/record/mic-check";
 
 // stop automatically so a forgotten recording can't grow past the 50 MB upload limit
 const MAX_SECONDS = 10 * 60;
@@ -134,6 +135,7 @@ export default function RecordPage() {
 
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+            <MicCheck />
             <div>
                 <PracticeSwitch current="/record" />
                 <PageHeader title="Record a practice run" description="Record yourself speaking, listen back, then get feedback." />

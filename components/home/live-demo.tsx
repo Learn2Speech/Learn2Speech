@@ -105,7 +105,7 @@ export default function LiveDemo({ metrics, durationMs, words }: Props) {
             return (
               <span
                 key={i}
-                className={`transition-colors duration-150 ease-out ${lit ? "text-foreground" : "text-muted-foreground/45"} ${lit && filler ? "bg-highlight/30" : ""}`}
+                className={`transition-colors duration-150 ease-out ${lit ? "text-foreground" : "text-muted-foreground"} ${lit && filler ? "bg-highlight/30" : ""}`}
               >
                 {word.text}{" "}
               </span>

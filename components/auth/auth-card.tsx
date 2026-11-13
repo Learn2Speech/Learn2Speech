@@ -39,7 +39,8 @@ export function AuthMessage({ kind, children }: { kind: "error" | "success"; chi
       : "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400";
   // role="alert" makes screen readers announce the message as soon as it appears
   return (
-    <p role="alert" className={`rounded-md border px-3 py-2 text-sm ${colors}`}>
+    // errors shake once as they appear (the "shake" rule in globals.css) so a wrong password can't be missed
+    <p role="alert" className={`rounded-md border px-3 py-2 text-sm ${kind === "error" ? "shake" : ""} ${colors}`}>
       {children}
     </p>
   );
