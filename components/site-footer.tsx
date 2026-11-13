@@ -7,6 +7,7 @@ const LINKS = [
   { title: "About", href: "/about" },
   { title: "Terms and Conditions", href: "/terms" },
   { title: "Privacy Policy", href: "/privacy" },
+  { title: "Accessibility", href: "/accessibility" },
 ];
 
 export default function SiteFooter({ className }: { className?: string }) {

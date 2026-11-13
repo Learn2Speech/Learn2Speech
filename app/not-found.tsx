@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import SiteFooter from "@/components/site-footer";
 import SiteNav from "@/components/site-nav";
+import SkipLink from "@/components/skip-link";
 import NotFound from "./(app)/not-found";
 
 export const metadata: Metadata = { title: "Page not found" };
@@ -9,8 +10,9 @@ export const metadata: Metadata = { title: "Page not found" };
 export default function GlobalNotFound() {
   return (
     <>
+      <SkipLink />
       <SiteNav />
-      <div className="flex flex-1 flex-col">
+      <div id="main" tabIndex={-1} className="flex flex-1 flex-col outline-none">
         <NotFound />
       </div>
       <SiteFooter className="border-t" />

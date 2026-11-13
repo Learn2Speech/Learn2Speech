@@ -38,7 +38,7 @@ export default function CookieConsent() {
       <div className="mx-auto flex max-w-2xl flex-col gap-3 rounded-md border bg-background p-4 text-sm shadow-lg sm:flex-row sm:items-center">
         <p className="flex-1 leading-relaxed">
           We use one cookie to keep you signed in. No ads or tracking.{" "}
-          <Link href="/privacy" className="font-medium text-brand underline underline-offset-4">Privacy Policy</Link>
+          <Link href="/privacy" className="font-medium text-foreground underline underline-offset-4">Privacy Policy</Link>
         </p>
         <Button onClick={close} className="h-11 sm:h-9">OK</Button>
       </div>

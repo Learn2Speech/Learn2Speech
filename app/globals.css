@@ -272,9 +272,10 @@
 
 /* Tutorial (components/tour.tsx): the part of the results being explained gets an orange outline */
 [data-tour-active] { outline: 2px solid var(--primary); outline-offset: 0.75rem; border-radius: 0.25rem; }
-/* ...and the other parts fade back so the outlined one stands out (figure-ground) */
-[data-tour] { transition: opacity 200ms ease-out; }
-body:has([data-tour-active]) [data-tour]:not([data-tour-active]) { opacity: 0.3; }
+/* ...and the other parts lose their colour so the outlined one stands out (figure-ground). Grey, not faded:
+   fading dropped their text below 4.5:1 contrast (WCAG 1.4.3); greyscale keeps every word fully readable. */
+[data-tour] { transition: filter 200ms ease-out; }
+body:has([data-tour-active]) [data-tour]:not([data-tour-active]) { filter: grayscale(1); }
 
 /* Upload page: the bars move while your recording is being analyzed, so the wait feels alive.
    transform only (cheap to animate). With reduced motion the bars simply stand still. */

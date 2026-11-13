@@ -105,7 +105,7 @@ Principles (from the "20 Principles of UX & Animation" reel and research):
   move less. **Exaggerated feedback** for errors. Respond to a press within 400ms (button label switches to
   "Working..." at once).
 - Worth reaching for later: anticipation (tiny wind-up), secondary action (check flourish after save),
-  staging (dim everything but the focus, but keep dimmed text readable, see Accessibility).
+  staging (draw focus with colour or grayscale, never by fading text below 4.5:1; see the tutorial).
 
 ## 7. Sound
 
@@ -192,6 +192,12 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 ## Design log
 
 Newest first. One entry per big design change: date, what changed, why, where.
+
+- **2026-11-12: Accessibility pass (Lighthouse 100 on home, tutorial, login, accessibility).** Tutorial now
+  greys out (`filter: grayscale(1)`) the parts not being explained instead of fading them, because fading broke
+  text contrast. Home demo's not-yet-spoken words use plain `text-muted-foreground`. Cookie notice link is ink,
+  not teal. "Skip to content" link (`components/skip-link.tsx`, target `id="main"` in `app/(app)/layout.tsx`).
+  New `/accessibility` statement page, linked in the footer.
 
 - **2026-11-12: Microphone check popup on Record.** Opens on page load; Skip or Test microphone, then a
   green check (the `AuthMessage` success green) pops in with the button spring and a soft tick once a voice
