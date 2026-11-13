@@ -161,6 +161,24 @@ Short and literal. Buttons name their action ("Upload a practice run", "Get feed
 Errors say what happened and what to do ("That code is wrong or has expired. Check the newest email, or send a
 new code."). Plain words a ninth grader knows. Show the speech, don't describe the product.
 
+### Legal and honesty (from the "20 things so your site doesn't get sued" reel, Nov 2026)
+
+The legal pages are `/privacy`, `/terms` and `/accessibility`, all linked in the footer. Keep them true to the code:
+- **New browser storage or cookie** (any `localStorage`, `sessionStorage` or cookie)? Add it to the
+  "Cookies and browser storage" list in `/privacy` (anchor `#cookies`, which the cookie notice links to).
+  Only strictly necessary cookies are allowed without asking for consent; anything for analytics, ads or
+  tracking would need a real opt-in, so don't add it without the product owner's OK.
+- **New outside service** (an API, font host, embed, analytics)? Add it to "Services that handle your data" in
+  `/privacy` and to the CSP in `next.config.ts`. Prefer a link over an embed (our YouTube video is a link, so
+  YouTube sets no cookies until someone clicks).
+- **Collect only what's needed.** Example: the age check reads birth month and year and doesn't save them.
+- **Claims must be true.** No fake reviews, user counts or results; label examples "Example".
+- **Consent at the point of use:** sign-up has the 13+ and Terms/Privacy checkbox; keep it for any new
+  account or data form.
+- Bump the "Last updated" date on any legal page you change.
+- Not applicable today: refund policy (nothing is sold). If payments are ever added, a refund policy and
+  checkout terms are required first.
+
 ## 10. Home screen extras (research, Nov 2026)
 
 1. One job, one main action; a quiet secondary at most.
@@ -192,6 +210,11 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 ## Design log
 
 Newest first. One entry per big design change: date, what changed, why, where.
+
+- **2026-11-12: Privacy Policy cookies section** (from the "20 things so your site doesn't get sued" reel).
+  New "Cookies and browser storage" section (`/privacy#cookies`) listing the login cookie, the three browser
+  settings (theme, sound, cookie notice) and the tab-only age-check flag, plus a Do Not Track statement. The
+  cookie notice links straight to it. Account menu gained Accessibility and Help links.
 
 - **2026-11-12: Accessibility pass (Lighthouse 100 on home, tutorial, login, accessibility).** Tutorial now
   greys out (`filter: grayscale(1)`) the parts not being explained instead of fading them, because fading broke

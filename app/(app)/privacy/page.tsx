@@ -8,7 +8,7 @@ import PageHeader from "@/components/page-header";
 
 export const metadata: Metadata = { title: "Privacy Policy" };
 
-type Section = { heading: string; body?: string; points?: string[] };
+type Section = { id?: string; heading: string; body?: string; points?: string[] };
 
 const SECTIONS: Section[] = [
   {
@@ -26,12 +26,24 @@ const SECTIONS: Section[] = [
       "Account: your email address and password. Your password is stored scrambled (hashed) by our login provider, Supabase; we never see it. If you sign in with Google, we receive your email address and name from Google, and use them only to create your account and log you in.",
       "Recordings: the audio files you upload or record in your browser, their original file names and sizes, and when you uploaded them.",
       "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, and the coaching feedback.",
-      "Small browser settings: a login cookie so you stay signed in. Your light/dark mode and whether you closed our cookie notice is kept in browser storage. We don't use advertising or tracking cookies.",
+      "Small browser settings: one login cookie and a few settings saved in your browser. They're listed under Cookies and browser storage below.",
     ],
   },
   {
     heading: "How we use it",
     body: "Only to run Learn2Speech: to log you in, store your recordings, analyze them, and show you your results and history. We don't use your recordings or results for anything else, and we don't sell or rent your information to anyone.",
+  },
+  {
+    // the cookie notice links here (/privacy#cookies), so keep this list exactly in step with the code
+    id: "cookies",
+    heading: "Cookies and browser storage",
+    points: [
+      "Login cookie: set by our login provider, Supabase, so you stay signed in. The app can't work without it, so it can't be turned off; logging out removes it.",
+      "Settings saved in your browser (not cookies, and never sent to us): light or dark mode, whether button sounds are on, and that you closed the cookie notice. Clearing your browser's site data removes them.",
+      "For one browser tab only: if the age check at sign-up doesn't pass, the tab remembers it until you close it.",
+      "We don't use advertising, analytics or tracking cookies, and nothing follows you to other websites.",
+      "Do Not Track: because we don't track you across sites or collect analytics, every visitor already gets what a Do Not Track signal asks for.",
+    ],
   },
   {
     heading: "Services that handle your data",
@@ -77,10 +89,10 @@ const SECTIONS: Section[] = [
 export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-[70ch] px-6 py-10">
-      <PageHeader title="Privacy Policy" description="Last updated November 11, 2026" />
+      <PageHeader title="Privacy Policy" description="Last updated November 12, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
-          <section key={section.heading} className="space-y-2">
+          <section key={section.heading} id={section.id} className="scroll-mt-20 space-y-2">
             <h2 className="text-lg font-semibold">{section.heading}</h2>
             {section.body && <p className="leading-relaxed text-muted-foreground">{section.body}</p>}
             {section.points && (
