@@ -6,7 +6,7 @@
 // On by default (the product owner's call); the speaker button in the top bar mutes them, remembered on this device.
 // A button can ask for a specific sound with data-sound="start" | "stop" | "tick"; otherwise presses get "tap".
 // Browsers only allow sound after a click or tap, which is exactly when these play.
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -14,13 +14,33 @@ const KEY = "l2s-sound";
 type Sound = "tap" | "tick" | "start" | "stop";
 
 let ctx: AudioContext | null = null;
+let fallbackOn = true; // used when localStorage is blocked (private mode), so muting still works this visit
+const listeners = new Set<() => void>();
 
 function soundOn() {
   try {
     return localStorage.getItem(KEY) !== "off";
   } catch {
-    return true;
+    return fallbackOn;
   }
+}
+
+function setSoundOn(on: boolean) {
+  fallbackOn = on;
+  try {
+    localStorage.setItem(KEY, on ? "on" : "off");
+  } catch {}
+  listeners.forEach((listener) => listener());
+}
+
+// lets the toggle re-render when the setting changes here or in another tab
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  window.addEventListener("storage", listener);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
 }
 
 // one short note: frequency glides from `from` to `to`, volume rises in 4 ms and fades out by `length`
@@ -86,15 +106,11 @@ export default function UiSounds() {
 
 // The speaker button in the top bar
 export function SoundToggle() {
-  const [on, setOn] = useState(true);
-  useEffect(() => setOn(soundOn()), []);
+  // server render assumes "on"; the browser then reads the saved choice
+  const on = useSyncExternalStore(subscribe, soundOn, () => true);
   function toggle() {
-    const next = !on;
-    try {
-      localStorage.setItem(KEY, next ? "on" : "off");
-    } catch {}
-    setOn(next);
-    if (next) playSound("tap"); // the press happened while muted, so confirm "sound is on" now
+    setSoundOn(!on);
+    if (!on) playSound("tap"); // the press happened while muted, so confirm "sound is on" now
   }
   return (
     <Button
