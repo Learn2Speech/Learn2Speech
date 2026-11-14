@@ -3,6 +3,7 @@
 // matches them, and the UI and history display them. Change a field here and
 // all three have to change with it.
 import type { SpeechMetrics } from "@/lib/metrics/types";
+import type { SpeechType } from "@/lib/topic/speech-types";
 
 // One specific thing to work on, plus what to actually do about it.
 export type Improvement = {
@@ -28,12 +29,22 @@ export type ImpromptuReview = {
   timeUse: ImpromptuCheck; // rating worked out in code from the length; Claude writes the comment
 };
 
+// Extra feedback for runs where the speaker typed a topic (lib/topic). topic and speechType are filled in
+// by our code from the checked topic; onTopic and tips come from Claude.
+export type TopicReview = {
+  topic: string; // what the speaker typed, cleaned (lib/topic/check-topic.ts)
+  speechType: SpeechType; // the kind of speech, which sets the pace target
+  onTopic?: ImpromptuCheck; // did the speech actually cover the topic?
+  tips: string[]; // tips that only make sense for this topic (empty if Claude's section was missing)
+};
+
 // Everything Claude tells the speaker about one recording.
 export type CoachingFeedback = {
   summary: string; // 1–2 sentences on how the speech went overall
   strengths: string[]; // what went well, so feedback isn't only criticism
   improvements: Improvement[]; // the most important things to fix, best first
   impromptu?: ImpromptuReview; // only on impromptu runs (older recordings and uploads don't have it)
+  topic?: TopicReview; // only on runs with a typed topic
 };
 
 export type FeedbackCall = {

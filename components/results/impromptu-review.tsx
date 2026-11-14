@@ -12,7 +12,8 @@ const RATING_COLOR: Record<ImpromptuRating, string> = {
   weak: "border-destructive/30 bg-destructive/10 text-destructive",
 };
 
-function Rating({ rating }: { rating: ImpromptuRating }) {
+// also used by the topic section (topic-review.tsx)
+export function Rating({ rating }: { rating: ImpromptuRating }) {
   return (
     <span className={cn("inline-flex shrink-0 items-center rounded-full border px-2.5 py-0.5 text-sm font-medium", RATING_COLOR[rating])}>
       {RATING_LABEL[rating]}

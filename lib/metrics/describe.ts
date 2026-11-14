@@ -4,12 +4,14 @@
 export type Rating = { label: string; tone: "good" | "okay" | "bad"};
 
 // Pace has TWO bad sides (too slow and too fast), so it checks both ends of the range.
-// 120-160 words per minute is a comfortable speaking speed.
-export function describePace(wpm: number): Rating {
-  if (wpm < 100) return { label: "Too slow", tone: "bad" };
-  if (wpm < 120) return { label: "A bit slow", tone: "okay" };
-  if (wpm <= 160) return { label: "Good pace", tone: "good" };
-  if (wpm <= 180) return { label: "A bit fast", tone: "okay" };
+// 120-160 words per minute is a comfortable speaking speed. A speech with a topic uses the range for its
+// kind of speech instead (lib/topic/speech-types.ts); up to 20 wpm outside the range counts as "a bit" off.
+export const PACE_MARGIN = 20;
+export function describePace(wpm: number, range: { low: number; high: number } = { low: 120, high: 160 }): Rating {
+  if (wpm < range.low - PACE_MARGIN) return { label: "Too slow", tone: "bad" };
+  if (wpm < range.low) return { label: "A bit slow", tone: "okay" };
+  if (wpm <= range.high) return { label: "Good pace", tone: "good" };
+  if (wpm <= range.high + PACE_MARGIN) return { label: "A bit fast", tone: "okay" };
   return { label: "Too fast", tone: "bad" };
 }
 // Fillers and pauses only have one bad side (more is worse), and they are rated PER MINUTE

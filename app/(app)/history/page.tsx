@@ -67,6 +67,8 @@ async function RecordingsList() {
                             </div>
                         </div>
                         {impromptu && <p className="mt-1 text-foreground">Topic: {impromptu.topic}</p>}
+                        {/* a topic the speaker typed lives in the feedback (topic mode) */}
+                        {!impromptu && row.feedback?.topic && <p className="mt-1 break-words text-foreground">Topic: {row.feedback.topic.topic}</p>}
                         <p className="text-sm text-muted-foreground">
                             {formatSize(row.size_bytes)} · {new Date(row.created_at).toLocaleDateString()}
                         </p>

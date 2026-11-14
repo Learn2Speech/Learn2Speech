@@ -5,7 +5,10 @@ import {UserFacingError} from "@/lib/user-error";
 //   parseFeedback    - turns Claude's text reply into a CoachingFeedback object
 // Every failure path logs the technical reason for us and throws a friendly message for the user.
 import type { CoachingFeedback, ImpromptuReview } from "@/lib/feedback/types";
-export async function requestFeedback(prompt: string): Promise<string> {
+import type { TopicInfo } from "@/lib/topic/speech-types";
+// maxTokens: room for the reply (thinking included). effort: how hard Claude thinks; the short topic check
+// (lib/topic/classify-topic.ts) uses "low", the feedback itself keeps the model's default.
+export async function requestFeedback(prompt: string, options: { maxTokens?: number; effort?: "low" | "medium" | "high" } = {}): Promise<string> {
   // The key only exists on the server (.env.local locally, Vercel settings online), never in the browser
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   if (!anthropicKey){
@@ -21,8 +24,9 @@ export async function requestFeedback(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
      model: "claude-opus-5-5",
-    max_tokens: 2500, // a little extra room for the impromptu section                             
-    messages: [{ role: "user", content: prompt }],  
+    max_tokens: options.maxTokens ?? 3000, // extra room for the impromptu or topic section
+    ...(options.effort ? { output_config: { effort: options.effort } } : {}),
+    messages: [{ role: "user", content: prompt }],
 }),
   });
   // A non-OK status (bad key, no credit, rate limit...) still comes back as a normal response,
@@ -90,7 +94,19 @@ export function isImpromptuReview(x: unknown): boolean {
 // expectImpromptu: this was an impromptu run, so keep the "impromptu" section if it's well formed.
 // If it's missing or broken we still keep the normal feedback (the speaker already paid the wait), just
 // without the extra section, rather than failing the whole analysis. On normal runs it's always dropped.
-export function parseFeedback(text: string, expectImpromptu = false): CoachingFeedback{
+// The topic section: an optional on-topic check plus 1-6 tips
+function isTopicSection(x: unknown): boolean {
+    const t = x as { onTopic?: unknown; tips?: unknown } | null;
+    return typeof t === "object" && t !== null
+    && (t.onTopic === undefined || isCheck(t.onTopic))
+    && Array.isArray(t.tips) && t.tips.length >= 1 && t.tips.length <= 6
+    && t.tips.every((tip) => typeof tip === "string" && tip.length < 1000);
+}
+
+// topic: this run had a topic (already checked). The topic text and speech type come from OUR code, never from
+// Claude's reply; only the on-topic rating and tips are read from the reply. If that part is missing or broken,
+// the topic and its pace target are still saved, just without tips.
+export function parseFeedback(text: string, expectImpromptu = false, topic: TopicInfo | null = null): CoachingFeedback{
     let data: unknown;
     try{
         // Claude sometimes adds a sentence or code fences around the JSON, so we cut from the
@@ -124,6 +140,17 @@ export function parseFeedback(text: string, expectImpromptu = false): CoachingFe
             };
         } else {
             console.error("Claude's reply was missing a valid impromptu section; saving the normal feedback only.");
+        }
+    }
+    if (topic) {
+        feedback.topic = {topic: topic.topic, speechType: topic.speechType, tips: []};
+        const section = (data as {topicReview?: unknown}).topicReview;
+        if (isTopicSection(section)) {
+            const s = section as {onTopic?: {rating: ImpromptuReview["onTopic"]["rating"]; comment: string}; tips: string[]};
+            feedback.topic.tips = [...s.tips];
+            if (s.onTopic) feedback.topic.onTopic = {rating: s.onTopic.rating, comment: s.onTopic.comment};
+        } else {
+            console.error("Claude's reply was missing a valid topic section; saving the topic without tips.");
         }
     }
     return feedback;
