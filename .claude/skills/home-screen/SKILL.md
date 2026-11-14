@@ -211,6 +211,13 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
 Newest first. One entry per big design change: date, what changed, why, where.
 
+- **2026-11-14: Topic mode, script mode, live filler counter, redo and compare.** The practice pages gained
+  stacked "Your topic" and "Your script (optional)" lines above the record and upload controls. They use small
+  uppercase labels and outline buttons, separated by hairlines. Popups reuse the mic-check dialog style.
+  The live counter is a 5xl teal number under the clock, off by default with a plain privacy line. Results add
+  topic and script sections in the 5/7 split. A redo opens with a side-by-side table (Better / Worse in words,
+  not only colour). Map of every file: `docs/FEATURE_MAP.md`.
+
 - **2026-11-13: Copy transcript and print styles** (from the "20 features to add to your website" reel; the
   app already had 14 of the 20). "Copy transcript" button on results (says "Copied" or "Couldn't copy",
   announced to screen readers) in `components/results/copy-transcript-button.tsx`. Printing: dark tokens are

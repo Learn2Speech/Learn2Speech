@@ -12,15 +12,23 @@ export class TopicRejectedError extends Error {
     }
 }
 
-// Asks the server to analyze a recording that is already saved. topic: what the speech is about (optional).
+// The optional extras sent with "Get feedback": a typed topic (lib/topic), a pasted script (lib/script),
+// and the earlier recording this take redoes (lib/redo). Impromptu runs send none of the first two.
+export type AnalyzeExtras = {topic?: string | null; script?: string | null; redoOf?: string | null};
+
+// Asks the server to analyze a recording that is already saved.
 // Throws TopicRejectedError if the topic can't be evaluated, or an Error whose message is safe to show.
-export async function analyzeRecording(id: string, topic?: string | null): Promise<void> {
+export async function analyzeRecording(id: string, extras: AnalyzeExtras = {}): Promise<void> {
     let response: Response;
     try {
         response = await fetch(`/api/recordings/${id}/analyze`, {
             method: "POST",
             headers: {"content-type": "application/json"},
-            body: JSON.stringify(topic ? {topic} : {}),
+            body: JSON.stringify({
+                ...(extras.topic ? {topic: extras.topic} : {}),
+                ...(extras.script ? {script: extras.script} : {}),
+                ...(extras.redoOf ? {redoOf: extras.redoOf} : {}),
+            }),
         });
     } catch {
         // The request never got an answer (no wifi, server down)
@@ -39,8 +47,8 @@ export async function analyzeRecording(id: string, topic?: string | null): Promi
 // adds its row, then asks the server to analyze it. Returns the new recording's id, or throws
 // an Error whose message is safe to show to the user.
 // An impromptu run (Record page) also saves its topic and target length (columns from migration 0008).
-// A typed topic (topic mode) isn't saved on the row; it goes to the analyze route, which checks it first.
-export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void, impromptu?: ImpromptuInfo | null, topic?: string | null): Promise<string> {
+// The extras (typed topic, script, redo) aren't saved on the row; they go to the analyze route, which checks them.
+export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void, impromptu?: ImpromptuInfo | null, extras: AnalyzeExtras = {}): Promise<string> {
     const problem = validateAudio(file);
     if (problem) throw new Error(problem);
     const {data} = await supabase.auth.getUser();
@@ -66,6 +74,6 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
         throw new Error("Could not save your recording. Please try again.");
     }
     onAnalyzing?.();
-    await analyzeRecording(newRecording.id, impromptu ? null : topic);
+    await analyzeRecording(newRecording.id, impromptu ? {redoOf: extras.redoOf} : extras);
     return newRecording.id;
 }

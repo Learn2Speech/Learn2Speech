@@ -7,7 +7,8 @@ import FeedbackPanel from "@/components/results/feedback-panel";
 import ImpromptuReview from "@/components/results/impromptu-review";
 import MetricsCards from "@/components/results/metrics-cards";
 import SpeechTimeline from "@/components/results/speech-timeline";
-import TopicReview from "@/components/results/topic-review";
+import TopicReview from "@/components/topic/topic-review";
+import ScriptReview from "@/components/script/script-review";
 import TranscriptView from "@/components/results/transcript-view";
 import { speechTypeInfo } from "@/lib/topic/speech-types";
 import type { CoachingFeedback } from "@/lib/feedback/types";
@@ -77,6 +78,12 @@ export default function ResultsView({ metrics, feedback, transcript, impromptu }
       {!impromptu && feedback.topic && (
         <section aria-label="Topic checks and tips">
           <TopicReview review={feedback.topic} />
+        </section>
+      )}
+
+      {!impromptu && feedback.script && (
+        <section aria-label="Script comparison">
+          <ScriptReview review={feedback.script} pace={topicType?.pace} />
         </section>
       )}
 

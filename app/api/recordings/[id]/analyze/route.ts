@@ -8,6 +8,7 @@ import {impromptuFromRow} from "@/lib/impromptu/topics"
 import {cleanTopic, quickTopicProblem} from "@/lib/topic/check-topic"
 import {classifyTopic} from "@/lib/topic/classify-topic"
 import type {TopicInfo} from "@/lib/topic/speech-types"
+import {cleanScript, countWords} from "@/lib/script/compare-script"
 export const maxDuration = 200;
 // A topic that can't be evaluated gets this status + code, so the page can show the "can't use that topic" popup.
 // The recording stays "uploaded", so the page can ask again (topic-free, or with a new topic) without re-uploading.
@@ -21,14 +22,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (!UUID.test(id)) {
         return Response.json({error: "Recording not found."}, {status: 404});
     }
-    // Optional body: {topic: "..."} when the speaker typed a topic (Record free practice or Upload).
-    // No body (older pages, topic-free) is fine.
-    let rawTopic: unknown = undefined
+    // Optional body (all parts optional; no body at all is fine):
+    //   topic  - what the speech is about, typed by the speaker (lib/topic)
+    //   script - the script they pasted (lib/script)
+    //   redoOf - the earlier recording this take redoes, for the side-by-side compare (lib/redo)
+    let body: {topic?: unknown; script?: unknown; redoOf?: unknown} = {}
     try {
-        rawTopic = ((await request.json()) as {topic?: unknown} | null)?.topic
+        body = ((await request.json()) as typeof body | null) ?? {}
     } catch {
-        // no body or not JSON: topic-free
+        // no body or not JSON: a plain run
     }
+    const rawTopic = body.topic
     const supabase = await createServerSupabase();
     // Checks first if you are trying to access the path that goes from the audio link ot AssemblyAI, you are the user
     // Checks who YOU are first of all. Who is TRYING to access the address (the path to AssemblyAI). Checks if you are a valid, logged in user. Uses server data because it happens fast, immediately and high end, 
@@ -64,6 +68,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     if (typedTopic) {
         const problem = quickTopicProblem(typedTopic)
         if (problem) return topicRejected(problem)
+    }
+    // A pasted script (ignored on impromptu runs). Fewer than 5 words isn't a script worth comparing.
+    const scriptText = !impromptu && typeof body.script === "string" ? cleanScript(body.script) : ""
+    const script = countWords(scriptText) >= 5 ? scriptText : null
+    // A redo only counts if the earlier recording is this user's own finished one (Row Level Security hides
+    // everyone else's) and isn't this same recording. Anything else is quietly treated as a normal run.
+    let redoOf: string | null = null
+    if (typeof body.redoOf === "string" && UUID.test(body.redoOf) && body.redoOf !== id) {
+        const {data: original} = await supabase.from("recordings").select("id").eq("id", body.redoOf).eq("status", "done").maybeSingle()
+        if (original) redoOf = original.id
     }
     // From here on, changes go through the admin client: users can't edit status or results themselves
     // (the ownership checks above already ran).
@@ -116,7 +130,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         // Uses the link and physically uses the path that has been cleared by the guards to send in that link and transcribe audio with the link
         const transcript = await transcribeAudio(link)
         // Uses that transcript and gets feedback (plus the impromptu or topic section, if any)
-        const {metrics, feedback} = await getFeedback(transcript, impromptu, topic)
+        const {metrics, feedback} = await getFeedback(transcript, {impromptu, topic, script})
+        if (redoOf) feedback.redoOf = redoOf
 
         //  Here we are now taking the values we got from Rian's code and taking them back and updating our table/database with them
         // They are extremely useful so we are giving the audio to Rian and his code doees his thing and then we take the outputs and reorganize them into the table below
