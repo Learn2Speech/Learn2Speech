@@ -2,8 +2,9 @@
 // against the target, instead of a bare number. The bands below are the same cutoffs
 // lib/metrics/describe.ts uses for the rating, so the picture and the words always agree.
 // Display only: the math and the ratings live in lib/metrics.
-import { describeFillers, describePace, describePauses, type Rating } from "@/lib/metrics/describe";
+import { describeFillers, describePace, describePauses, PACE_MARGIN, type Rating } from "@/lib/metrics/describe";
 import type { SpeechMetrics } from "@/lib/metrics/types";
+import { DEFAULT_PACE, type PaceRange } from "@/lib/topic/speech-types";
 
 type Band = { to: number; tone: Rating["tone"] };
 
@@ -58,7 +59,14 @@ const perMinute = (count: number, durationMs: number) => (durationMs ? count / (
 const oneDecimal = (n: number) => (Math.round(n * 10) / 10).toString();
 
 // durationMs (the recording's length) lets the filler and pause ratings work per minute.
-export default function MetricsCards({ metrics, durationMs }: { metrics: SpeechMetrics; durationMs: number }) {
+// pace: the good range for this kind of speech when the speaker gave a topic (lib/topic/speech-types.ts),
+// with paceLabel naming it ("Persuasive speech"). Without a topic it's the usual comfortable 120 to 160.
+export default function MetricsCards({ metrics, durationMs, pace = DEFAULT_PACE, paceLabel = "Comfortable" }: {
+  metrics: SpeechMetrics;
+  durationMs: number;
+  pace?: PaceRange;
+  paceLabel?: string;
+}) {
   const fillerRate = perMinute(metrics.fillerCount, durationMs);
   const pauseRate = perMinute(metrics.pauses.length, durationMs);
   return (
@@ -67,11 +75,14 @@ export default function MetricsCards({ metrics, durationMs }: { metrics: SpeechM
         label="Pace"
         value={metrics.wordsPerMinute}
         unit="words / min"
-        rating={describePace(metrics.wordsPerMinute)}
-        target="Comfortable: 120 to 160"
+        rating={describePace(metrics.wordsPerMinute, pace)}
+        target={`${paceLabel}: ${pace.low} to ${pace.high}`}
         gauge={{
           value: metrics.wordsPerMinute, min: 60, max: 220,
-          bands: [{ to: 100, tone: "bad" }, { to: 120, tone: "okay" }, { to: 160, tone: "good" }, { to: 180, tone: "okay" }, { to: 220, tone: "bad" }],
+          bands: [
+            { to: pace.low - PACE_MARGIN, tone: "bad" }, { to: pace.low, tone: "okay" }, { to: pace.high, tone: "good" },
+            { to: pace.high + PACE_MARGIN, tone: "okay" }, { to: 220, tone: "bad" },
+          ],
         }}
       />
       <Readout

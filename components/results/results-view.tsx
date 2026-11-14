@@ -7,7 +7,9 @@ import FeedbackPanel from "@/components/results/feedback-panel";
 import ImpromptuReview from "@/components/results/impromptu-review";
 import MetricsCards from "@/components/results/metrics-cards";
 import SpeechTimeline from "@/components/results/speech-timeline";
+import TopicReview from "@/components/results/topic-review";
 import TranscriptView from "@/components/results/transcript-view";
+import { speechTypeInfo } from "@/lib/topic/speech-types";
 import type { CoachingFeedback } from "@/lib/feedback/types";
 import type { FillerHit, SpeechMetrics } from "@/lib/metrics/types";
 import type { Transcript } from "@/lib/transcription/types";
@@ -31,6 +33,7 @@ function topFiller(fillers: FillerHit[]) {
 
 export default function ResultsView({ metrics, feedback, transcript, impromptu }: ResultsViewProps) {
   const top = topFiller(metrics.fillers);
+  const topicType = !impromptu && feedback.topic ? speechTypeInfo(feedback.topic.speechType) : null;
   const big = top ? top.word : String(metrics.wordsPerMinute);
   return (
     <div className="space-y-16">
@@ -54,7 +57,9 @@ export default function ResultsView({ metrics, feedback, transcript, impromptu }
       </section>
 
       <section data-tour="metrics">
-        <MetricsCards metrics={metrics} durationMs={transcript.durationMs} />
+        {/* with a topic, the pace gauge uses the target for that kind of speech */}
+        <MetricsCards metrics={metrics} durationMs={transcript.durationMs}
+          pace={topicType?.pace} paceLabel={topicType?.label} />
       </section>
 
       {/* the teal block (the 30): the recording from start to finish */}
@@ -66,6 +71,12 @@ export default function ResultsView({ metrics, feedback, transcript, impromptu }
       {impromptu && (
         <section aria-label="Impromptu checks">
           <ImpromptuReview topic={impromptu.topic} targetSeconds={impromptu.targetSeconds} durationMs={transcript.durationMs} review={feedback.impromptu} />
+        </section>
+      )}
+
+      {!impromptu && feedback.topic && (
+        <section aria-label="Topic checks and tips">
+          <TopicReview review={feedback.topic} />
         </section>
       )}
 

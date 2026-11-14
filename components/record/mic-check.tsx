@@ -11,7 +11,8 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} fro
 import VolumeBars from "@/components/record/volume-bars";
 import {playSound} from "@/components/ui-sounds";
 
-export default function MicCheck() {
+// onClose: runs once the popup is closed (the Record page then asks for a topic)
+export default function MicCheck({onClose}: {onClose?: () => void}) {
     const [open, setOpen] = useState(true);
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [heard, setHeard] = useState(false);
@@ -42,8 +43,10 @@ export default function MicCheck() {
     }
 
     function close() {
+        if (!open) return;
         setOpen(false);
         setStream(null);
+        onClose?.();
     }
 
     return (

@@ -3,11 +3,44 @@ import validateAudio from "@/lib/validate-audio";
 import buildAudioPath from "@/lib/build-audio-path";
 import type {ImpromptuInfo} from "@/lib/impromptu/topics";
 
+// Thrown when the server can't evaluate the typed topic (keysmash, gibberish...). The recording is already
+// uploaded and still waiting, so the page can call analyzeRecording again with recordingId instead of re-uploading.
+export class TopicRejectedError extends Error {
+    constructor(message: string, readonly recordingId: string) {
+        super(message);
+        this.name = "TopicRejectedError";
+    }
+}
+
+// Asks the server to analyze a recording that is already saved. topic: what the speech is about (optional).
+// Throws TopicRejectedError if the topic can't be evaluated, or an Error whose message is safe to show.
+export async function analyzeRecording(id: string, topic?: string | null): Promise<void> {
+    let response: Response;
+    try {
+        response = await fetch(`/api/recordings/${id}/analyze`, {
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify(topic ? {topic} : {}),
+        });
+    } catch {
+        // The request never got an answer (no wifi, server down)
+        throw new Error("Could not reach the server. Please try again.");
+    }
+    if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        if (response.status === 422 && result.code === "topic_rejected") {
+            throw new TopicRejectedError(result.error ?? "We can't evaluate that topic.", id);
+        }
+        throw new Error(result.error ?? "Analysis failed. Please try again.");
+    }
+}
+
 // Shared by the Upload page and the Record page: checks the file, saves it to private storage,
 // adds its row, then asks the server to analyze it. Returns the new recording's id, or throws
 // an Error whose message is safe to show to the user.
 // An impromptu run (Record page) also saves its topic and target length (columns from migration 0008).
-export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void, impromptu?: ImpromptuInfo | null): Promise<string> {
+// A typed topic (topic mode) isn't saved on the row; it goes to the analyze route, which checks it first.
+export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void, impromptu?: ImpromptuInfo | null, topic?: string | null): Promise<string> {
     const problem = validateAudio(file);
     if (problem) throw new Error(problem);
     const {data} = await supabase.auth.getUser();
@@ -33,16 +66,6 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
         throw new Error("Could not save your recording. Please try again.");
     }
     onAnalyzing?.();
-    let response: Response;
-    try {
-        response = await fetch(`/api/recordings/${newRecording.id}/analyze`, {method: "POST"});
-    } catch {
-        // The request never got an answer (no wifi, server down)
-        throw new Error("Could not reach the server. Please try again.");
-    }
-    if (!response.ok) {
-        const result = await response.json().catch(() => ({}));
-        throw new Error(result.error ?? "Analysis failed. Please try again.");
-    }
+    await analyzeRecording(newRecording.id, impromptu ? null : topic);
     return newRecording.id;
 }

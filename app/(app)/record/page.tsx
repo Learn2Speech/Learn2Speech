@@ -5,21 +5,21 @@
 // validateAudio and the storage bucket (WebM needs migration 0006).
 //
 // Two modes:
-//   Free practice - say whatever you want, the clock counts up.
+//   Free practice - say whatever you want, the clock counts up. After the mic check a popup asks for your topic
+//                   (or "Go topic-free"); a topic tunes the pace target and adds topic tips (components/topic).
 //   Impromptu     - get a random topic from our built-in list, pick 1, 2 or 3 minutes, optionally take
 //                   30 seconds to think (recording starts by itself after), then the clock counts DOWN and
 //                   warns you near the end. The topic and length are saved with the recording (migration 0008)
 //                   so the feedback can also judge staying on topic, structure and use of time.
 import {useCallback, useEffect, useRef, useState, useSyncExternalStore} from "react";
-import {useRouter} from "next/navigation";
 import {Mic, Shuffle, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import PageHeader from "@/components/page-header";
 import PracticeSwitch from "@/components/practice-switch";
 import {Button} from "@/components/ui/button";
 import Waiting from "@/components/upload/waiting";
-import {createClient} from "@/lib/supabase";
-import uploadRecording from "@/lib/upload-recording";
+import TopicBar from "@/components/topic/topic-bar";
+import {useTopicFeedback} from "@/components/topic/use-topic-feedback";
 import VolumeBars from "@/components/record/volume-bars";
 import MicCheck from "@/components/record/mic-check";
 import {formatClock, randomTopic, SPEECH_LENGTHS, type ImpromptuInfo, type SpeechLength} from "@/lib/impromptu/topics";
@@ -54,8 +54,6 @@ const urlSaysImpromptu = () => new URLSearchParams(window.location.search).get("
 const onServer = () => false;
 
 export default function RecordPage() {
-    const supabase = createClient();
-    const router = useRouter();
     // the mode the user picked with the switch; until they pick one, the address bar decides
     const [pickedMode, setMode] = useState<Mode | null>(null);
     const fromUrl = useSyncExternalStore(noSubscribe, urlSaysImpromptu, onServer);
@@ -80,6 +78,9 @@ export default function RecordPage() {
     // the topic + length the current take was recorded with (null for free practice). Saved with the
     // recording, so changing the choices afterwards can't mislabel a take.
     const [take, setTake] = useState<ImpromptuInfo | null>(null);
+
+    // free practice: the typed topic, its popups, and the "Get feedback" step (impromptu takes ignore the typed topic)
+    const topicFlow = useTopicFeedback({file, impromptu: take, askOnStart: false, setBusy, setMessage});
 
     // true once the user has left the page, so a mic allowed after leaving gets switched straight off
     const leftRef = useRef(false);
@@ -215,19 +216,6 @@ export default function RecordPage() {
         clearTake();
     }
 
-    async function analyze() {
-        if (!file) return;
-        setBusy(true);
-        setMessage("");
-        try {
-            const id = await uploadRecording(supabase, file, () => setMessage("Analyzing...this can take a few minutes."), take);
-            router.push(`/history/${id}`);
-        } catch (err) {
-            setMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
-            setBusy(false);
-        }
-    }
-
     const working = message.startsWith("Analyzing");
     const elapsed = Math.max(0, Math.floor((now - phaseStart) / 1000));
     const thinking = phase === "thinking";
@@ -266,7 +254,9 @@ export default function RecordPage() {
 
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
-            <MicCheck />
+            {/* after the mic check, free practice asks for a topic (once; "Add a topic" is there after that) */}
+            <MicCheck onClose={() => { if (mode === "free" && !topicFlow.decided) topicFlow.ask(); }} />
+            {topicFlow.dialogs}
             <div>
                 <PracticeSwitch current="/record" />
                 <PageHeader
@@ -292,6 +282,10 @@ export default function RecordPage() {
                 <Waiting stage={working ? 1 : 0} fileName={file.name} />
             ) : (
                 <div className="flex flex-col items-start gap-5 border-t border-foreground pt-6">
+                    {!impromptuMode && (
+                        <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} locked={active}
+                            className="border-b pb-5" />
+                    )}
                     {impromptuMode && (
                         <ImpromptuSetup topic={topic} onNewTopic={newTopic} length={length} thinkFirst={thinkFirst} locked={active}
                             onLength={(l) => { setLength(l); clearTake(); }} onThinkFirst={setThinkFirst} />
@@ -330,7 +324,7 @@ export default function RecordPage() {
                             {recording && stream && <VolumeBars stream={stream} />}
                             {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                             {file && !active && (
-                                <Button onClick={analyze} disabled={busy} className="h-12 w-full text-base">
+                                <Button onClick={() => topicFlow.getFeedback()} disabled={busy} className="h-12 w-full text-base">
                                     {busy ? "Working..." : "Get feedback"}
                                 </Button>
                             )}

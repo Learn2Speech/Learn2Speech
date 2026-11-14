@@ -1,45 +1,34 @@
 "use client";
+// Upload an audio file and get feedback. A popup asks for the speech's topic when the page opens (or
+// "Go topic-free"); a topic tunes the pace target and adds tips for that topic (components/topic).
 import {useState} from "react";
-import {createClient} from "@/lib/supabase";
-import uploadRecording from "@/lib/upload-recording";
 import formatSize from "@/lib/format-size";
 import Link from "next/link";
-import {useRouter} from "next/navigation";
 import {FileAudio, LockKeyhole, Upload as UploadIcon} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
 import Waiting from "@/components/upload/waiting";
 import PracticeSwitch from "@/components/practice-switch";
+import TopicBar from "@/components/topic/topic-bar";
+import {useTopicFeedback} from "@/components/topic/use-topic-feedback";
 import {Button} from "@/components/ui/button";
 export default function UploadPage() {
-    const supabase = createClient();
-    const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false)
-    async function handleUpload(event: React.FormEvent) {
-        event.preventDefault();
-        setMessage("");
-        if (!file) return;
-        setBusy(true)
-        try {
-            const id = await uploadRecording(supabase, file, () => setMessage("Analyzing...this can take a few minutes."))
-            setMessage("Analysis complete!")
-            // open the results right away; the results page lives at a real address, so it survives a refresh
-            router.push(`/history/${id}`)
-        } catch (err) {
-            setMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.")
-        }
+    // the topic, its popups, and the upload + analyze step (opens the results page when it's done)
+    const topicFlow = useTopicFeedback({file, askOnStart: true, setBusy, setMessage});
 
-        // Every way out of the function has to switch busy off, or the button stays locked
-        setBusy(false)
+    function handleUpload(event: React.FormEvent) {
+        event.preventDefault();
+        topicFlow.getFeedback();
     }
 
-    // Akshith's messages decide what to show: done (green), still working (the waiting screen), or an error (red).
-    const done = message === "Analysis complete!";
+    // still working shows the waiting screen; anything else is an error (red)
     const working = message.startsWith("Analyzing");
 
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
+            {topicFlow.dialogs}
             <div>
                 <PracticeSwitch current="/upload" />
                 <h1 className="text-4xl leading-[1.02] font-semibold sm:text-5xl">Upload a practice run</h1>
@@ -59,6 +48,7 @@ export default function UploadPage() {
                 <Waiting stage={working ? 1 : 0} fileName={file.name} />
             ) : (
                 <form onSubmit={handleUpload} className="space-y-5">
+                    <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} className="border-b pb-5" />
                     {/* the whole dashed box is the label, so clicking anywhere in it opens the file picker */}
                     <label htmlFor="audio"
                         className="flex min-h-56 cursor-pointer flex-col items-start justify-center gap-3 rounded-lg border-2 border-dashed border-input px-6 py-12 transition-colors duration-150 hover:border-brand hover:bg-muted has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50">
@@ -80,12 +70,7 @@ export default function UploadPage() {
                     <input id="audio" type="file" accept="audio/*" required
                         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
                         className="sr-only" />
-                    {message && !working && (
-                        <AuthMessage kind={done ? "success" : "error"}>
-                            {message}
-                            {done && <> <Link href="/history" className="font-medium underline underline-offset-4">See it in your history</Link></>}
-                        </AuthMessage>
-                    )}
+                    {message && !working && <AuthMessage kind="error">{message}</AuthMessage>}
                     <Button type="submit" disabled={!file} size="lg" className="h-12 w-full text-base">
                         Upload and analyze
                     </Button>

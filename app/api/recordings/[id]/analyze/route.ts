@@ -5,13 +5,29 @@ import createAudioURL from "@/lib/create-audio-url"
 import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
 import {impromptuFromRow} from "@/lib/impromptu/topics"
+import {cleanTopic, quickTopicProblem} from "@/lib/topic/check-topic"
+import {classifyTopic} from "@/lib/topic/classify-topic"
+import type {TopicInfo} from "@/lib/topic/speech-types"
 export const maxDuration = 200;
+// A topic that can't be evaluated gets this status + code, so the page can show the "can't use that topic" popup.
+// The recording stays "uploaded", so the page can ask again (topic-free, or with a new topic) without re-uploading.
+function topicRejected(reason: string) {
+    return Response.json({error: reason, code: "topic_rejected"}, {status: 422});
+}
 const DAILY_LIMIT = 20;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const {id} = await params
     if (!UUID.test(id)) {
         return Response.json({error: "Recording not found."}, {status: 404});
+    }
+    // Optional body: {topic: "..."} when the speaker typed a topic (Record free practice or Upload).
+    // No body (older pages, topic-free) is fine.
+    let rawTopic: unknown = undefined
+    try {
+        rawTopic = ((await request.json()) as {topic?: unknown} | null)?.topic
+    } catch {
+        // no body or not JSON: topic-free
     }
     const supabase = await createServerSupabase();
     // Checks first if you are trying to access the path that goes from the audio link ot AssemblyAI, you are the user
@@ -39,6 +55,16 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         console.error(`Analysis is not set up: missing ${missing.join(", ")}. Add them to .env.local (or the Vercel project settings) and restart.`);
         return Response.json({error: "Feedback isn't available right now. Please try again later."}, {status: 503});
     }
+    // Impromptu runs (migration 0008) carry a topic + target length. Only topics on our built-in list
+    // count, so text a user typed into the row can never reach the prompt; anything else is a normal run.
+    const impromptu = impromptuFromRow(data)
+    // A typed topic (ignored on impromptu runs, which already have one). The free keysmash check runs first,
+    // before anything is counted or paid for.
+    const typedTopic = !impromptu && typeof rawTopic === "string" ? cleanTopic(rawTopic) : ""
+    if (typedTopic) {
+        const problem = quickTopicProblem(typedTopic)
+        if (problem) return topicRejected(problem)
+    }
     // From here on, changes go through the admin client: users can't edit status or results themselves
     // (the ownership checks above already ran).
     const admin = createAdminSupabase();
@@ -56,6 +82,15 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return countError
             ? Response.json({error: "Could not check your daily limit. Please try again."}, {status: 500})
             : Response.json({error: "Daily analysis limit reached. Please try again tomorrow."}, {status: 429});
+    }
+    // The Claude topic check: after the daily limit (so it can't be called endlessly) and before the claim and
+    // transcription (so a rejected topic never costs an AssemblyAI run). A rejection keeps its daily-limit
+    // entry on purpose: the check itself was a paid call.
+    let topic: TopicInfo | null = null
+    if (typedTopic) {
+        const verdict = await classifyTopic(typedTopic)
+        if (!verdict.ok) return topicRejected(verdict.reason)
+        topic = {topic: typedTopic, speechType: verdict.speechType}
     }
     // a row stuck on "analyzing" (server timed out) becomes retryable 10 min after its analysis started
     const stale = new Date(Date.now() - 10 * 60 * 1000).toISOString();
@@ -80,11 +115,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const link = await createAudioURL(data.file_path)
         // Uses the link and physically uses the path that has been cleared by the guards to send in that link and transcribe audio with the link
         const transcript = await transcribeAudio(link)
-        // Uses that transcript and gets feedback
-        // Impromptu runs (migration 0008) carry a topic + target length. Only topics on our built-in list
-        // count, so text a user typed into the row can never reach the prompt; anything else is a normal run.
-        const impromptu = impromptuFromRow(data)
-        const {metrics, feedback} = await getFeedback(transcript, impromptu)
+        // Uses that transcript and gets feedback (plus the impromptu or topic section, if any)
+        const {metrics, feedback} = await getFeedback(transcript, impromptu, topic)
 
         //  Here we are now taking the values we got from Rian's code and taking them back and updating our table/database with them
         // They are extremely useful so we are giving the audio to Rian and his code doees his thing and then we take the outputs and reorganize them into the table below

@@ -17,7 +17,7 @@ const SECTIONS: Section[] = [
       "We collect what the app needs to coach you: your email, your recordings, and the results we make from them.",
       "Only you can see your recordings and results. The database itself enforces this, and you can delete any recording at any time.",
       "We don't sell your data, show ads, or use tracking or analytics tools.",
-      "Your audio is sent to AssemblyAI for transcription, and the transcript to Anthropic (Claude) for feedback. Nobody else gets it.",
+      "Your audio is sent to AssemblyAI for transcription, and the transcript (plus your speech topic, if you add one) to Anthropic (Claude) for feedback. Nobody else gets it.",
     ],
   },
   {
@@ -25,7 +25,7 @@ const SECTIONS: Section[] = [
     points: [
       "Account: your email address and password. Your password is stored scrambled (hashed) by our login provider, Supabase; we never see it. If you sign in with Google, we receive your email address and name from Google, and use them only to create your account and log you in.",
       "Recordings: the audio files you upload or record in your browser, their original file names and sizes, and when you uploaded them.",
-      "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, and the coaching feedback.",
+      "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, the coaching feedback, and the speech topic you typed, if you added one.",
       "Small browser settings: one login cookie and a few settings saved in your browser. They're listed under Cookies and browser storage below.",
     ],
   },
@@ -50,7 +50,7 @@ const SECTIONS: Section[] = [
     points: [
       "Supabase stores your account, recordings and results. Recordings are kept in a private storage area, and each person can only reach their own files and results.",
       "AssemblyAI turns your audio into text. We give it a temporary link to your recording that stops working after 10 minutes, and as soon as the transcript is done we ask AssemblyAI to delete its copy of the audio and text.",
-      "Anthropic (Claude) writes your coaching feedback from your transcript and speaking stats. Anthropic handles this data under its commercial terms, which say it doesn't train its models on data sent through its API by default.",
+      "Anthropic (Claude) writes your coaching feedback from your transcript and speaking stats, and checks the speech topic you type (if you add one) before feedback starts. Anthropic handles this data under its commercial terms, which say it doesn't train its models on data sent through its API by default.",
       "Vercel hosts the website. Like any web host, it keeps short-term technical logs (for example, when a page was requested) so the site can run and errors can be fixed.",
     ],
   },
@@ -89,7 +89,7 @@ const SECTIONS: Section[] = [
 export default function PrivacyPage() {
   return (
     <main className="mx-auto w-full max-w-[70ch] px-6 py-10">
-      <PageHeader title="Privacy Policy" description="Last updated November 12, 2026" />
+      <PageHeader title="Privacy Policy" description="Last updated November 14, 2026" />
       <div className="space-y-6">
         {SECTIONS.map((section) => (
           <section key={section.heading} id={section.id} className="scroll-mt-20 space-y-2">
