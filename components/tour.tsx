@@ -35,7 +35,7 @@ export default function Tour() {
   return (
     <aside
       aria-label="Tutorial"
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground bg-background pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-foreground bg-background pb-[env(safe-area-inset-bottom)] print:hidden"
     >
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:gap-8">
         {/* aria-live: screen readers read the new step when it changes */}

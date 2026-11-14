@@ -9,7 +9,7 @@ import type { SpeechMetrics } from "@/lib/metrics/types";
 const MAX_TRANSCRIPT_CHARS = 12000;
 // Strips anything that looks like an opening or closing transcript tag, in any case or spacing ("</TRANSCRIPT >",
 // "< transcript>"), so words in a recording can't close the <transcript> block and pose as instructions.
-const TRANSCRIPT_TAG = /<\s*\/?\s*transcript[^>]*>/gi;
+const TRANSCRIPT_TAG = /<[\s/]*transcript[^>]*>/gi; // one character class, so a long run of spaces can't make it backtrack (ReDoS)
 
 export function speechFeedbackPrompt(transcript: Transcript, metrics: SpeechMetrics): string{
     return `You are a supportive speech coach who is meant to look at data and transcript to help the user improve their speaking skills.   

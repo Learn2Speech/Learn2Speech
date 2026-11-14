@@ -211,6 +211,13 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
 Newest first. One entry per big design change: date, what changed, why, where.
 
+- **2026-11-13: Copy transcript and print styles** (from the "20 features to add to your website" reel; the
+  app already had 14 of the 20). "Copy transcript" button on results (says "Copied" or "Couldn't copy",
+  announced to screen readers) in `components/results/copy-transcript-button.tsx`. Printing: dark tokens are
+  `@media screen` only so paper is always light; `print:hidden` on the top bar, footer, cookie notice and
+  tutorial bar; teal blocks keep their colour (`print-color-adjust: exact`); the transcript box expands.
+  Skipped on purpose: site search, back-to-top, scroll progress, UTM tracking, floating contact button.
+
 - **2026-11-12: Privacy Policy cookies section** (from the "20 things so your site doesn't get sued" reel).
   New "Cookies and browser storage" section (`/privacy#cookies`) listing the login cookie, the three browser
   settings (theme, sound, cookie notice) and the tab-only age-check flag, plus a Do Not Track statement. The
