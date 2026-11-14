@@ -12,7 +12,7 @@ const LINKS = [
 
 export default function SiteFooter({ className }: { className?: string }) {
   return (
-    <footer className={cn("flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-6 text-sm text-muted-foreground", className)}>
+    <footer className={cn("print:hidden flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6 py-6 text-sm text-muted-foreground", className)}>
       <span>© 2026 Learn2Speech</span>
       {LINKS.map((link) => (
         <Link key={link.href} href={link.href} className="underline-offset-4 hover:text-foreground hover:underline">

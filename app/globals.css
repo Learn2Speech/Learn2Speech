@@ -103,6 +103,8 @@
   --chart-5: #D8DEDC;
 }
 
+/* screen only: printouts always use the light colours above (dark text on white paper) */
+@media screen {
 .dark {
   --background: #0C0F10;
   --foreground: #E4EAE9;
@@ -144,6 +146,13 @@
   --chart-3: #8B979A;
   --chart-4: #3E5156;
   --chart-5: #1F272A;
+}
+}
+
+/* Printing a results page: drop the top bar, footer, cookie notice and tutorial bar (they carry print:hidden),
+   and keep the teal blocks' background so their light text stays readable on paper. */
+@media print {
+  .on-teal { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
 
 /* On an orange block: the text color flips to whatever passes contrast on the action color. */

@@ -3,6 +3,7 @@
 // It doesn't detect anything itself: it matches the timestamps from SpeechMetrics.
 import { Pause } from "lucide-react";
 import type { SpeechMetrics } from "@/lib/metrics/types";
+import CopyTranscriptButton from "@/components/results/copy-transcript-button";
 import type { Transcript } from "@/lib/transcription/types";
 
 export default function TranscriptView({ transcript, metrics }: { transcript: Transcript; metrics: SpeechMetrics }) {
@@ -15,7 +16,10 @@ export default function TranscriptView({ transcript, metrics }: { transcript: Tr
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-2">
-        <h2 className="text-2xl font-semibold sm:text-3xl">Transcript</h2>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <h2 className="text-2xl font-semibold sm:text-3xl">Transcript</h2>
+          <CopyTranscriptButton text={transcript.text} />
+        </div>
         <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <mark className="rounded bg-highlight/30 px-1 text-foreground">um</mark> filler word
@@ -27,7 +31,7 @@ export default function TranscriptView({ transcript, metrics }: { transcript: Tr
       </div>
       {/* scrolls on its own so a long speech doesn't push everything else down.
           tabIndex lets keyboard users scroll it. */}
-      <div tabIndex={0} className="mt-6 max-h-[32rem] overflow-y-auto border-y py-5 text-xl leading-[1.7] sm:text-2xl sm:leading-[1.65]">
+      <div tabIndex={0} className="mt-6 max-h-[32rem] overflow-y-auto print:max-h-none print:overflow-visible border-y py-5 text-xl leading-[1.7] sm:text-2xl sm:leading-[1.65]">
         {transcript.words.length === 0
           ? transcript.text
           : transcript.words.map((word, i) => {

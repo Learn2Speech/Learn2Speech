@@ -34,7 +34,7 @@ export default function CookieConsent() {
   }
 
   return (
-    <div role="region" aria-label="Cookie notice" className="fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <div role="region" aria-label="Cookie notice" className="fixed inset-x-0 bottom-0 z-50 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] print:hidden">
       <div className="mx-auto flex max-w-2xl flex-col gap-3 rounded-md border bg-background p-4 text-sm shadow-lg sm:flex-row sm:items-center">
         <p className="flex-1 leading-relaxed">
           We use one cookie to keep you signed in. No ads or tracking.{" "}
