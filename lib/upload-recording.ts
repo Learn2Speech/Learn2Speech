@@ -1,11 +1,13 @@
 import type {SupabaseClient} from "@supabase/supabase-js";
 import validateAudio from "@/lib/validate-audio";
 import buildAudioPath from "@/lib/build-audio-path";
+import type {ImpromptuInfo} from "@/lib/impromptu/topics";
 
 // Shared by the Upload page and the Record page: checks the file, saves it to private storage,
 // adds its row, then asks the server to analyze it. Returns the new recording's id, or throws
 // an Error whose message is safe to show to the user.
-export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void): Promise<string> {
+// An impromptu run (Record page) also saves its topic and target length (columns from migration 0008).
+export default async function uploadRecording(supabase: SupabaseClient, file: File, onAnalyzing?: () => void, impromptu?: ImpromptuInfo | null): Promise<string> {
     const problem = validateAudio(file);
     if (problem) throw new Error(problem);
     const {data} = await supabase.auth.getUser();
@@ -22,6 +24,8 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
         file_path: address,
         original_name: file.name,
         size_bytes: file.size,
+        // only sent for impromptu runs, so normal uploads don't depend on the new columns
+        ...(impromptu ? {topic: impromptu.topic, target_seconds: impromptu.targetSeconds} : {}),
     }).select("id").single();
     if (insertError) {
         await supabase.storage.from("recordings").remove([address]);

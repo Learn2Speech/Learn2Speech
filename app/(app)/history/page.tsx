@@ -10,12 +10,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import type {Recording} from "@/lib/recording-types"
 import ProgressChart from "@/components/history/progress-chart"
+import { impromptuFromRow } from "@/lib/impromptu/topics"
 
 export const metadata: Metadata = { title: "History" };
 
 // Only the columns the list shows. We leave out the full transcript on purpose:
 // it holds every word with timestamps, which is too heavy to load for every row.
-type HistoryRow = Pick<Recording, "id" | "original_name" | "size_bytes" | "created_at" | "status" | "metrics" | "feedback" | "error_message">
+type HistoryRow = Pick<Recording, "id" | "original_name" | "size_bytes" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">
 
 async function RecordingsList() {
 
@@ -23,7 +24,7 @@ async function RecordingsList() {
     const supabase = await createServerSupabase();
     const {data: rows, error} = await supabase
         .from("recordings")
-        .select("id, original_name, size_bytes, created_at, status, metrics, feedback, error_message")
+        .select("id, original_name, size_bytes, created_at, status, metrics, feedback, error_message, topic, target_seconds")
         .order("created_at", {ascending: false})
     // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
     const data = (rows ?? []) as HistoryRow[]
@@ -41,21 +42,31 @@ async function RecordingsList() {
     }
     // finished recordings only, oldest first, so the chart reads left → right over time
     // ([...data] copies first, because reverse() would also flip the list below)
-    const points = [...data].reverse().flatMap((row) =>
-        row.status === "done" && row.metrics ? [{createdAt: row.created_at, metrics: row.metrics}] : []);
+    const finished = [...data].reverse().filter((row) => row.status === "done" && row.metrics)
+    const points = finished.map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
+    // the same charts again for impromptu runs only, once there are at least two of them
+    const impromptuPoints = finished.filter((row) => impromptuFromRow(row)).map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
+    const showImpromptu = impromptuPoints.length >= 2
     return (
         <>
-        <ProgressChart points={points} />
+        <ProgressChart points={points} title={showImpromptu ? "All recordings" : undefined} />
+        {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu runs" />}
         <ul className="divide-y border-y border-foreground">
             {/* map returns one <li> per row; key lets React tell the items apart */}
-            {data.map((row) => (
+            {data.map((row) => {
+                const impromptu = impromptuFromRow(row)
+                return (
                 <li key={row.id}>
                     {/* the whole row is a link to that recording's full results */}
                     <Link href={`/history/${row.id}`} className="block py-6 transition-colors duration-150 hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3">
                         <div className="flex items-start justify-between gap-3">
                             <p className="min-w-0 truncate text-xl font-semibold sm:text-2xl" title={row.original_name}>{row.original_name}</p>
-                            <StatusBadge status={row.status} />
+                            <div className="flex shrink-0 gap-1.5">
+                                {impromptu && <Badge variant="outline" className="border-orange/40 bg-orange/10 text-foreground">Impromptu</Badge>}
+                                <StatusBadge status={row.status} />
+                            </div>
                         </div>
+                        {impromptu && <p className="mt-1 text-foreground">Topic: {impromptu.topic}</p>}
                         <p className="text-sm text-muted-foreground">
                             {formatSize(row.size_bytes)} · {new Date(row.created_at).toLocaleDateString()}
                         </p>
@@ -82,7 +93,8 @@ async function RecordingsList() {
                         )}
                     </Link>
                 </li>
-            ))}
+                )
+            })}
         </ul>
         </>
     );

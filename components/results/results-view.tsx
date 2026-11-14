@@ -4,17 +4,20 @@
 // Used by /history/[id] and by the tutorial at /demo. Each part has a data-tour name so the
 // tutorial (components/tour.tsx) can point at it.
 import FeedbackPanel from "@/components/results/feedback-panel";
+import ImpromptuReview from "@/components/results/impromptu-review";
 import MetricsCards from "@/components/results/metrics-cards";
 import SpeechTimeline from "@/components/results/speech-timeline";
 import TranscriptView from "@/components/results/transcript-view";
 import type { CoachingFeedback } from "@/lib/feedback/types";
 import type { FillerHit, SpeechMetrics } from "@/lib/metrics/types";
 import type { Transcript } from "@/lib/transcription/types";
+import type { ImpromptuInfo } from "@/lib/impromptu/topics";
 
 type ResultsViewProps = {
   metrics: SpeechMetrics;
   feedback: CoachingFeedback;
   transcript: Transcript;
+  impromptu?: ImpromptuInfo | null; // set on impromptu runs: shows the topic and the topic/structure/time checks
 };
 
 // The filler word said most often, with how many times; null when there were none.
@@ -26,7 +29,7 @@ function topFiller(fillers: FillerHit[]) {
   return top;
 }
 
-export default function ResultsView({ metrics, feedback, transcript }: ResultsViewProps) {
+export default function ResultsView({ metrics, feedback, transcript, impromptu }: ResultsViewProps) {
   const top = topFiller(metrics.fillers);
   const big = top ? top.word : String(metrics.wordsPerMinute);
   return (
@@ -59,6 +62,12 @@ export default function ResultsView({ metrics, feedback, transcript }: ResultsVi
         <h2 className="mb-8 text-2xl font-semibold sm:text-3xl">Where it happened</h2>
         <SpeechTimeline metrics={metrics} durationMs={transcript.durationMs} words={transcript.words} />
       </section>
+
+      {impromptu && (
+        <section aria-label="Impromptu checks">
+          <ImpromptuReview topic={impromptu.topic} targetSeconds={impromptu.targetSeconds} durationMs={transcript.durationMs} review={feedback.impromptu} />
+        </section>
+      )}
 
       <section data-tour="feedback">
         <FeedbackPanel feedback={feedback} />
