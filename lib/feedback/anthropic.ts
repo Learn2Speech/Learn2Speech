@@ -4,7 +4,7 @@ import {UserFacingError} from "@/lib/user-error";
 //   isCoachingFeedback - checks a parsed reply really has the fields we expect
 //   parseFeedback    - turns Claude's text reply into a CoachingFeedback object
 // Every failure path logs the technical reason for us and throws a friendly message for the user.
-import type { CoachingFeedback } from "@/lib/feedback/types";
+import type { CoachingFeedback, ImpromptuReview } from "@/lib/feedback/types";
 export async function requestFeedback(prompt: string): Promise<string> {
   // The key only exists on the server (.env.local locally, Vercel settings online), never in the browser
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
@@ -21,7 +21,7 @@ export async function requestFeedback(prompt: string): Promise<string> {
     },
     body: JSON.stringify({
      model: "claude-opus-5-5",
-    max_tokens: 2000,                             
+    max_tokens: 2500, // a little extra room for the impromptu section                             
     messages: [{ role: "user", content: prompt }],  
 }),
   });
@@ -71,7 +71,26 @@ export function isCoachingFeedback(x: unknown): boolean {
         && typeof item.tip === "string" && item.tip.length < 1000;
     });
 }
-export function parseFeedback(text: string): CoachingFeedback{
+// The extra impromptu section, checked the same careful way
+function isCheck(x: unknown): boolean {
+    const c = x as { rating?: unknown; comment?: unknown } | null;
+    return typeof c === "object" && c !== null
+    && (c.rating === "strong" || c.rating === "okay" || c.rating === "weak")
+    && typeof c.comment === "string" && c.comment.length < 1000;
+}
+export function isImpromptuReview(x: unknown): boolean {
+    const r = x as { onTopic?: unknown; structure?: unknown; timeUse?: unknown } | null;
+    if (typeof r !== "object" || r === null) return false;
+    const s = r.structure as { opening?: unknown; mainPoints?: unknown; closing?: unknown } | null;
+    return isCheck(r.onTopic) && isCheck(r.timeUse) && isCheck(s)
+    && typeof s?.opening === "boolean" && typeof s?.closing === "boolean"
+    && typeof s?.mainPoints === "number" && Number.isInteger(s.mainPoints) && s.mainPoints >= 0 && s.mainPoints <= 20;
+}
+
+// expectImpromptu: this was an impromptu run, so keep the "impromptu" section if it's well formed.
+// If it's missing or broken we still keep the normal feedback (the speaker already paid the wait), just
+// without the extra section, rather than failing the whole analysis. On normal runs it's always dropped.
+export function parseFeedback(text: string, expectImpromptu = false): CoachingFeedback{
     let data: unknown;
     try{
         // Claude sometimes adds a sentence or code fences around the JSON, so we cut from the
@@ -92,5 +111,20 @@ export function parseFeedback(text: string): CoachingFeedback{
         console.error("Claude's reply was missing summary, strengths, or improvements.");
         throw new UserFacingError("Reply was garbled. Please try again.")
     }
-    return data as CoachingFeedback;
+    const {summary, strengths, improvements, impromptu} = data as CoachingFeedback;
+    const feedback: CoachingFeedback = {summary, strengths, improvements};
+    if (expectImpromptu) {
+        if (isImpromptuReview(impromptu)) {
+            const r = impromptu as ImpromptuReview;
+            // copy only the fields we know about, so nothing extra from the reply gets saved
+            feedback.impromptu = {
+                onTopic: {rating: r.onTopic.rating, comment: r.onTopic.comment},
+                structure: {rating: r.structure.rating, comment: r.structure.comment, opening: r.structure.opening, mainPoints: r.structure.mainPoints, closing: r.structure.closing},
+                timeUse: {rating: r.timeUse.rating, comment: r.timeUse.comment},
+            };
+        } else {
+            console.error("Claude's reply was missing a valid impromptu section; saving the normal feedback only.");
+        }
+    }
+    return feedback;
 }

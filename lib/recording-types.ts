@@ -23,4 +23,9 @@ export type Recording = {
   feedback: CoachingFeedback | null;
   duration_ms: number | null;
   error_message: string | null; // only filled in when status is "failed"
+
+  // impromptu runs only (migration 0008): the topic from lib/impromptu/topics.ts and the target
+  // length in seconds (60, 120 or 180). Both null for normal recordings and uploads.
+  topic: string | null;
+  target_seconds: number | null;
 };

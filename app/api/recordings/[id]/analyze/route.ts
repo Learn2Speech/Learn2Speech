@@ -4,6 +4,7 @@ import {UserFacingError} from "@/lib/user-error"
 import createAudioURL from "@/lib/create-audio-url"
 import {transcribeAudio} from "@/lib/transcription/assemblyai"
 import {getFeedback} from "@/lib/feedback/getFeedback"
+import {impromptuFromRow} from "@/lib/impromptu/topics"
 export const maxDuration = 200;
 const DAILY_LIMIT = 20;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -29,6 +30,14 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     // Server-side check that the file really is in this user's own folder (the browser could send any path)
     if (!new RegExp(`^${user.id}/[0-9a-f-]{36}\\.[a-zA-Z0-9]{1,5}$`).test(data.file_path)) {
         return Response.json({error: "Recording not found."}, {status: 404});
+    }
+    // Every server key the analysis needs, checked BEFORE anything starts. A missing one would otherwise
+    // crash with no message, or fail halfway (after AssemblyAI was already paid for). The recording stays
+    // "uploaded", so it can be analyzed once the key is added. Only the NAMES are logged, never values.
+    const missing = ["SUPABASE_SERVICE_ROLE_KEY", "ASSEMBLYAI_API_KEY", "ANTHROPIC_API_KEY"].filter((name) => !process.env[name]);
+    if (missing.length > 0) {
+        console.error(`Analysis is not set up: missing ${missing.join(", ")}. Add them to .env.local (or the Vercel project settings) and restart.`);
+        return Response.json({error: "Feedback isn't available right now. Please try again later."}, {status: 503});
     }
     // From here on, changes go through the admin client: users can't edit status or results themselves
     // (the ownership checks above already ran).
@@ -72,7 +81,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         // Uses the link and physically uses the path that has been cleared by the guards to send in that link and transcribe audio with the link
         const transcript = await transcribeAudio(link)
         // Uses that transcript and gets feedback
-        const {metrics, feedback} = await getFeedback(transcript)
+        // Impromptu runs (migration 0008) carry a topic + target length. Only topics on our built-in list
+        // count, so text a user typed into the row can never reach the prompt; anything else is a normal run.
+        const impromptu = impromptuFromRow(data)
+        const {metrics, feedback} = await getFeedback(transcript, impromptu)
 
         //  Here we are now taking the values we got from Rian's code and taking them back and updating our table/database with them
         // They are extremely useful so we are giving the audio to Rian and his code doees his thing and then we take the outputs and reorganize them into the table below

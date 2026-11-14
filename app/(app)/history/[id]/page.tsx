@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Loader2, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, Shuffle, Upload } from "lucide-react";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
 import ResultsView from "@/components/results/results-view";
 import SinceLastTime from "@/components/results/since-last-time";
@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createServerSupabase } from "@/lib/supabase-server";
 import type { Recording } from "@/lib/recording-types";
+import { impromptuFromRow } from "@/lib/impromptu/topics";
 
 // Tab title = the recording's file name, or "Page not found" when the row doesn't exist or isn't yours
 // (Row Level Security hides other people's). One small extra query; the page below already loads at request time.
@@ -35,6 +36,7 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
   if (error || !data) notFound();
   // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
   const recording = data as Recording;
+  const impromptu = impromptuFromRow(recording);
 
   const header = (
     <div className="mb-12 flex flex-wrap items-end justify-between gap-4 border-b border-foreground pb-6">
@@ -43,15 +45,20 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
         <p className="text-muted-foreground">
           {new Date(recording.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
           {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
+          {impromptu && ` · Impromptu, ${impromptu.targetSeconds / 60} min target`}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
         {/* the next step after reading feedback is usually to try again */}
-        {recording.status === "done" && (
+        {recording.status === "done" && (impromptu ? (
+          <Link href="/record?mode=impromptu" className={buttonVariants()}>
+            <Shuffle /> Try another topic
+          </Link>
+        ) : (
           <Link href="/upload" className={buttonVariants()}>
             <Upload /> Upload another speech
           </Link>
-        )}
+        ))}
         {/* available in every state, so users can always erase their own data */}
         <DeleteRecordingButton id={recording.id} filePath={recording.file_path} />
       </div>
@@ -68,7 +75,7 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
       <>
         {header}
         {previous && <SinceLastTime current={recording.metrics} previous={previous} />}
-        <ResultsView metrics={recording.metrics} feedback={recording.feedback} transcript={recording.transcript} />
+        <ResultsView metrics={recording.metrics} feedback={recording.feedback} transcript={recording.transcript} impromptu={impromptu} />
       </>
     );
   }

@@ -25,10 +25,13 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-export default function ProgressChart({ points }: { points: ProgressPoint[] }) {
+// title: shown above the charts when the page has more than one set (e.g. "Impromptu runs")
+export default function ProgressChart({ points, title }: { points: ProgressPoint[]; title?: string }) {
   if (points.length < 2) return null; // one recording isn't a trend yet
   return (
-    <section aria-label="Your progress" className="mb-12 grid gap-3 sm:grid-cols-3">
+    <section aria-label={title ? `Your progress: ${title}` : "Your progress"} className="mb-12">
+      {title && <h2 className="mb-3 text-xl font-semibold">{title} <span className="text-base font-normal text-muted-foreground">({points.length})</span></h2>}
+      <div className="grid gap-3 sm:grid-cols-3">
       {CHARTS.map((chart) => {
         const values = points.map((p) => chart.pick(p.metrics));
         const first = values[0], latest = values[values.length - 1];
@@ -42,6 +45,7 @@ export default function ProgressChart({ points }: { points: ProgressPoint[] }) {
           </div>
         );
       })}
+      </div>
     </section>
   );
 }
