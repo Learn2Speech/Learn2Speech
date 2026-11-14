@@ -17,7 +17,7 @@ const SECTIONS: Section[] = [
       "We collect what the app needs to coach you: your email, your recordings, and the results we make from them.",
       "Only you can see your recordings and results. The database itself enforces this, and you can delete any recording at any time.",
       "We don't sell your data, show ads, or use tracking or analytics tools.",
-      "Your audio is sent to AssemblyAI for transcription, and the transcript (plus your speech topic, if you add one) to Anthropic (Claude) for feedback. Nobody else gets it.",
+      "Your audio is sent to AssemblyAI for transcription, and the transcript (plus your speech topic and parts of your script, if you add them) to Anthropic (Claude) for feedback. Nobody else gets it.",
     ],
   },
   {
@@ -25,7 +25,7 @@ const SECTIONS: Section[] = [
     points: [
       "Account: your email address and password. Your password is stored scrambled (hashed) by our login provider, Supabase; we never see it. If you sign in with Google, we receive your email address and name from Google, and use them only to create your account and log you in.",
       "Recordings: the audio files you upload or record in your browser, their original file names and sizes, and when you uploaded them.",
-      "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, the coaching feedback, and the speech topic you typed, if you added one.",
+      "Results: the transcript of each recording (every word with its timing), your pace, filler word and pause measurements, the coaching feedback, and the speech topic and script you added, if any. When you redo a speech, the new results also note which earlier recording they redo, so the two can be shown side by side.",
       "Small browser settings: one login cookie and a few settings saved in your browser. They're listed under Cookies and browser storage below.",
     ],
   },
@@ -50,7 +50,8 @@ const SECTIONS: Section[] = [
     points: [
       "Supabase stores your account, recordings and results. Recordings are kept in a private storage area, and each person can only reach their own files and results.",
       "AssemblyAI turns your audio into text. We give it a temporary link to your recording that stops working after 10 minutes, and as soon as the transcript is done we ask AssemblyAI to delete its copy of the audio and text.",
-      "Anthropic (Claude) writes your coaching feedback from your transcript and speaking stats, and checks the speech topic you type (if you add one) before feedback starts. Anthropic handles this data under its commercial terms, which say it doesn't train its models on data sent through its API by default.",
+      "Anthropic (Claude) writes your coaching feedback from your transcript and speaking stats, and checks the speech topic you type (if you add one) before feedback starts. If you add a script, we compare it with your transcript on our own server and send Anthropic only the results of that comparison (short quotes of parts you skipped or added, and your pace per part), not the whole script. Anthropic handles this data under its commercial terms, which say it doesn't train its models on data sent through its API by default.",
+      "Your browser's speech recognition, only if you turn on the live filler counter on the Record page (it's off by default). When your browser can recognize speech on your device, nothing leaves it. Otherwise your browser sends your audio to its own speech service (for example Google in Chrome, Microsoft in Edge) while you record, and the page tells you this before you turn it on. Learn2Speech never receives or saves that live text.",
       "Vercel hosts the website. Like any web host, it keeps short-term technical logs (for example, when a page was requested) so the site can run and errors can be fixed.",
     ],
   },

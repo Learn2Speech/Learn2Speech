@@ -11,6 +11,13 @@
 //                   30 seconds to think (recording starts by itself after), then the clock counts DOWN and
 //                   warns you near the end. The topic and length are saved with the recording (migration 0008)
 //                   so the feedback can also judge staying on topic, structure and use of time.
+//
+// Extras on this page (each lives in its own folder):
+//   components/topic       - the typed topic and its popups (free practice)
+//   components/script      - a pasted script, compared with what you said (free practice)
+//   components/live-fillers - the optional live filler counter while recording (both modes)
+//   components/redo        - /record?redo=<id>: record an earlier speech again, then compare the two takes
+//   components/practice    - the shared "Get feedback" step that sends all of the above
 import {useCallback, useEffect, useRef, useState, useSyncExternalStore} from "react";
 import {Mic, Shuffle, Square} from "lucide-react";
 import {AuthMessage} from "@/components/auth/auth-card";
@@ -19,7 +26,14 @@ import PracticeSwitch from "@/components/practice-switch";
 import {Button} from "@/components/ui/button";
 import Waiting from "@/components/upload/waiting";
 import TopicBar from "@/components/topic/topic-bar";
-import {useTopicFeedback} from "@/components/topic/use-topic-feedback";
+import ScriptBar from "@/components/script/script-bar";
+import {useScript} from "@/components/script/use-script";
+import LiveFillerToggle from "@/components/live-fillers/live-filler-toggle";
+import LiveFillerCounter from "@/components/live-fillers/live-filler-counter";
+import {useLiveFillers} from "@/components/live-fillers/use-live-fillers";
+import RedoBanner from "@/components/redo/redo-banner";
+import {useRedo} from "@/components/redo/use-redo";
+import {useGetFeedback} from "@/components/practice/use-get-feedback";
 import VolumeBars from "@/components/record/volume-bars";
 import MicCheck from "@/components/record/mic-check";
 import {formatClock, randomTopic, SPEECH_LENGTHS, type ImpromptuInfo, type SpeechLength} from "@/lib/impromptu/topics";
@@ -57,7 +71,11 @@ export default function RecordPage() {
     // the mode the user picked with the switch; until they pick one, the address bar decides
     const [pickedMode, setMode] = useState<Mode | null>(null);
     const fromUrl = useSyncExternalStore(noSubscribe, urlSaysImpromptu, onServer);
-    const mode: Mode = pickedMode ?? (fromUrl ? "impromptu" : "free");
+    // /record?redo=<id>: the earlier take being redone (components/redo). Its settings fill in below until
+    // the speaker changes them, and "Stop redoing" puts everything back to normal.
+    const redoFlow = useRedo();
+    const earlier = redoFlow.redo;
+    const mode: Mode = pickedMode ?? (earlier ? (earlier.impromptu ? "impromptu" : "free") : fromUrl ? "impromptu" : "free");
     const [phase, setPhase] = useState<Phase>("idle");
     // when the current phase started, the latest clock tick, and how many seconds the phase may run
     const [phaseStart, setPhaseStart] = useState(0);
@@ -72,15 +90,25 @@ export default function RecordPage() {
     const [stream, setStream] = useState<MediaStream | null>(null);
 
     // impromptu choices
-    const [topic, setTopic] = useState("");
-    const [length, setLength] = useState<SpeechLength>(120);
+    const [pickedTopic, setTopic] = useState("");
+    const [pickedLength, setLength] = useState<SpeechLength | null>(null);
+    const topic = pickedTopic || earlier?.impromptu?.topic || "";
+    const length: SpeechLength = pickedLength ?? earlier?.impromptu?.targetSeconds ?? 120;
     const [thinkFirst, setThinkFirst] = useState(true);
     // the topic + length the current take was recorded with (null for free practice). Saved with the
     // recording, so changing the choices afterwards can't mislabel a take.
     const [take, setTake] = useState<ImpromptuInfo | null>(null);
 
-    // free practice: the typed topic, its popups, and the "Get feedback" step (impromptu takes ignore the typed topic)
-    const topicFlow = useTopicFeedback({file, impromptu: take, askOnStart: false, setBusy, setMessage});
+    // free practice: a pasted script (components/script); a redo brings back the earlier take's script
+    const scriptFlow = useScript(earlier ? earlier.script : undefined);
+    // the typed topic, its popups, and the "Get feedback" step (impromptu takes ignore the typed topic and script)
+    const topicFlow = useGetFeedback({
+        file, impromptu: take, script: scriptFlow.script, redoOf: earlier?.id ?? null,
+        redoTopic: earlier && !earlier.impromptu ? earlier.topic : undefined,
+        askOnStart: false, holdTopicPopup: redoFlow.loading, setBusy, setMessage,
+    });
+    // the optional live filler counter; listens only while recording (components/live-fillers)
+    const live = useLiveFillers(phase === "recording");
 
     // true once the user has left the page, so a mic allowed after leaving gets switched straight off
     const leftRef = useRef(false);
@@ -143,7 +171,7 @@ export default function RecordPage() {
     }
 
     function newTopic() {
-        setTopic((t) => randomTopic(t));
+        setTopic(randomTopic(topic));
         setMessage("");
         clearTake();
     }
@@ -255,8 +283,10 @@ export default function RecordPage() {
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
             {/* after the mic check, free practice asks for a topic (once; "Add a topic" is there after that) */}
-            <MicCheck onClose={() => { if (mode === "free" && !topicFlow.decided) topicFlow.ask(); }} />
+            {/* (a redo brings its own topic, so it skips the question) */}
+            <MicCheck onClose={() => { if (mode === "free" && !topicFlow.decided && !redoFlow.loading && !redoFlow.redo) topicFlow.ask(); }} />
             {topicFlow.dialogs}
+            {scriptFlow.dialog}
             <div>
                 <PracticeSwitch current="/record" />
                 <PageHeader
@@ -282,9 +312,14 @@ export default function RecordPage() {
                 <Waiting stage={working ? 1 : 0} fileName={file.name} />
             ) : (
                 <div className="flex flex-col items-start gap-5 border-t border-foreground pt-6">
+                    {redoFlow.redo && <RedoBanner redo={redoFlow.redo} onCancel={redoFlow.cancel} locked={active} />}
                     {!impromptuMode && (
-                        <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} locked={active}
-                            className="border-b pb-5" />
+                        <>
+                            <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} locked={active}
+                                className="border-b pb-5" />
+                            <ScriptBar script={scriptFlow.script} onEdit={scriptFlow.edit} onRemove={scriptFlow.remove} locked={active}
+                                className="border-b pb-5" />
+                        </>
                     )}
                     {impromptuMode && (
                         <ImpromptuSetup topic={topic} onNewTopic={newTopic} length={length} thinkFirst={thinkFirst} locked={active}
@@ -321,7 +356,9 @@ export default function RecordPage() {
                                     <Square /> Stop recording
                                 </Button>
                             )}
+                            {phase === "idle" && <LiveFillerToggle live={live} locked={busy} />}
                             {recording && stream && <VolumeBars stream={stream} />}
+                            {(recording || (file && !active)) && <LiveFillerCounter live={live} recording={recording} />}
                             {previewUrl && <audio controls src={previewUrl} className="w-full" />}
                             {file && !active && (
                                 <Button onClick={() => topicFlow.getFeedback()} disabled={busy} className="h-12 w-full text-base">

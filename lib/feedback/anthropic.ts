@@ -6,6 +6,7 @@ import {UserFacingError} from "@/lib/user-error";
 // Every failure path logs the technical reason for us and throws a friendly message for the user.
 import type { CoachingFeedback, ImpromptuReview } from "@/lib/feedback/types";
 import type { TopicInfo } from "@/lib/topic/speech-types";
+import type { ScriptReview } from "@/lib/script/types";
 // maxTokens: room for the reply (thinking included). effort: how hard Claude thinks; the short topic check
 // (lib/topic/classify-topic.ts) uses "low", the feedback itself keeps the model's default.
 export async function requestFeedback(prompt: string, options: { maxTokens?: number; effort?: "low" | "medium" | "high" } = {}): Promise<string> {
@@ -103,10 +104,21 @@ function isTopicSection(x: unknown): boolean {
     && t.tips.every((tip) => typeof tip === "string" && tip.length < 1000);
 }
 
+// The script section: a comment plus 0-4 tips
+function isScriptSection(x: unknown): boolean {
+    const s = x as { comment?: unknown; tips?: unknown } | null;
+    return typeof s === "object" && s !== null
+    && typeof s.comment === "string" && s.comment.length < 1000
+    && Array.isArray(s.tips) && s.tips.length <= 4
+    && s.tips.every((tip) => typeof tip === "string" && tip.length < 1000);
+}
+
 // topic: this run had a topic (already checked). The topic text and speech type come from OUR code, never from
 // Claude's reply; only the on-topic rating and tips are read from the reply. If that part is missing or broken,
 // the topic and its pace target are still saved, just without tips.
-export function parseFeedback(text: string, expectImpromptu = false, topic: TopicInfo | null = null): CoachingFeedback{
+// script: this run had a script. The comparison numbers come from OUR code (lib/script/compare-script.ts);
+// only the comment and tips are read from the reply, and the comparison is saved even without them.
+export function parseFeedback(text: string, expectImpromptu = false, topic: TopicInfo | null = null, script: Omit<ScriptReview, "tips" | "comment"> | null = null): CoachingFeedback{
     let data: unknown;
     try{
         // Claude sometimes adds a sentence or code fences around the JSON, so we cut from the
@@ -151,6 +163,17 @@ export function parseFeedback(text: string, expectImpromptu = false, topic: Topi
             if (s.onTopic) feedback.topic.onTopic = {rating: s.onTopic.rating, comment: s.onTopic.comment};
         } else {
             console.error("Claude's reply was missing a valid topic section; saving the topic without tips.");
+        }
+    }
+    if (script) {
+        feedback.script = {...script, tips: []};
+        const section = (data as {scriptReview?: unknown}).scriptReview;
+        if (isScriptSection(section)) {
+            const s = section as {comment: string; tips: string[]};
+            feedback.script.comment = s.comment;
+            feedback.script.tips = [...s.tips];
+        } else {
+            console.error("Claude's reply was missing a valid script section; saving the script comparison without tips.");
         }
     }
     return feedback;

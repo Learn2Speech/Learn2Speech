@@ -5,9 +5,10 @@ import { Suspense } from "react";
 import { connection } from "next/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Loader2, Shuffle, Upload } from "lucide-react";
+import { ArrowLeft, Loader2, Repeat, Shuffle, Upload } from "lucide-react";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
 import ResultsView from "@/components/results/results-view";
+import RedoCompare from "@/components/redo/redo-compare";
 import SinceLastTime from "@/components/results/since-last-time";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,12 +51,18 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
       </div>
       <div className="flex flex-wrap gap-2">
         {/* the next step after reading feedback is usually to try again */}
+        {/* "Redo this speech": record it again with the same topic / script, then see both takes side by side (components/redo) */}
+        {recording.status === "done" && (
+          <Link href={`/record?redo=${recording.id}`} className={buttonVariants()}>
+            <Repeat /> Redo this speech
+          </Link>
+        )}
         {recording.status === "done" && (impromptu ? (
-          <Link href="/record?mode=impromptu" className={buttonVariants()}>
+          <Link href="/record?mode=impromptu" className={buttonVariants({ variant: "outline" })}>
             <Shuffle /> Try another topic
           </Link>
         ) : (
-          <Link href="/upload" className={buttonVariants()}>
+          <Link href="/upload" className={buttonVariants({ variant: "outline" })}>
             <Upload /> Upload another speech
           </Link>
         ))}
@@ -66,15 +73,27 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
   );
 
   if (recording.status === "done" && recording.metrics && recording.feedback && recording.transcript) {
-    // the newest finished recording made before this one (RLS keeps it to this user's own rows)
-    const { data: prev } = await supabase.from("recordings").select("metrics")
+    // A redo is compared with the take it redid (components/redo/redo-compare.tsx); anything else with the
+    // newest finished recording made before it. RLS keeps both lookups to this user's own rows.
+    const redoOf = recording.feedback.redoOf;
+    const { data: earlierRow } = redoOf
+      ? await supabase.from("recordings").select("id, original_name, metrics, feedback, duration_ms").eq("id", redoOf).eq("status", "done").maybeSingle()
+      : { data: null };
+    const earlier = earlierRow as Pick<Recording, "id" | "original_name" | "metrics" | "feedback" | "duration_ms"> | null;
+    const { data: prev } = earlier ? { data: null } : await supabase.from("recordings").select("metrics")
       .eq("status", "done").lt("created_at", recording.created_at)
       .order("created_at", { ascending: false }).limit(1).maybeSingle();
     const previous = (prev as Pick<Recording, "metrics"> | null)?.metrics;
     return (
       <>
         {header}
-        {previous && <SinceLastTime current={recording.metrics} previous={previous} />}
+        {earlier?.metrics && earlier.feedback ? (
+          <RedoCompare earlierId={earlier.id} earlierName={earlier.original_name}
+            earlier={{ metrics: earlier.metrics, feedback: earlier.feedback, durationMs: earlier.duration_ms ?? 0 }}
+            current={{ metrics: recording.metrics, feedback: recording.feedback, durationMs: recording.duration_ms ?? recording.transcript.durationMs }} />
+        ) : (
+          previous && <SinceLastTime current={recording.metrics} previous={previous} />
+        )}
         <ResultsView metrics={recording.metrics} feedback={recording.feedback} transcript={recording.transcript} impromptu={impromptu} />
       </>
     );

@@ -4,6 +4,7 @@
 // all three have to change with it.
 import type { SpeechMetrics } from "@/lib/metrics/types";
 import type { SpeechType } from "@/lib/topic/speech-types";
+import type { ScriptReview } from "@/lib/script/types";
 
 // One specific thing to work on, plus what to actually do about it.
 export type Improvement = {
@@ -45,6 +46,8 @@ export type CoachingFeedback = {
   improvements: Improvement[]; // the most important things to fix, best first
   impromptu?: ImpromptuReview; // only on impromptu runs (older recordings and uploads don't have it)
   topic?: TopicReview; // only on runs with a typed topic
+  script?: ScriptReview; // only on runs with a pasted script (lib/script)
+  redoOf?: string; // id of the earlier recording this one redoes, for the side-by-side compare (lib/redo)
 };
 
 export type FeedbackCall = {

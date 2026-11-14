@@ -5,18 +5,30 @@ import { requestFeedback, parseFeedback } from "@/lib/feedback/anthropic";
 import type { FeedbackCall } from "@/lib/feedback/types";
 import { rateTimeUse, type ImpromptuInfo } from "@/lib/impromptu/topics";
 import type { TopicInfo } from "@/lib/topic/speech-types";
+import { compareScript } from "@/lib/script/compare-script";
 
 // SUMMARY: the feedback pipeline in four steps: measure the transcript, build the prompt from it,
 // ask Claude, then parse the reply. Returns both the metrics and the feedback so they are
 // saved together and always match each other.
-// For an impromptu run (topic + target length), the feedback also judges topic, structure and timing.
-// For a run with a typed topic, the pace target and tips are tailored to that topic (impromptu wins if both).
-export async function getFeedback(transcript: Transcript, impromptu?: ImpromptuInfo | null, topic?: TopicInfo | null): Promise<FeedbackCall> {
-  const typedTopic = impromptu ? null : topic ?? null;
+// Optional extras (an impromptu run has its own topic, so a typed topic or script is ignored on one):
+//   impromptu - also judges topic, structure and timing
+//   topic     - a typed topic: pace target and tips tuned to it (lib/topic)
+//   script    - a pasted script: compared with what was said, in code, plus Claude's comment (lib/script)
+export type FeedbackExtras = {
+  impromptu?: ImpromptuInfo | null;
+  topic?: TopicInfo | null;
+  script?: string | null; // already cleaned by the analyze route
+};
+
+export async function getFeedback(transcript: Transcript, extras: FeedbackExtras = {}): Promise<FeedbackCall> {
+  const impromptu = extras.impromptu ?? null;
+  const topic = impromptu ? null : extras.topic ?? null;
+  const scriptText = impromptu ? null : extras.script ?? null;
   const metrics = calculateMetrics(transcript);
-  const prompt = speechFeedbackPrompt(transcript, metrics, impromptu, typedTopic);
+  const comparison = scriptText ? compareScript(scriptText, transcript.words) : null;
+  const prompt = speechFeedbackPrompt(transcript, metrics, { impromptu, topic, script: comparison });
   const replyText = await requestFeedback(prompt);
-  const feedback = parseFeedback(replyText, Boolean(impromptu), typedTopic);
+  const feedback = parseFeedback(replyText, Boolean(impromptu), topic, comparison && scriptText ? { ...comparison, text: scriptText } : null);
   // the time rating is decided in code, so make sure the saved one is ours even if Claude changed it
   if (impromptu && feedback.impromptu) {
     feedback.impromptu.timeUse.rating = rateTimeUse(transcript.durationMs / 1000, impromptu.targetSeconds);

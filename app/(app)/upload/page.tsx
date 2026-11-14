@@ -1,6 +1,8 @@
 "use client";
 // Upload an audio file and get feedback. A popup asks for the speech's topic when the page opens (or
 // "Go topic-free"); a topic tunes the pace target and adds tips for that topic (components/topic).
+// An optional pasted script is compared with what was said (components/script). The shared "Get feedback"
+// step that sends it all lives in components/practice.
 import {useState} from "react";
 import formatSize from "@/lib/format-size";
 import Link from "next/link";
@@ -9,14 +11,17 @@ import {AuthMessage} from "@/components/auth/auth-card";
 import Waiting from "@/components/upload/waiting";
 import PracticeSwitch from "@/components/practice-switch";
 import TopicBar from "@/components/topic/topic-bar";
-import {useTopicFeedback} from "@/components/topic/use-topic-feedback";
+import ScriptBar from "@/components/script/script-bar";
+import {useScript} from "@/components/script/use-script";
+import {useGetFeedback} from "@/components/practice/use-get-feedback";
 import {Button} from "@/components/ui/button";
 export default function UploadPage() {
     const [file, setFile] = useState<File | null>(null);
     const [message, setMessage] = useState("");
     const [busy, setBusy] = useState(false)
     // the topic, its popups, and the upload + analyze step (opens the results page when it's done)
-    const topicFlow = useTopicFeedback({file, askOnStart: true, setBusy, setMessage});
+    const scriptFlow = useScript();
+    const topicFlow = useGetFeedback({file, script: scriptFlow.script, askOnStart: true, setBusy, setMessage});
 
     function handleUpload(event: React.FormEvent) {
         event.preventDefault();
@@ -29,6 +34,7 @@ export default function UploadPage() {
     return (
         <main className="mx-auto grid w-full max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
             {topicFlow.dialogs}
+            {scriptFlow.dialog}
             <div>
                 <PracticeSwitch current="/upload" />
                 <h1 className="text-4xl leading-[1.02] font-semibold sm:text-5xl">Upload a practice run</h1>
@@ -49,6 +55,7 @@ export default function UploadPage() {
             ) : (
                 <form onSubmit={handleUpload} className="space-y-5">
                     <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} className="border-b pb-5" />
+                    <ScriptBar script={scriptFlow.script} onEdit={scriptFlow.edit} onRemove={scriptFlow.remove} className="border-b pb-5" />
                     {/* the whole dashed box is the label, so clicking anywhere in it opens the file picker */}
                     <label htmlFor="audio"
                         className="flex min-h-56 cursor-pointer flex-col items-start justify-center gap-3 rounded-lg border-2 border-dashed border-input px-6 py-12 transition-colors duration-150 hover:border-brand hover:bg-muted has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50">

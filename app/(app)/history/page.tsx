@@ -63,6 +63,10 @@ async function RecordingsList() {
                             <p className="min-w-0 truncate text-xl font-semibold sm:text-2xl" title={row.original_name}>{row.original_name}</p>
                             <div className="flex shrink-0 gap-1.5">
                                 {impromptu && <Badge variant="outline" className="border-orange/40 bg-orange/10 text-foreground">Impromptu</Badge>}
+                                {/* a redo of an earlier take (components/redo) */}
+                                {row.feedback?.redoOf && <Badge variant="outline">Redo</Badge>}
+                                {/* practiced from a pasted script (components/script) */}
+                                {row.feedback?.script && <Badge variant="outline">Script</Badge>}
                                 <StatusBadge status={row.status} />
                             </div>
                         </div>
