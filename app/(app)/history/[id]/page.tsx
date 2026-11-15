@@ -7,6 +7,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Loader2, Repeat, Shuffle, Upload } from "lucide-react";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
+import RenameRecordingButton from "@/components/history/rename-recording-button";
 import ResultsView from "@/components/results/results-view";
 import RedoCompare from "@/components/redo/redo-compare";
 import SinceLastTime from "@/components/results/since-last-time";
@@ -67,6 +68,7 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
           </Link>
         ))}
         {/* available in every state, so users can always erase their own data */}
+        <RenameRecordingButton id={recording.id} name={recording.original_name} />
         <DeleteRecordingButton id={recording.id} filePath={recording.file_path} />
       </div>
     </div>

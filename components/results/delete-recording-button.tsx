@@ -10,7 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { createClient } from "@/lib/supabase";
 
-export default function DeleteRecordingButton({ id, filePath }: { id: string; filePath: string }) {
+// compact: the red trash-can icon used on each History row (name says which recording, for screen readers)
+export default function DeleteRecordingButton({ id, filePath, compact, name }: { id: string; filePath: string; compact?: boolean; name?: string }) {
   const [open, setOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,9 +41,16 @@ export default function DeleteRecordingButton({ id, filePath }: { id: string; fi
 
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
-        <Trash2 /> Delete recording
-      </Button>
+      {compact ? (
+        <Button variant="ghost" size="icon" onClick={() => setOpen(true)} aria-label={`Delete ${name ?? "recording"}`} title="Delete"
+          className="size-10 text-destructive hover:bg-destructive/10 hover:text-destructive">
+          <Trash2 />
+        </Button>
+      ) : (
+        <Button variant="outline" onClick={() => setOpen(true)}>
+          <Trash2 /> Delete recording
+        </Button>
+      )}
       <Dialog open={open} onOpenChange={(value) => { if (!deleting) setOpen(value); }}>
         <DialogContent showCloseButton={false}>
           <DialogHeader>
