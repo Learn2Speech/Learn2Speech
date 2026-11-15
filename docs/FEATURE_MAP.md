@@ -20,8 +20,9 @@ accepted topic sets the pace target for that kind of speech and adds tips for th
 
 ## Live filler counter (Record page)
 
-Optional and off by default. While you record, the browser's speech recognition counts your ums. It runs on
-your device when the browser can do that; otherwise the toggle says where the audio goes before you turn it on.
+Starts on for Impromptu and off for free practice, and a switch changes it. While you record, the browser's
+speech recognition counts your ums. It only starts on by itself when it can run on your device; otherwise it
+stays off and the switch says where the audio goes before you turn it on.
 
 | Piece | File |
 |---|---|

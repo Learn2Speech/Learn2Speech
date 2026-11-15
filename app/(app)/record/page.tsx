@@ -107,8 +107,9 @@ export default function RecordPage() {
         redoTopic: earlier && !earlier.impromptu ? earlier.topic : undefined,
         askOnStart: false, holdTopicPopup: redoFlow.loading, setBusy, setMessage,
     });
-    // the optional live filler counter; listens only while recording (components/live-fillers)
-    const live = useLiveFillers(phase === "recording");
+    // the live filler counter: starts ON for Impromptu, OFF for free practice, and the switch changes it.
+    // Listens only while recording (components/live-fillers)
+    const live = useLiveFillers(phase === "recording", {presetOn: mode === "impromptu", mode});
 
     // true once the user has left the page, so a mic allowed after leaving gets switched straight off
     const leftRef = useRef(false);
