@@ -56,9 +56,12 @@ export const TOPICS = [
   "Is it important to know how to cook?",
 ] as const;
 
-// Speech lengths you can pick, in seconds (1, 2 or 3 minutes). Migration 0008 allows only these.
-export const SPEECH_LENGTHS = [60, 120, 180] as const;
-export type SpeechLength = (typeof SPEECH_LENGTHS)[number];
+// Speech length in seconds: 30 seconds to 5 minutes, in 15-second steps (the Record page's - and + buttons).
+// Migration 0010 allows exactly the same, so the database and the page can't disagree.
+export const MIN_LENGTH = 30;
+export const MAX_LENGTH = 300;
+export const LENGTH_STEP = 15;
+export type SpeechLength = number;
 
 // What an impromptu recording carries with it: the topic and how long the speech was meant to be.
 export type ImpromptuInfo = { topic: string; targetSeconds: SpeechLength };
@@ -76,7 +79,8 @@ export function isKnownTopic(topic: unknown): topic is string {
 }
 
 export function isSpeechLength(seconds: unknown): seconds is SpeechLength {
-  return typeof seconds === "number" && (SPEECH_LENGTHS as readonly number[]).includes(seconds);
+  return Number.isInteger(seconds) && (seconds as number) >= MIN_LENGTH && (seconds as number) <= MAX_LENGTH
+    && (seconds as number) % LENGTH_STEP === 0;
 }
 
 // Reads the topic and target length saved on a recording row; null unless both are valid.

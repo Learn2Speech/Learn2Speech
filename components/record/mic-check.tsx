@@ -1,6 +1,6 @@
 "use client";
-// Pops up when the Record page opens: the user says a few words and sees a green check once
-// the microphone is clearly picking them up, or skips straight to recording.
+// Opens from the "Check mic" button on Record and Impromptu: the user says a few words and sees a green
+// check once the microphone is clearly picking them up. Not on page load, so it never gets in the way.
 // The test sound is never saved or sent; the mic is switched off when the popup closes.
 // Styled to DESIGN.md: flat (hairline frame, no blur or shadow), 8px radius, 48px main buttons, the house ease.
 import {useEffect, useRef, useState} from "react";
@@ -9,11 +9,10 @@ import {AuthMessage} from "@/components/auth/auth-card";
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle} from "@/components/ui/dialog";
 import VolumeBars from "@/components/record/volume-bars";
+import {MIC_BLOCKED} from "@/components/record/mic-permission";
 import {playSound} from "@/components/ui-sounds";
 
-// onClose: runs once the popup is closed (the Record page then asks for a topic)
-export default function MicCheck({onClose}: {onClose?: () => void}) {
-    const [open, setOpen] = useState(true);
+export default function MicCheck({open, onClose}: {open: boolean; onClose: () => void}) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     const [heard, setHeard] = useState(false);
     const [error, setError] = useState("");
@@ -30,7 +29,7 @@ export default function MicCheck({onClose}: {onClose?: () => void}) {
         try {
             s = await navigator.mediaDevices.getUserMedia({audio: true});
         } catch {
-            setError("We couldn't use your microphone. Allow microphone access in your browser and try again.");
+            setError(MIC_BLOCKED);
             return;
         }
         if (closedRef.current) s.getTracks().forEach((t) => t.stop());
@@ -44,9 +43,10 @@ export default function MicCheck({onClose}: {onClose?: () => void}) {
 
     function close() {
         if (!open) return;
-        setOpen(false);
         setStream(null);
-        onClose?.();
+        setHeard(false);
+        setError("");
+        onClose();
     }
 
     return (

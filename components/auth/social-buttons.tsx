@@ -2,7 +2,8 @@
 // "Continue with Google / Apple" buttons for the login and sign-up pages. Only providers listed in
 // NEXT_PUBLIC_OAUTH_PROVIDERS (e.g. "google,apple") are shown, so a provider isn't offered until it is
 // switched on in Supabase. Signing in this way skips our birth-date question, so the notice below the
-// buttons is how people agree to the terms and confirm they are 13+.
+// buttons is how people agree to the Terms (which set the minimum age). It doesn't name the age on purpose,
+// so the sign-in pages don't tell anyone what to claim (same idea as the neutral age question on sign-up).
 import {useState} from "react";
 import Link from "next/link";
 import {useSearchParams} from "next/navigation";
@@ -60,7 +61,7 @@ export default function SocialButtons() {
             ))}
             {(errorMessage || failedBefore) && <AuthMessage kind="error">{errorMessage || "Sign-in didn't finish. Please try again."}</AuthMessage>}
             <p className="text-center text-xs text-muted-foreground">
-                By continuing you confirm you are 13 or older and agree to the{" "}
+                By continuing you agree to the{" "}
                 <Link href="/terms" target="_blank" className="underline underline-offset-4">Terms</Link> and{" "}
                 <Link href="/privacy" target="_blank" className="underline underline-offset-4">Privacy Policy</Link>.
             </p>

@@ -1,6 +1,6 @@
 // Accessibility statement: what standard we aim for, what we do to meet it, and how to report a problem.
 // Same shape as /privacy. Keep it honest: only claim what the app really does, and update the date when you
-// re-check the app (see the Accessibility section of the /home-screen skill for how to test).
+// re-check the app (see the Accessibility section of the /l2s skill for how to test).
 import type { Metadata } from "next";
 import Link from "next/link";
 import PageHeader from "@/components/page-header";

@@ -63,8 +63,11 @@ new results then start with both takes side by side.
 
 | Piece | File |
 |---|---|
-| Topic list, lengths, time rating | `lib/impromptu/topics.ts` |
-| Impromptu setup and countdown | `app/(app)/record/page.tsx` |
+| Topic list, lengths (0:30 to 5:00), time rating | `lib/impromptu/topics.ts` |
+| The `/impromptu` page (same recorder as `/record`, impromptu mode) | `app/(app)/impromptu/page.tsx` |
+| Impromptu setup, length stepper and countdown | `components/record/practice-recorder.tsx` |
+| Topic reel animation | `components/impromptu/topic-reel.tsx` |
+| "How impromptu works" popup (first visit) | `components/impromptu/impromptu-intro.tsx` |
 | Results section | `components/results/impromptu-review.tsx` |
 
 ## Shared plumbing

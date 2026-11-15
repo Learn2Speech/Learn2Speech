@@ -1,9 +1,9 @@
 ---
-name: home-screen
-description: /home-screen — the Learn2Speech UI guide for the WHOLE app, not just the home page. Layout, colour, type, components, motion, sound, accessibility (WCAG 2.2 AA), copy and a ship checklist, so any new page, component or change looks and behaves like the rest. Use before building or changing ANY page or component, any visual, motion or sound change, or when asked what the app's design rules are. After a big design change ships, add it to the Design log at the bottom.
+name: l2s
+description: /l2s — the Learn2Speech UI and UX guide for the WHOLE app. Layout, colour, type, components, motion, sound, accessibility (WCAG 2.2 AA), copy and a ship checklist, so any new page, component or change looks and behaves like the rest. Use before building or changing ANY page or component, any visual, motion or sound change, or when asked what the app's design rules are. After a big design change ships, add it to the Design log at the bottom.
 ---
 
-# /home-screen: the Learn2Speech UI guide
+# /l2s: the Learn2Speech UI and UX guide
 
 Read this before building or changing any page or component. Follow it and a new page will look, move, sound
 and behave like the rest of the app. `DESIGN.md` (design system) and `PRODUCT.md` (audience, principles) are the
@@ -43,7 +43,15 @@ clear enough for a ninth grader. Never invent numbers, users, prices or testimon
   " | Learn2Speech". Client pages (`"use client"`) can't export metadata, so give their folder a tiny
   `layout.tsx` that only sets the title (see `app/login/layout.tsx`).
 - **Missing things.** Call `notFound()`; it renders `app/(app)/not-found.tsx` (giant "404", way home).
-- **Practice pages** start with `PracticeSwitch` (Record | Upload a file).
+- **Practice pages** start with `PracticeSwitch` (Record | Upload a file). Record also has a mode switch
+  (Free practice | Impromptu), the same segmented look (`rounded-lg border bg-secondary p-1`, selected =
+  `bg-background shadow-sm`, `aria-pressed`).
+- **Option rows.** Optional settings before the main action are one-line rows: small muted label, value
+  under it, one outline button on the right, plus an icon-only remove button (with `aria-label`) when set.
+  Keep the value short ("None yet") so the row stays one line on a 375px phone. See `TopicBar`, `ScriptBar`.
+- **Eyebrow label.** A small caps label above a big value: `text-sm font-medium tracking-wide
+  text-muted-foreground uppercase` ("YOUR TOPIC", "TIME LEFT"). Only above a large value, never as a heading
+  on its own.
 
 ## 3. Colour (tokens in `app/globals.css`, light and dark)
 
@@ -77,11 +85,35 @@ One typeface, Archivo (variable: weight 100–900, width 62–125%), loaded in `
   Links that look like buttons: `<Link className={buttonVariants(...)}>`. Ghost/icon buttons for the top bar.
 - `AuthCard`, `AuthMessage` (errors shake, success green) in `components/auth/auth-card.tsx`.
 - `PageHeader`, `PracticeSwitch`, `Reveal` (scroll-in for home steps), `Tour` (tutorial bar), `Logo`/`LogoMark`.
+- Practice extras: `TopicBar` / `ScriptBar` (option rows), `RedoBanner`, `LiveFillerToggle` (checkbox plus a
+  plain line saying where the audio goes). Popups reuse `DIALOG_CLASS` from `components/topic/topic-dialog.tsx`
+  (flat, 8px radius, 48px buttons, house ease), primary button on the right, "Cancel"/way-out on the left.
+- `Rating` pill (`components/results/impromptu-review.tsx`): Strong (green) / Okay (teal) / Needs work (red),
+  always with the word, never colour alone.
+- **Charts** (`components/history/progress-chart.tsx`): plain SVG, teal line, a dot per recording, a bigger
+  dot on the latest. Each chart says the answer in words ("Better, down 9 since your first"), shows the target
+  range as a faint teal band, dates under the line, and an `sr-only` sentence. Columns split by hairlines,
+  not boxed cards. "Better" for pace means closer to the target range, not just lower.
 - shadcn primitives in `components/ui/` (dialog, dropdown-menu, input, label, sheet, tooltip...). The dialog has
   no backdrop blur on purpose (no glass).
 - Icons: `lucide-react` only, one stroke weight. No emoji or unicode glyphs as icons.
 
-## 6. Motion
+## 6. UX (when the product owner says "UI", it always means UI and UX)
+
+- **Main action in the first phone screen.** Measure it: at 375×812 the main button's bottom must be under
+  812px (`button.getBoundingClientRect().bottom`). Shorten copy, keep option rows to one line, tighten gaps
+  (`gap-8 py-10` on phones) before moving things around.
+- **No empty steps.** If the next thing is obvious, do it for the user (switching to Impromptu draws a topic
+  straight away instead of showing a lone "Give me a topic" button). Keep a way to change it.
+- **One popup at a time,** only when the answer changes what happens next; everything a popup asks must also
+  be changeable from the page afterwards (the topic row).
+- **Say the answer, then the detail:** results and charts lead with the verdict in plain words, numbers and
+  lines second.
+- **Lock, don't hide:** while recording, settings rows stay visible but lose their buttons (`locked`).
+- **Destructive or reset actions** (remove topic, remove script, stop redoing) are ghost buttons; the
+  forward action is the orange one.
+
+## 7. Motion
 
 One ease `cubic-bezier(0.23, 1, 0.32, 1)`. Entrances 600ms, presses 150ms, everything else under 300ms.
 Only animate `transform` and `opacity` (and a font axis once). Every animation lives inside
@@ -107,7 +139,7 @@ Principles (from the "20 Principles of UX & Animation" reel and research):
 - Worth reaching for later: anticipation (tiny wind-up), secondary action (check flourish after save),
   staging (draw focus with colour or grayscale, never by fading text below 4.5:1; see the tutorial).
 
-## 7. Sound
+## 8. Sound
 
 Quiet Web Audio tones from `components/ui-sounds.tsx`, ON by default (product owner's call), speaker button in
 the top bar mutes (remembered per device). Every button press gets "tap" automatically; a button can ask for
@@ -115,7 +147,7 @@ the top bar mutes (remembered per device). Every button press gets "tap" automat
 meaningful actions, never hover/typing/scrolling/focus, always alongside a visual change, nothing depends on
 hearing it. Nothing plays on page load (browsers block it anyway).
 
-## 8. Accessibility (required: WCAG 2.2 AA)
+## 9. Accessibility (required: WCAG 2.2 AA)
 
 Why it matters: in the US, courts treat **WCAG 2.1 AA** as the working benchmark in ADA website lawsuits
 (thousands filed a year); WCAG 2.2 AA includes 2.1 AA, so target **2.2 AA**. The six most common failures on the
@@ -155,7 +187,7 @@ Sources: W3C "What's New in WCAG 2.2"; WebAIM Million 2026 (via Priority Pixels,
 website accessibility 2026"; allaccessible.org "Accessibility lawsuits in 2026"; Level Access WCAG 2.2 summary;
 BOIA "What's new in WCAG 2.2"; Deque WCAG 2.2 updates.
 
-## 9. Copy
+## 10. Copy
 
 Short and literal. Buttons name their action ("Upload a practice run", "Get feedback", not "Submit").
 Errors say what happened and what to do ("That code is wrong or has expired. Check the newest email, or send a
@@ -173,13 +205,16 @@ The legal pages are `/privacy`, `/terms` and `/accessibility`, all linked in the
   YouTube sets no cookies until someone clicks).
 - **Collect only what's needed.** Example: the age check reads birth month and year and doesn't save them.
 - **Claims must be true.** No fake reviews, user counts or results; label examples "Example".
-- **Consent at the point of use:** sign-up has the 13+ and Terms/Privacy checkbox; keep it for any new
-  account or data form.
+- **Consent at the point of use:** sign-up has the Terms/Privacy checkbox; keep it for any new account or
+  data form.
+- **Never name the minimum age outside `/terms` and `/privacy`.** The sign-up age question is neutral (just
+  "Date of birth"), its error doesn't say the age, and the Google/Apple line only says you agree to the
+  Terms. Naming "13" tells a child what to pick (FTC guidance on neutral age screens).
 - Bump the "Last updated" date on any legal page you change.
 - Not applicable today: refund policy (nothing is sold). If payments are ever added, a refund policy and
   checkout terms are required first.
 
-## 10. Home screen extras (research, Nov 2026)
+## 11. Home screen extras (research, Nov 2026)
 
 1. One job, one main action; a quiet secondary at most.
 2. The main action stays in the first viewport on phones.
@@ -194,7 +229,7 @@ variable-font collections; Omniconvert hero examples; saasui.design ElevenLabs; 
 UI sound: userinterface-wiki "Sounds on the web", Readymag, freeCodeCamp Web Audio, Josh Comeau "use-sound",
 W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
-## 11. Before you ship any UI change
+## 12. Before you ship any UI change
 
 - [ ] Uses the patterns above (container, header, split, specimen, tokens, `Button`, title).
 - [ ] Screenshots at 1280px and 375px, light and dark; no sideways scroll
@@ -210,6 +245,33 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 ## Design log
 
 Newest first. One entry per big design change: date, what changed, why, where.
+
+- **2026-11-14: Impromptu gets its own page, a topic reel and an intro.** `/impromptu` (same recorder as
+  `/record`, `components/record/practice-recorder.tsx`), so Record isn't packed; the practice switch is
+  Record | Impromptu | Upload. New topics arrive on a **reel**: topics scroll up fast and slow down (house
+  ease-out, 750 ms, WAAPI) onto the new one with soft ticks, then it settles with a small pop; reduced motion
+  just fades it in (`components/impromptu/topic-reel.tsx`). First visit opens "How impromptu works" (4
+  numbered steps), then the mic check, then the first topic spins in; "How impromptu works" reopens it
+  (`components/impromptu/impromptu-intro.tsx`, stored as `l2s-impromptu-intro`, listed in /privacy).
+  No popup on page load except the topic question and the first-visit intro: the mic check opens from a
+  "Check mic" button next to Start. Microphone permission: the browser draws its own "Allow microphone?"
+  prompt (we can't style or skip it), so we only ask on Start / Check mic, say "Your browser will ask to use
+  your microphone. Choose Allow." beforehand, and if it's blocked, say how to turn it back on
+  (`components/record/mic-permission.tsx`, Permissions API).
+  Sign-up's age block now gives a reason ("you don't meet the age requirement in our Terms") without
+  naming the age.
+
+- **2026-11-14: Practice modes and progress charts fitted to the system; skill renamed /l2s.** Record: topic
+  and script are compact one-line option rows (icon-only remove), Impromptu draws a topic as soon as you
+  switch to it, "New topic" sits with the length buttons, shorter copy, tighter phone spacing, so Start is
+  on the first phone screen in both modes (was ~900px down on a 812px screen). History charts: ruled columns
+  instead of boxed cards, a visible "Your progress" heading, "Better/Worse since your first", the pace target
+  band, dates and a dot per recording (the hint also wrongly said 130–160; the target is 120–160).
+  Impromptu length is your own: − and + by 15 seconds, 0:30 to 5:00 (`lib/impromptu/topics.ts`, migration
+  0010), replacing the 1/2/3 min buttons; shorter speeches get a shorter wrap-up warning and grace time.
+  Login and sign-up no longer mention the age (only the Terms and Privacy Policy do).
+  New UX section. `components/topic/topic-bar.tsx`, `components/script/script-bar.tsx`,
+  `app/(app)/record/page.tsx`, `components/history/progress-chart.tsx`, `app/(app)/history/page.tsx`.
 
 - **2026-11-14: Topic mode, script mode, live filler counter, redo and compare.** The practice pages gained
   stacked "Your topic" and "Your script (optional)" lines above the record and upload controls. They use small

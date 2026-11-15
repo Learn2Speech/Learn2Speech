@@ -39,7 +39,7 @@ const SECTIONS: Section[] = [
     heading: "Cookies and browser storage",
     points: [
       "Login cookie: set by our login provider, Supabase, so you stay signed in. The app can't work without it, so it can't be turned off; logging out removes it.",
-      "Settings saved in your browser (not cookies, and never sent to us): light or dark mode, whether button sounds are on, and that you closed the cookie notice. Clearing your browser's site data removes them.",
+      "Settings saved in your browser (not cookies, and never sent to us): light or dark mode, whether button sounds are on, that you closed the cookie notice, and that you've seen the impromptu introduction. Clearing your browser's site data removes them.",
       "For one browser tab only: if the age check at sign-up doesn't pass, the tab remembers it until you close it.",
       "We don't use advertising, analytics or tracking cookies, and nothing follows you to other websites.",
       "Do Not Track: because we don't track you across sites or collect analytics, every visitor already gets what a Do Not Track signal asks for.",
