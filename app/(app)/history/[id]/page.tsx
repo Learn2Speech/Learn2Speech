@@ -15,7 +15,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createServerSupabase } from "@/lib/supabase-server";
 import type { Recording } from "@/lib/recording-types";
-import { impromptuFromRow } from "@/lib/impromptu/topics";
+import { formatClock, impromptuFromRow } from "@/lib/impromptu/topics";
 
 // Tab title = the recording's file name, or "Page not found" when the row doesn't exist or isn't yours
 // (Row Level Security hides other people's). One small extra query; the page below already loads at request time.
@@ -46,19 +46,19 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
         <p className="text-muted-foreground">
           {new Date(recording.created_at).toLocaleDateString(undefined, { dateStyle: "long" })}
           {recording.duration_ms !== null && ` · ${Math.round(recording.duration_ms / 1000)} seconds`}
-          {impromptu && ` · Impromptu, ${impromptu.targetSeconds / 60} min target`}
+          {impromptu && ` · Impromptu, ${formatClock(impromptu.targetSeconds)} target`}
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
         {/* the next step after reading feedback is usually to try again */}
         {/* "Redo this speech": record it again with the same topic / script, then see both takes side by side (components/redo) */}
         {recording.status === "done" && (
-          <Link href={`/record?redo=${recording.id}`} className={buttonVariants()}>
+          <Link href={`${impromptu ? "/impromptu" : "/record"}?redo=${recording.id}`} className={buttonVariants()}>
             <Repeat /> Redo this speech
           </Link>
         )}
         {recording.status === "done" && (impromptu ? (
-          <Link href="/record?mode=impromptu" className={buttonVariants({ variant: "outline" })}>
+          <Link href="/impromptu" className={buttonVariants({ variant: "outline" })}>
             <Shuffle /> Try another topic
           </Link>
         ) : (

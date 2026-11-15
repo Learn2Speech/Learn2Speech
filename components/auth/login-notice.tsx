@@ -8,9 +8,10 @@ import { createClient } from "@/lib/supabase";
 
 // Only pages we know about get a name, so a made-up ?from= value shows nothing (and can't redirect anywhere else).
 export const PAGE_NAMES: Record<string, string> = {
-  // both are "Practice" in the top bar
+  // all three are "Practice" in the top bar
   upload: "Practice",
   record: "Practice",
+  impromptu: "Practice",
   history: "History",
 };
 

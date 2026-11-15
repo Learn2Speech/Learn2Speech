@@ -56,7 +56,10 @@ export default function SignUpPage() {
         try { blockedBefore = sessionStorage.getItem(UNDER_AGE_KEY) === "1"; } catch {}
         if (blockedBefore || !isOldEnough(Number(birthYear), Number(birthMonth))) {
             try { sessionStorage.setItem(UNDER_AGE_KEY, "1"); } catch {}
-            setErrorMessage("Sorry, you need to be 13 or older to use Learn2Speech.")
+            // Says WHY (age) so it doesn't look broken, but not the number, so it doesn't tell anyone what to
+            // pick next time (FTC: keep age screens neutral). The Terms, linked just below, state the age, and
+            // this tab won't accept a different date now (UNDER_AGE_KEY above).
+            setErrorMessage("Sorry, you don't meet the age requirement in our Terms and Conditions, so we can't create an account.")
             return;
         }
         setLoading(true)

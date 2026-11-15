@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 // the link right after logging in would replay it (until a refresh).
 const PAGES = [
   // Practice = Record or Upload; both pages have a switch at the top, so either counts as "on Practice"
-  { title: "Practice", href: "/record", matches: ["/record", "/upload"], needsLogin: true },
+  { title: "Practice", href: "/record", matches: ["/record", "/impromptu", "/upload"], needsLogin: true },
   { title: "History", href: "/history", matches: ["/history"], needsLogin: true },
   { title: "Tutorial", href: "/demo", matches: ["/demo"], needsLogin: false },
 ];

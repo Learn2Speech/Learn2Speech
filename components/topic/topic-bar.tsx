@@ -1,5 +1,6 @@
-// Topic mode: the topic line above the Record and Upload buttons, with Change / Go topic-free
+// Topic mode: the one-line "Topic" row above the Record and Upload buttons, with Change / Go topic-free
 // (or "Add a topic" when there isn't one). Locked while recording or sending.
+// A compact row (value left, buttons right) so the main button stays on screen on phones.
 import {Pencil, Plus, X} from "lucide-react";
 import {Button} from "@/components/ui/button";
 import {cn} from "@/lib/utils";
@@ -12,19 +13,19 @@ export default function TopicBar({topic, onChange, onRemove, locked, className}:
     className?: string;
 }) {
     return (
-        <div className={cn("w-full", className)}>
-            <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">Your topic</p>
-            {topic ? (
-                <p className="mt-2 max-w-[32ch] text-2xl leading-[1.15] font-semibold break-words sm:text-3xl">{topic}</p>
-            ) : (
-                <p className="mt-2 text-lg text-muted-foreground">Topic-free. You&apos;ll get general feedback.</p>
-            )}
+        <div className={cn("flex w-full items-center justify-between gap-4", className)}>
+            <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-muted-foreground">Topic</p>
+                {topic
+                    ? <p className="text-lg leading-snug font-semibold break-words">{topic}</p>
+                    : <p className="text-lg leading-snug">None yet: general feedback</p>}
+            </div>
             {!locked && (
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="flex shrink-0 gap-1">
                     {topic ? (
                         <>
-                            <Button type="button" variant="outline" onClick={onChange} className="h-10 border-foreground/30!"><Pencil /> Change topic</Button>
-                            <Button type="button" variant="ghost" onClick={onRemove} className="h-10"><X /> Go topic-free</Button>
+                            <Button type="button" variant="outline" onClick={onChange} className="h-10 border-foreground/30!"><Pencil /> Change</Button>
+                            <Button type="button" variant="ghost" size="icon" onClick={onRemove} aria-label="Go topic-free" title="Go topic-free" className="size-10"><X /></Button>
                         </>
                     ) : (
                         <Button type="button" variant="outline" onClick={onChange} className="h-10 border-foreground/30!"><Plus /> Add a topic</Button>

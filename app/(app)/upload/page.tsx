@@ -54,8 +54,8 @@ export default function UploadPage() {
                 <Waiting stage={working ? 1 : 0} fileName={file.name} />
             ) : (
                 <form onSubmit={handleUpload} className="space-y-5">
-                    <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} className="border-b pb-5" />
-                    <ScriptBar script={scriptFlow.script} onEdit={scriptFlow.edit} onRemove={scriptFlow.remove} className="border-b pb-5" />
+                    <TopicBar topic={topicFlow.topic} onChange={topicFlow.ask} onRemove={topicFlow.removeTopic} className="border-b pb-4" />
+                    <ScriptBar script={scriptFlow.script} onEdit={scriptFlow.edit} onRemove={scriptFlow.remove} className="border-b pb-4" />
                     {/* the whole dashed box is the label, so clicking anywhere in it opens the file picker */}
                     <label htmlFor="audio"
                         className="flex min-h-56 cursor-pointer flex-col items-start justify-center gap-3 rounded-lg border-2 border-dashed border-input px-6 py-12 transition-colors duration-150 hover:border-brand hover:bg-muted has-[:focus-visible]:ring-3 has-[:focus-visible]:ring-ring/50">

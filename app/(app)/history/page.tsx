@@ -49,8 +49,8 @@ async function RecordingsList() {
     const showImpromptu = impromptuPoints.length >= 2
     return (
         <>
-        <ProgressChart points={points} title={showImpromptu ? "All recordings" : undefined} />
-        {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu runs" />}
+        <ProgressChart points={points} />
+        {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
         <ul className="divide-y border-y border-foreground">
             {/* map returns one <li> per row; key lets React tell the items apart */}
             {data.map((row) => {
