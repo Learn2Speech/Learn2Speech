@@ -42,15 +42,16 @@ type ReadoutProps = {
 function Readout({ label, value, unit, rating, target, gauge }: ReadoutProps) {
   return (
     <div className="py-6 sm:px-6 sm:first:pl-0 sm:last:pr-0">
-      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-base text-muted-foreground">{label}</p>
       {/* flex-wrap lets the unit drop below the number when the column is narrow */}
       <p className="mt-2 flex flex-wrap items-baseline gap-x-2 font-heading text-5xl font-medium tracking-[-0.04em]"> 
         {value}
         <span className="text-sm font-normal tracking-normal whitespace-nowrap text-muted-foreground">{unit}</span>
       </p>
       <Gauge {...gauge} />
-      <p className="mt-4 font-medium">{rating.label}</p>
-      <p className="text-sm text-muted-foreground">{target}</p>
+      <p className="mt-4 text-lg font-medium">{rating.label}</p>
+      {/* the goal: one size up from a caption so it gets read, still muted so the number stays the star */}
+      <p className="mt-0.5 text-base text-muted-foreground">{target}</p>
     </div>
   );
 }

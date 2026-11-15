@@ -246,6 +246,11 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
 Newest first. One entry per big design change: date, what changed, why, where.
 
+- **2026-11-15: Feedback as short lists; readable targets.** Feedback stays lists (scanning beats prose, NN/g
+  1997): the prompt asks for a 1-2 sentence summary, 2-3 strengths and 3-5 improvements, each one short
+  sentence. The metric labels and "aim for" lines went from 14px to 16px (still muted) so people read the
+  target. `lib/feedback/buildPrompt.ts`, `components/results/metrics-cards.tsx`.
+
 - **2026-11-15: Practice in the top bar; captions rule.** Captions stay, except detail the Privacy Policy
   already covers: there, keep one short safety line instead ("We never save what it hears." under the live
   counter, "We don't save this." under the sign-up birth date). Top bar: a "Practice" menu at every width (Upload, Record, Impromptu with an orange-tinted "New"
