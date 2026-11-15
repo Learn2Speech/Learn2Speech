@@ -246,6 +246,14 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
 Newest first. One entry per big design change: date, what changed, why, where.
 
+- **2026-11-15: Practice in the top bar; captions rule.** Captions stay, except detail the Privacy Policy
+  already covers: there, keep one short safety line instead ("We never save what it hears." under the live
+  counter, "We don't save this." under the sign-up birth date). Top bar: Record, Impromptu (orange-tinted
+  "New" tag), Upload,
+  History, Tutorial, About on wide screens; below `lg` the three practice pages fold into a "Practice"
+  menu with an orange dot; About is footer-only on phones so the bar fits 375px. Topic reel now 1.1 s
+  over 11 topics. `components/site-nav.tsx`, `components/impromptu/topic-reel.tsx`.
+
 - **2026-11-14: Impromptu gets its own page, a topic reel and an intro.** `/impromptu` (same recorder as
   `/record`, `components/record/practice-recorder.tsx`), so Record isn't packed; the practice switch is
   Record | Impromptu | Upload. New topics arrive on a **reel**: topics scroll up fast and slow down (house

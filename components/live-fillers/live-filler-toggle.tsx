@@ -1,15 +1,10 @@
 "use client";
-// Live filler counter: the on/off switch shown before recording, with a plain line saying where the
-// audio goes for live counting (on the device, or the browser's own speech service).
+// Live filler counter: the on/off switch shown before recording, with one short line saying what it does and
+// that we keep nothing. Where the audio goes (the device or the browser's speech service) is in the Privacy Policy.
 // Starts on for Impromptu and off for free practice (see use-live-fillers.ts); the switch changes it.
 import type {LiveFillers} from "@/components/live-fillers/use-live-fillers";
 import {cn} from "@/lib/utils";
 
-const WHERE: Record<"on-device" | "downloadable" | "cloud", string> = {
-    "on-device": "Counts ums while you speak. Runs on your device, so nothing extra is sent anywhere.",
-    "downloadable": "Counts ums while you speak. Runs on your device after a one-time download of your browser's English speech pack.",
-    "cloud": "Counts ums while you speak. Your browser sends your audio to its own speech service (Google in Chrome, Microsoft in Edge) to do this. We never receive or save that text.",
-};
 
 export default function LiveFillerToggle({live, locked}: {live: LiveFillers; locked: boolean}) {
     if (live.support === null) return null; // still checking
@@ -31,7 +26,7 @@ export default function LiveFillerToggle({live, locked}: {live: LiveFillers; loc
                 <span>{live.preparing ? "Getting the live filler counter ready..." : "Live filler counter"}</span>
                 <span aria-hidden="true" className="text-muted-foreground">{live.enabled ? "On" : "Off"}</span>
             </button>
-            <p id="live-filler-where" className="mt-1 text-sm text-muted-foreground">{WHERE[live.support]}</p>
+            <p id="live-filler-where" className="mt-1 text-sm text-muted-foreground">Counts filler words (um, uh, etc.) while you speak. We never save what it hears.</p>
         </div>
     );
 }

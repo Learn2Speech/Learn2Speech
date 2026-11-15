@@ -123,7 +123,8 @@ export default function SignUpPage() {
                             {YEARS.map((year) => <option key={year} value={year}>{year}</option>)}
                         </select>
                     </div>
-                    <p className="text-xs text-muted-foreground">Only used to check your age. We don&apos;t save it.</p>
+                    {/* short on purpose: the full explanation is in the Privacy Policy */}
+                    <p className="text-xs text-muted-foreground">We don&apos;t save this.</p>
                 </fieldset>
                 {/* The terms and privacy policy open in a new tab so the email and password typed here aren't lost */}
                 <div className="flex items-start gap-2">

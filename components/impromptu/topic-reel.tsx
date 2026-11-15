@@ -3,7 +3,7 @@
 // fast and slows down (the house ease-out) until it lands on the new topic, ticking softly as each one
 // passes, then the topic settles with a small pop. The real topic text stays underneath (invisible while
 // the reel runs), so the layout never jumps and screen readers only hear the new topic, once.
-// Drawn a few times a session, so it may take ~0.75 s (the delight tier in /l2s). With reduced motion the
+// Drawn a few times a session, so it may take ~1.1 s (the delight tier in /l2s). With reduced motion the
 // reel is skipped and the topic just fades in. Web Animations API: no library, interruptible (a new draw
 // cancels the running reel and starts from the topic on screen).
 import {useEffect, useRef, useState} from "react";
@@ -12,8 +12,8 @@ import {TOPICS} from "@/lib/impromptu/topics";
 import {cn} from "@/lib/utils";
 
 const EASE = "cubic-bezier(0.23, 1, 0.32, 1)"; // the house ease (globals.css)
-const SPIN_MS = 750;
-const FILLERS = 6; // topics that fly past between the old one and the new one
+const SPIN_MS = 1100;
+const FILLERS = 9; // topics that fly past between the old one and the new one
 
 // the old topic, a few others, then the new one (picked from the list by position, so rendering stays pure)
 function buildReel(from: string, to: string): string[] {
