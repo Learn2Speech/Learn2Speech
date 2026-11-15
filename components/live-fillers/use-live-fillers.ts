@@ -1,6 +1,9 @@
 "use client";
 // Live filler counter: the hook behind the toggle and the counter on the Record page.
-// Off by default. When it's on, the browser's speech recognition listens while you record and we count
+// Default per mode (the Record page decides): ON for Impromptu, OFF for free practice, and the speaker can flip
+// it either way with the switch. A preset ON only applies when the browser recognizes speech on the device;
+// if it would have to send audio to the browser's speech service, it stays off until the speaker turns it on
+// after reading where the audio goes. When it's on, the browser's speech recognition listens while you record and we count
 // the filler words in what it hears. It's an estimate: browsers sometimes leave "um" out of their text.
 // The exact count still comes from the full analysis afterwards.
 import {useEffect, useState} from "react";
@@ -16,9 +19,13 @@ const FATAL: Record<string, string> = {
     "audio-capture": "The live counter couldn't hear your microphone. Your recording still works.",
 };
 
-export function useLiveFillers(listening: boolean) {
+// listening: recording right now. presetOn: this mode starts with the counter on. mode: which mode the
+// speaker's own choice belongs to (switching Impromptu off doesn't switch free practice off, and the other way).
+export function useLiveFillers(listening: boolean, {presetOn, mode}: {presetOn: boolean; mode: string}) {
     const [support, setSupport] = useState<LiveSupport | null>(null); // null while checking
-    const [enabled, setEnabled] = useState(false);
+    const [choices, setChoices] = useState<Record<string, boolean>>({}); // the speaker's own on/off, per mode
+    const enabled = choices[mode] ?? (presetOn && support === "on-device");
+    const setEnabled = (on: boolean) => setChoices((c) => ({...c, [mode]: on}));
     const [preparing, setPreparing] = useState(false); // downloading the on-device language pack
     const [finalCounts, setFinalCounts] = useState<FillerCounts>({});
     const [interimCounts, setInterimCounts] = useState<FillerCounts>({});
