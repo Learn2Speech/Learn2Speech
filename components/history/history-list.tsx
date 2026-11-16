@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
+import DeleteFailedButton from "@/components/history/delete-failed-button";
 import SwitchToggle from "@/components/ui/switch-toggle";
 import RenameRecordingButton from "@/components/history/rename-recording-button";
 import { impromptuFromRow } from "@/lib/impromptu/topics";
@@ -50,6 +51,7 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
     if (to && day > to) return false;
     return !q || `${row.original_name} ${topicOf(row)}`.toLowerCase().includes(q);
   });
+  const failedIds = rows.filter((row) => row.status === "failed").map((row) => row.id);
   const filtering = Boolean(q || from || to || type !== "all");
   const pageCount = Math.max(1, Math.ceil(shown.length / PER_PAGE));
   const page = Math.min(pickedPage, pageCount); // a delete can empty the last page
@@ -97,6 +99,8 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
           {duplicates.length > 0 && (
             <SwitchToggle on={hideDuplicates} onChange={(on) => { setHideDuplicates(on); setPage(1); }} label="Hide duplicates" />
           )}
+          {/* only when some analyses failed: clears them all at once */}
+          {failedIds.length > 0 && <DeleteFailedButton ids={failedIds} />}
           {filtering && (
             <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); setType("all"); setPage(1); }} className="h-11">
               <X /> Clear

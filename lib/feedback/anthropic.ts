@@ -9,15 +9,18 @@ import type { TopicInfo } from "@/lib/topic/speech-types";
 import type { ScriptReview } from "@/lib/script/types";
 // maxTokens: room for the reply (thinking included). effort: how hard Claude thinks; the short topic check
 // (lib/topic/classify-topic.ts) uses "low", the feedback itself keeps the model's default.
-export async function requestFeedback(prompt: string, options: { maxTokens?: number; effort?: "low" | "medium" | "high" } = {}): Promise<string> {
+export async function requestFeedback(prompt: string, options: { maxTokens?: number; effort?: "low" | "medium" | "high"; signal?: AbortSignal } = {}): Promise<string> {
   // The key only exists on the server (.env.local locally, Vercel settings online), never in the browser
   const anthropicKey = process.env.ANTHROPIC_API_KEY;
   if (!anthropicKey){
     console.error("ANTHROPIC_API_KEY is missing. Add it to .env.local");
     throw new UserFacingError("Feedback isn't available right now. Please try again later.");
   }
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  let response: Response;
+  try {
+  response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
+    signal: options.signal, // a time limit from the caller, if any
     headers: {
       "x-api-key": anthropicKey,
       "content-type": "application/json",
@@ -30,6 +33,11 @@ export async function requestFeedback(prompt: string, options: { maxTokens?: num
     messages: [{ role: "user", content: prompt }],
 }),
   });
+  } catch (err) {
+    // no answer at all: the time limit ran out, or the network failed
+    console.error("Claude request got no answer:", err instanceof Error ? err.name : err);
+    throw new UserFacingError("Feedback took too long. Please try again.");
+  }
   // A non-OK status (bad key, no credit, rate limit...) still comes back as a normal response,
   // so fetch doesn't throw. We have to check it ourselves and log the real reason for debugging.
   if (!response.ok){

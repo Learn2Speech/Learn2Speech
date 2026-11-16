@@ -18,6 +18,7 @@ export type FeedbackExtras = {
   impromptu?: ImpromptuInfo | null;
   topic?: TopicInfo | null;
   script?: string | null; // already cleaned by the analyze route
+  signal?: AbortSignal; // stops the Claude call when the route runs out of time
 };
 
 export async function getFeedback(transcript: Transcript, extras: FeedbackExtras = {}): Promise<FeedbackCall> {
@@ -27,7 +28,7 @@ export async function getFeedback(transcript: Transcript, extras: FeedbackExtras
   const metrics = calculateMetrics(transcript);
   const comparison = scriptText ? compareScript(scriptText, transcript.words) : null;
   const prompt = speechFeedbackPrompt(transcript, metrics, { impromptu, topic, script: comparison });
-  const replyText = await requestFeedback(prompt);
+  const replyText = await requestFeedback(prompt, { signal: extras.signal });
   const feedback = parseFeedback(replyText, Boolean(impromptu), topic, comparison && scriptText ? { ...comparison, text: scriptText } : null);
   // the time rating is decided in code, so make sure the saved one is ours even if Claude changed it
   if (impromptu && feedback.impromptu) {

@@ -15,7 +15,8 @@ import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createServerSupabase } from "@/lib/supabase-server";
-import type { Recording } from "@/lib/recording-types";
+import { isStuck, type Recording } from "@/lib/recording-types";
+import RetryAnalysisButton from "@/components/results/retry-analysis-button";
 import { formatClock, impromptuFromRow } from "@/lib/impromptu/topics";
 
 // Tab title = the recording's file name, or "Page not found" when the row doesn't exist or isn't yours
@@ -84,6 +85,7 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
     const earlier = earlierRow as Pick<Recording, "id" | "original_name" | "metrics" | "feedback" | "duration_ms"> | null;
     const { data: prev } = earlier ? { data: null } : await supabase.from("recordings").select("metrics")
       .eq("status", "done").lt("created_at", recording.created_at)
+      .neq("size_bytes", recording.size_bytes) // not the same audio uploaded twice (every number would read "same")
       .order("created_at", { ascending: false }).limit(1).maybeSingle();
     const previous = (prev as Pick<Recording, "metrics"> | null)?.metrics;
     return (
@@ -101,7 +103,9 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
     );
   }
 
-  // Not finished (or failed): explain where it is instead of showing empty results.
+  // Not finished (or failed): explain where it is instead of showing empty results. "Try again" when it can
+  // be retried: failed, or stuck on "analyzing" past the time the server could still be working on it.
+  const stuck = isStuck(recording);
   return (
     <>
       {header}
@@ -109,13 +113,19 @@ async function RecordingResults({ params }: { params: Promise<{ id: string }> })
         <CardContent className="flex flex-col items-center gap-3">
           {recording.status === "failed" ? (
             <p className="text-destructive">Analysis failed: {recording.error_message ?? "unknown reason"}</p>
+          ) : stuck ? (
+            <p className="text-destructive">This analysis didn&apos;t finish.</p>
           ) : (
             <p className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="size-4 animate-spin" />
               {recording.status === "analyzing" ? "Still analyzing... refresh in a few minutes." : "Waiting to be analyzed."}
             </p>
           )}
-          <Link href="/upload" className={buttonVariants({ variant: "outline" })}>Upload another speech</Link>
+          {recording.status === "failed" || stuck ? (
+            <RetryAnalysisButton id={recording.id} />
+          ) : (
+            <Link href="/upload" className={buttonVariants({ variant: "outline" })}>Upload another speech</Link>
+          )}
         </CardContent>
       </Card>
     </>

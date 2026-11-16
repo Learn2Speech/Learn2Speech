@@ -5,6 +5,12 @@ import type { Transcript } from "@/lib/transcription/types";
 import type { SpeechMetrics } from "@/lib/metrics/types";
 import type { CoachingFeedback } from "@/lib/feedback/types";
 
+// The analyze route is stopped after 200 seconds (its maxDuration), so a row still "analyzing" after this
+// long is dead: the route may claim it again, and the results page offers "Try again".
+export const STALE_ANALYSIS_MS = 4 * 60 * 1000;
+export const isStuck = (row: Pick<Recording, "status" | "analysis_started_at">) =>
+  row.status === "analyzing" && Date.now() - new Date(row.analysis_started_at ?? 0).getTime() > STALE_ANALYSIS_MS;
+
 // Must match the `check` on the status column in 0003_recordings_results.sql.
 export type RecordingStatus = "uploaded" | "analyzing" | "done" | "failed";
 
@@ -23,6 +29,7 @@ export type Recording = {
   feedback: CoachingFeedback | null;
   duration_ms: number | null;
   error_message: string | null; // only filled in when status is "failed"
+  analysis_started_at: string | null; // when the latest analysis began (migration 0005)
 
   // impromptu runs only (migration 0008): the topic from lib/impromptu/topics.ts and the target
   // length in seconds (60, 120 or 180). Both null for normal recordings and uploads.
