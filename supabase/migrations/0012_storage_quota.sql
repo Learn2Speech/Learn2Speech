@@ -24,7 +24,8 @@ $$;
 revoke execute on function private.storage_under_quota() from public, anon;
 grant execute on function private.storage_under_quota() to authenticated;
 
-alter policy "Users are able to upload audio (add new components to the bucket)" on storage.objects
+-- the name as Postgres stored it (names are cut at 63 characters)
+alter policy "Users are able to upload audio (add new components to the bucke" on storage.objects
   with check (
     bucket_id = 'recordings'
     and (storage.foldername(name))[1] = (select auth.uid())::text
