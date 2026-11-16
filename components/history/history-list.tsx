@@ -1,10 +1,12 @@
 "use client"; // filters the list as you type
 // The list on /history, with a search box (name or topic) and a from/to date filter, plus Rename and a red
-// Delete on every row so people don't have to open a recording to tidy up. Filtering happens in the browser:
-// the page already loaded every row (newest first), so there's nothing to fetch.
-import { useState } from "react";
+// Delete on every row so people don't have to open a recording to tidy up. Filtering and paging happen in the
+// browser: the page already loaded every row (newest first), so there's nothing to fetch. 6 per page.
+// Duplicates (the same audio uploaded again, lib/duplicates.ts) get an orange "Duplicate" tag.
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import formatSize from "@/lib/format-size";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,10 +27,14 @@ const localDay = (iso: string) => {
 
 const topicOf = (row: HistoryRow) => impromptuFromRow(row)?.topic ?? row.feedback?.topic?.topic ?? "";
 
-export default function HistoryList({ rows }: { rows: HistoryRow[] }) {
+const PER_PAGE = 6;
+
+export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; duplicates: string[] }) {
   const [query, setQuery] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
+  const [pickedPage, setPage] = useState(1);
+  const listRef = useRef<HTMLDivElement>(null);
   const q = query.trim().toLowerCase();
   const shown = rows.filter((row) => {
     const day = localDay(row.created_at);
@@ -37,30 +43,38 @@ export default function HistoryList({ rows }: { rows: HistoryRow[] }) {
     return !q || `${row.original_name} ${topicOf(row)}`.toLowerCase().includes(q);
   });
   const filtering = Boolean(q || from || to);
+  const pageCount = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+  const page = Math.min(pickedPage, pageCount); // a delete can empty the last page
+  const onPage = shown.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  // changing a filter starts again at page 1
+  const filter = (set: (v: string) => void) => (e: React.ChangeEvent<HTMLInputElement>) => { set(e.target.value); setPage(1); };
+  function goTo(n: number) {
+    setPage(n);
+    listRef.current?.scrollIntoView({ block: "start" });
+  }
 
   return (
     <>
-      {/* only worth showing once there's something to look through */}
-      {rows.length > 1 && (
+      <div ref={listRef} className="scroll-mt-20">
         <div role="search" className="mb-6 flex flex-wrap items-end gap-x-4 gap-y-3">
           <div className="grid min-w-56 flex-1 gap-1.5">
             <Label htmlFor="history-search">Search</Label>
             <div className="relative">
               <Search aria-hidden="true" className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input id="history-search" type="search" value={query} onChange={(e) => setQuery(e.target.value)}
+              <Input id="history-search" type="search" value={query} onChange={filter(setQuery)}
                 placeholder="Name or topic" className="h-11 pl-9 text-base md:text-base" />
             </div>
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="history-from">From</Label>
-            <Input id="history-from" type="date" value={from} max={to || undefined} onChange={(e) => setFrom(e.target.value)} className="h-11 w-auto text-base md:text-base" />
+            <Input id="history-from" type="date" value={from} max={to || undefined} onChange={filter(setFrom)} className="h-11 w-auto text-base md:text-base" />
           </div>
           <div className="grid gap-1.5">
             <Label htmlFor="history-to">To</Label>
-            <Input id="history-to" type="date" value={to} min={from || undefined} onChange={(e) => setTo(e.target.value)} className="h-11 w-auto text-base md:text-base" />
+            <Input id="history-to" type="date" value={to} min={from || undefined} onChange={filter(setTo)} className="h-11 w-auto text-base md:text-base" />
           </div>
           {filtering && (
-            <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); }} className="h-11">
+            <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); setPage(1); }} className="h-11">
               <X /> Clear
             </Button>
           )}
@@ -69,13 +83,13 @@ export default function HistoryList({ rows }: { rows: HistoryRow[] }) {
             {filtering ? `Showing ${shown.length} of ${rows.length} recordings` : ""}
           </p>
         </div>
-      )}
+      </div>
 
       {shown.length === 0 ? (
         <p className="border-y border-foreground py-10 text-lg text-muted-foreground">No recordings match. Try a different word or dates.</p>
       ) : (
         <ul className="divide-y border-y border-foreground">
-          {shown.map((row) => {
+          {onPage.map((row) => {
             const impromptu = impromptuFromRow(row);
             return (
               <li key={row.id} className="relative">
@@ -83,6 +97,8 @@ export default function HistoryList({ rows }: { rows: HistoryRow[] }) {
                 <Link href={`/history/${row.id}`} className="block py-6 pr-24 transition-colors duration-150 hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3 sm:pr-28">
                   <p className="truncate text-xl font-semibold sm:text-2xl" title={row.original_name}>{row.original_name}</p>
                   <div className="mt-2 flex flex-wrap gap-1.5">
+                    {/* solid orange so it can't be missed: this one isn't counted in the charts */}
+                    {duplicates.includes(row.id) && <Badge className="border-transparent bg-primary text-primary-foreground">Duplicate</Badge>}
                     {impromptu && <Badge variant="outline" className="border-orange/40 bg-orange/10 text-foreground">Impromptu</Badge>}
                     {/* a redo of an earlier take (components/redo) */}
                     {row.feedback?.redoOf && <Badge variant="outline">Redo</Badge>}
@@ -120,6 +136,23 @@ export default function HistoryList({ rows }: { rows: HistoryRow[] }) {
             );
           })}
         </ul>
+      )}
+
+      {pageCount > 1 && (
+        <nav aria-label="History pages" className="mt-6 flex flex-wrap items-center justify-center gap-1">
+          <Button variant="ghost" onClick={() => goTo(page - 1)} disabled={page === 1} className="h-11">
+            <ChevronLeft /> Previous
+          </Button>
+          {Array.from({ length: pageCount }, (_, i) => i + 1).map((n) => (
+            <Button key={n} variant="ghost" onClick={() => goTo(n)} aria-label={`Page ${n}`} aria-current={n === page ? "page" : undefined}
+              className={cn("size-11 tabular-nums", n === page && "bg-secondary font-semibold")}>
+              {n}
+            </Button>
+          ))}
+          <Button variant="ghost" onClick={() => goTo(page + 1)} disabled={page === pageCount} className="h-11">
+            Next <ChevronRight />
+          </Button>
+        </nav>
       )}
     </>
   );

@@ -52,8 +52,18 @@ function Sparkline({ values, band }: { values: number[]; band?: { low: number; h
 const shortDate = (iso: string) => new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
 export default function ProgressChart({ points, title = "Your progress" }: { points: ProgressPoint[]; title?: string }) {
-  if (points.length < 2) return null; // one recording isn't a trend yet
   const id = `progress-${title.toLowerCase().replace(/\W+/g, "-")}`;
+  // one recording isn't a trend yet: keep the section so people know the charts are coming
+  if (points.length < 2) {
+    return (
+      <section aria-labelledby={id} className="mb-16 border-t border-foreground pt-6">
+        <h2 id={id} className="text-2xl font-semibold">{title}</h2>
+        <p className="mt-3 text-lg text-muted-foreground">
+          Not enough recordings yet. Finish {points.length === 0 ? "2 recordings" : "1 more recording"} to see how you&apos;re improving.
+        </p>
+      </section>
+    );
+  }
   const firstDate = shortDate(points[0].createdAt), lastDate = shortDate(points[points.length - 1].createdAt);
   return (
     <section aria-labelledby={id} className="mb-16 border-t border-foreground pt-6">

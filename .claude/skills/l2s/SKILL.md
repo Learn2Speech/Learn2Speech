@@ -252,6 +252,10 @@ Newest first. One entry per big design change: date, what changed, why, where.
   outside the row's link. Results pages got a Rename button next to Delete. Rename needs migration 0011
   (users may update only `original_name` on their own rows). `components/history/history-list.tsx`,
   `components/history/rename-recording-button.tsx`, `components/results/delete-recording-button.tsx`.
+  Then: filters show even with one recording; 6 recordings per page (Previous, page numbers, Next); the
+  progress section says "Not enough recordings yet" instead of disappearing; the same audio uploaded again
+  (same file size, `lib/duplicates.ts`) gets a solid orange "Duplicate" tag on the newer copy and is left
+  out of the charts.
 
 - **2026-11-15: Feedback as short lists; readable targets.** Feedback stays lists (scanning beats prose, NN/g
   1997): the prompt asks for a 1-2 sentence summary, 2-3 strengths and 3-5 improvements, each one short

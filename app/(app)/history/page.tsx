@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProgressChart from "@/components/history/progress-chart"
 import HistoryList, {type HistoryRow} from "@/components/history/history-list"
+import { duplicateIds } from "@/lib/duplicates"
 import { impromptuFromRow } from "@/lib/impromptu/topics"
 
 export const metadata: Metadata = { title: "History" };
@@ -39,16 +40,18 @@ async function RecordingsList() {
     }
     // finished recordings only, oldest first, so the chart reads left → right over time
     // ([...data] copies first, because reverse() would also flip the list below)
-    const finished = [...data].reverse().filter((row) => row.status === "done" && row.metrics)
+    // duplicates (the same audio uploaded again) stay in the list, marked, but don't count twice in the charts
+    const duplicates = duplicateIds(data)
+    const finished = [...data].reverse().filter((row) => row.status === "done" && row.metrics && !duplicates.has(row.id))
     const points = finished.map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
-    // the same charts again for impromptu runs only, once there are at least two of them
+    // the same charts again for impromptu runs only, once there's at least one (it says when it needs more)
     const impromptuPoints = finished.filter((row) => impromptuFromRow(row)).map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
-    const showImpromptu = impromptuPoints.length >= 2
+    const showImpromptu = impromptuPoints.length >= 1
     return (
         <>
         <ProgressChart points={points} />
         {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
-        <HistoryList rows={data} />
+        <HistoryList rows={data} duplicates={[...duplicates]} />
         </>
     );
 }
