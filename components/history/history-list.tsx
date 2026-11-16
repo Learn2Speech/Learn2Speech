@@ -19,7 +19,15 @@ import RenameRecordingButton from "@/components/history/rename-recording-button"
 import { impromptuFromRow } from "@/lib/impromptu/topics";
 import type { Recording } from "@/lib/recording-types";
 
-export type HistoryRow = Pick<Recording, "id" | "original_name" | "file_path" | "size_bytes" | "duration_ms" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">;
+// Only what the list shows: the History page trims each recording to this before sending it to the browser,
+// instead of the full metrics and feedback (a few KB each, times up to 200 recordings).
+export type HistoryRow = Pick<Recording, "id" | "original_name" | "file_path" | "size_bytes" | "duration_ms" | "created_at" | "status" | "error_message" | "topic" | "target_seconds"> & {
+  scores: { wordsPerMinute: number; fillerCount: number; pauses: number } | null; // null until analyzed
+  summary: string | null;
+  typedTopic: string | null; // a topic the speaker typed (topic mode)
+  redo: boolean;
+  script: boolean;
+};
 
 // a date input gives "2026-11-15"; compare it with the recording's day in the viewer's own time zone
 const localDay = (iso: string) => {
@@ -27,7 +35,7 @@ const localDay = (iso: string) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 };
 
-const topicOf = (row: HistoryRow) => impromptuFromRow(row)?.topic ?? row.feedback?.topic?.topic ?? "";
+const topicOf = (row: HistoryRow) => impromptuFromRow(row)?.topic ?? row.typedTopic ?? "";
 
 const PER_PAGE = 6;
 // Impromptu = a run from /impromptu; Practice = everything else (recorded or uploaded)
@@ -129,14 +137,14 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
                     {duplicates.includes(row.id) && <Badge className="border-transparent bg-primary text-primary-foreground">Duplicate</Badge>}
                     {impromptu && <Badge variant="outline" className="border-orange/40 bg-orange/10 text-foreground">Impromptu</Badge>}
                     {/* a redo of an earlier take (components/redo) */}
-                    {row.feedback?.redoOf && <Badge variant="outline">Redo</Badge>}
+                    {row.redo && <Badge variant="outline">Redo</Badge>}
                     {/* practiced from a pasted script (components/script) */}
-                    {row.feedback?.script && <Badge variant="outline">Script</Badge>}
+                    {row.script && <Badge variant="outline">Script</Badge>}
                     <StatusBadge status={row.status} />
                   </div>
                   {impromptu && <p className="mt-2 text-foreground">Topic: {impromptu.topic}</p>}
                   {/* a topic the speaker typed lives in the feedback (topic mode) */}
-                  {!impromptu && row.feedback?.topic && <p className="mt-2 break-words text-foreground">Topic: {row.feedback.topic.topic}</p>}
+                  {!impromptu && row.typedTopic && <p className="mt-2 break-words text-foreground">Topic: {row.typedTopic}</p>}
                   <p className="text-sm text-muted-foreground">
                     {formatSize(row.size_bytes)} · {new Date(row.created_at).toLocaleDateString()}
                   </p>
@@ -144,15 +152,14 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
                   {row.status === "analyzing" && <p className="mt-2 text-sm text-muted-foreground">Analyzing... refresh in a few minutes.</p>}
                   {row.status === "uploaded" && <p className="mt-2 text-sm text-muted-foreground">Waiting to be analyzed.</p>}
                   {row.status === "failed" && <p className="mt-2 text-sm text-destructive">Analysis failed: {row.error_message ?? "unknown reason"}</p>}
-                  {/* metrics and feedback can be null, so check they exist before reading them */}
-                  {row.status === "done" && row.metrics && row.feedback && (
+                  {row.status === "done" && row.scores && (
                     <div className="mt-4 space-y-3">
                       <p className="flex flex-wrap items-baseline gap-x-8 gap-y-1 tabular-nums">
-                        <span><span className="text-3xl font-black text-(--brand)">{row.metrics.wordsPerMinute}</span> <span className="text-muted-foreground">words/min</span></span>
-                        <span><span className="text-3xl font-black text-(--brand)">{row.metrics.fillerCount}</span> <span className="text-muted-foreground">fillers</span></span>
-                        <span><span className="text-3xl font-black text-(--brand)">{row.metrics.pauses.length}</span> <span className="text-muted-foreground">long pauses</span></span>
+                        <span><span className="text-3xl font-black text-(--brand)">{row.scores.wordsPerMinute || "–"}</span> <span className="text-muted-foreground">words/min</span></span>
+                        <span><span className="text-3xl font-black text-(--brand)">{row.scores.fillerCount}</span> <span className="text-muted-foreground">fillers</span></span>
+                        <span><span className="text-3xl font-black text-(--brand)">{row.scores.pauses}</span> <span className="text-muted-foreground">long pauses</span></span>
                       </p>
-                      <p className="line-clamp-2 max-w-[75ch] text-muted-foreground">{row.feedback.summary}</p>
+                      {row.summary && <p className="line-clamp-2 max-w-[75ch] text-muted-foreground">{row.summary}</p>}
                     </div>
                   )}
                 </Link>

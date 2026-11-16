@@ -37,13 +37,14 @@ function buildRows(earlier: Take, current: Take, pace: PaceRange): Row[] {
       show: oneDecimal, better: "lower",
       headline: (b, a) => `Fewer fillers: ${b} → ${a} per minute.`,
     },
-    {
+    // pace 0 = too short to measure (lib/metrics/wpm.ts), so there's nothing to compare
+    ...(earlier.metrics.wordsPerMinute && current.metrics.wordsPerMinute ? [{
       label: `Pace (target ${pace.low} to ${pace.high})`,
       before: earlier.metrics.wordsPerMinute,
       after: current.metrics.wordsPerMinute,
-      show: (n) => `${n} wpm`, better: null,
-      headline: (b, a) => `Pace closer to your target: ${b} → ${a}.`,
-    },
+      show: (n: number) => `${n} wpm`, better: null,
+      headline: (b: string, a: string) => `Pace closer to your target: ${b} → ${a}.`,
+    }] : []),
     {
       label: "Long pauses per minute",
       before: perMinute(earlier.metrics.pauses.length, earlier.durationMs),

@@ -12,8 +12,12 @@ import ChartReset from "@/components/history/chart-reset"
 import HistoryList, {type HistoryRow} from "@/components/history/history-list"
 import { duplicateIds } from "@/lib/duplicates"
 import { impromptuFromRow } from "@/lib/impromptu/topics"
+import type { Recording } from "@/lib/recording-types"
 
 export const metadata: Metadata = { title: "History" };
+
+// the columns selected below
+type Row = Pick<Recording, "id" | "original_name" | "file_path" | "size_bytes" | "duration_ms" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">;
 
 // Only the columns the list shows (HistoryRow). We leave out the full transcript on purpose:
 // it holds every word with timestamps, which is too heavy to load for every row.
@@ -27,7 +31,7 @@ async function RecordingsList() {
         .select("id, original_name, file_path, size_bytes, duration_ms, created_at, status, metrics, feedback, error_message, topic, target_seconds")
         .order("created_at", {ascending: false})
     // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
-    const data = (rows ?? []) as HistoryRow[]
+    const data = (rows ?? []) as Row[]
     if (error) {
         return <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">We encountered an error with the display. Please try refreshing.</p>
     }
@@ -44,7 +48,8 @@ async function RecordingsList() {
     // ([...data] copies first, because reverse() would also flip the list below)
     // duplicates (the same audio uploaded again) stay in the list, marked, but don't count twice in the charts
     const duplicates = duplicateIds(data)
-    const allFinished = [...data].reverse().filter((row) => row.status === "done" && row.metrics && !duplicates.has(row.id))
+    // a clip too short to measure the pace (wordsPerMinute 0, lib/metrics/wpm.ts) would drag the charts down
+    const allFinished = [...data].reverse().filter((row) => row.status === "done" && row.metrics?.wordsPerMinute && !duplicates.has(row.id))
     // "Start chart fresh" (components/history/chart-reset.tsx): the charts count only recordings from that moment
     const {data: {user}} = await supabase.auth.getUser()
     const chartStart = typeof user?.user_metadata?.chart_start === "string" ? user.user_metadata.chart_start as string : null
@@ -60,9 +65,21 @@ async function RecordingsList() {
             <ProgressChart points={points} className="mb-0" />
         </PinnableChart>
         {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
-        <HistoryList rows={data} duplicates={[...duplicates]} />
+        <HistoryList rows={data.map(listRow)} duplicates={[...duplicates]} />
         </>
     );
+}
+
+// Trims a recording to what the list shows (HistoryRow), so the browser isn't sent every recording's full results
+function listRow({ metrics, feedback, ...row }: Row): HistoryRow {
+    return {
+        ...row,
+        scores: metrics && feedback ? { wordsPerMinute: metrics.wordsPerMinute, fillerCount: metrics.fillerCount, pauses: metrics.pauses.length } : null,
+        summary: feedback?.summary ?? null,
+        typedTopic: feedback?.topic?.topic ?? null,
+        redo: Boolean(feedback?.redoOf),
+        script: Boolean(feedback?.script),
+    }
 }
 
 // Gray placeholder rows shown while the list loads, shaped like the real rows.

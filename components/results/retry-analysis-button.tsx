@@ -29,8 +29,10 @@ export default function RetryAnalysisButton({ id }: { id: string }) {
   return (
     <>
       <Button onClick={retry} disabled={busy} className="h-12 px-6 text-base">
-        {busy ? <><Loader2 className="animate-spin" /> {ANALYZING_MESSAGE}</> : <><RotateCcw /> Try again</>}
+        {busy ? <><Loader2 className="animate-spin" /> Analyzing...</> : <><RotateCcw /> Try again</>}
       </Button>
+      {/* the long wait message sits under the button: buttons don't wrap, and it's too wide for a phone */}
+      {busy && <p className="text-sm text-muted-foreground">{ANALYZING_MESSAGE}</p>}
       {errorMessage && <p role="alert" className="text-sm text-destructive">{errorMessage}</p>}
     </>
   );

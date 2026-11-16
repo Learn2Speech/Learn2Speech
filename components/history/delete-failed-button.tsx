@@ -1,8 +1,9 @@
 "use client"; // needs clicks and the browser's Supabase login
 // History: "Delete failed" removes every recording whose analysis failed (row and audio file), after a
 // confirm popup. A button, not automatic: a failed recording can still be retried from its results page.
-// Rows go first, and only ones still "failed", so a recording retried in another tab meanwhile is kept;
-// then the audio files of the rows that really went. RLS keeps both to the user's own data.
+// Same order as deleting one recording: files first, then rows, so a failure part-way can simply be tried
+// again (removing a missing file is fine) and no file is left that nobody can see but still counts toward
+// the storage limit. Only rows still "failed" are touched. RLS keeps it all to the user's own data.
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
@@ -23,14 +24,11 @@ export default function DeleteFailedButton({ ids }: { ids: string[] }) {
     setDeleting(true);
     setErrorMessage("");
     const supabase = createClient();
-    const { data: gone, error } = await supabase.from("recordings").delete().in("id", ids).eq("status", "failed").select("file_path");
-    if (error) {
-      setDeleting(false);
-      return setErrorMessage("Couldn't delete them. Please try again.");
-    }
-    // a file left behind here only takes space; the user's list is already clean
-    if (gone.length) await supabase.storage.from("recordings").remove(gone.map((row) => row.file_path));
+    const { data: failed, error } = await supabase.from("recordings").select("file_path").in("id", ids).eq("status", "failed");
+    const { error: fileError } = error || !failed.length ? { error } : await supabase.storage.from("recordings").remove(failed.map((row) => row.file_path));
+    const { error: rowError } = error || fileError ? { error: true } : await supabase.from("recordings").delete().in("id", ids).eq("status", "failed");
     setDeleting(false);
+    if (rowError) return setErrorMessage("Couldn't delete them. Please try again.");
     setOpen(false);
     router.refresh();
   }
