@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import DeleteRecordingButton from "@/components/results/delete-recording-button";
+import SwitchToggle from "@/components/ui/switch-toggle";
 import RenameRecordingButton from "@/components/history/rename-recording-button";
 import { impromptuFromRow } from "@/lib/impromptu/topics";
 import type { Recording } from "@/lib/recording-types";
@@ -28,6 +29,9 @@ const localDay = (iso: string) => {
 const topicOf = (row: HistoryRow) => impromptuFromRow(row)?.topic ?? row.feedback?.topic?.topic ?? "";
 
 const PER_PAGE = 6;
+// Impromptu = a run from /impromptu; Practice = everything else (recorded or uploaded)
+type Type = "all" | "impromptu" | "practice";
+const TYPES: [Type, string][] = [["all", "All"], ["impromptu", "Impromptu"], ["practice", "Practice"]];
 
 export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; duplicates: string[] }) {
   const [query, setQuery] = useState("");
@@ -35,16 +39,18 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
   const [to, setTo] = useState("");
   const [pickedPage, setPage] = useState(1);
   const [hideDuplicates, setHideDuplicates] = useState(false); // only hides them here; nothing is deleted
+  const [type, setType] = useState<Type>("all");
   const listRef = useRef<HTMLDivElement>(null);
   const q = query.trim().toLowerCase();
   const shown = rows.filter((row) => {
     if (hideDuplicates && duplicates.includes(row.id)) return false;
+    if (type !== "all" && (impromptuFromRow(row) ? "impromptu" : "practice") !== type) return false;
     const day = localDay(row.created_at);
     if (from && day < from) return false;
     if (to && day > to) return false;
     return !q || `${row.original_name} ${topicOf(row)}`.toLowerCase().includes(q);
   });
-  const filtering = Boolean(q || from || to);
+  const filtering = Boolean(q || from || to || type !== "all");
   const pageCount = Math.max(1, Math.ceil(shown.length / PER_PAGE));
   const page = Math.min(pickedPage, pageCount); // a delete can empty the last page
   const onPage = shown.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -68,6 +74,18 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
             </div>
           </div>
           <div className="grid gap-1.5">
+            <span id="history-type" className="text-sm leading-none font-medium select-none">Type</span>
+            <div role="group" aria-labelledby="history-type" className="inline-flex h-11 rounded-lg border bg-secondary p-1">
+              {TYPES.map(([value, label]) => (
+                <button key={value} type="button" aria-pressed={type === value} onClick={() => { setType(value); setPage(1); }}
+                  className={cn("rounded-md px-3 text-sm font-medium transition-colors",
+                    type === value ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}>
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="grid gap-1.5">
             <Label htmlFor="history-from">From</Label>
             <Input id="history-from" type="date" value={from} max={to || undefined} onChange={filter(setFrom)} className="h-11 w-auto text-base md:text-base" />
           </div>
@@ -75,20 +93,12 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
             <Label htmlFor="history-to">To</Label>
             <Input id="history-to" type="date" value={to} min={from || undefined} onChange={filter(setTo)} className="h-11 w-auto text-base md:text-base" />
           </div>
-          {/* a switch (same look as the live filler counter's), only when there are duplicates to hide */}
+          {/* only when there are duplicates to hide */}
           {duplicates.length > 0 && (
-            <button type="button" role="switch" aria-checked={hideDuplicates} onClick={() => { setHideDuplicates(!hideDuplicates); setPage(1); }}
-              className="flex h-11 cursor-pointer items-center gap-3 rounded-md text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
-              <span aria-hidden="true" className={cn("relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors duration-150",
-                hideDuplicates ? "border-transparent bg-primary" : "border-foreground/30 bg-secondary")}>
-                <span className={cn("absolute left-0.5 size-5 rounded-full bg-background shadow-sm transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
-                  hideDuplicates ? "translate-x-5" : "translate-x-0")} />
-              </span>
-              Hide duplicates
-            </button>
+            <SwitchToggle on={hideDuplicates} onChange={(on) => { setHideDuplicates(on); setPage(1); }} label="Hide duplicates" />
           )}
           {filtering && (
-            <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); setPage(1); }} className="h-11">
+            <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); setType("all"); setPage(1); }} className="h-11">
               <X /> Clear
             </Button>
           )}

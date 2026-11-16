@@ -7,6 +7,7 @@ import PageHeader from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProgressChart from "@/components/history/progress-chart"
+import PinnableChart from "@/components/history/pinnable-chart"
 import HistoryList, {type HistoryRow} from "@/components/history/history-list"
 import { duplicateIds } from "@/lib/duplicates"
 import { impromptuFromRow } from "@/lib/impromptu/topics"
@@ -49,7 +50,7 @@ async function RecordingsList() {
     const showImpromptu = impromptuPoints.length >= 1
     return (
         <>
-        <ProgressChart points={points} />
+        <PinnableChart canPin={points.length >= 2}><ProgressChart points={points} className="mb-0" /></PinnableChart>
         {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
         <HistoryList rows={data} duplicates={[...duplicates]} />
         </>
