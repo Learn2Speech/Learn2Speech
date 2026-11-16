@@ -260,6 +260,11 @@ Newest first. One entry per big design change: date, what changed, why, where.
   A Type filter (All / Impromptu / Practice) sits next to the search. "Keep chart in view" (off by default,
   lg+ only, not remembered) pins the main progress chart under the top bar while the list scrolls; never
   on phones, where it would cover most of the screen. Switches share `components/ui/switch-toggle.tsx`.
+  Charts open with a one-line summary written in code from the same Better/Worse verdicts ("Great progress:
+  ...", "Your pace has improved... Keep working on your filler words."). "Start chart fresh" (confirm popup)
+  makes the charts count only recordings from now on; nothing is deleted and "Bring back old points" undoes
+  it. Saved in the account's user_metadata.chart_start, so it follows the user across devices.
+  `components/history/chart-reset.tsx`.
 
 - **2026-11-15: Feedback as short lists; readable targets.** Feedback stays lists (scanning beats prose, NN/g
   1997): the prompt asks for a 1-2 sentence summary, 2-3 strengths and 3-5 improvements, each one short

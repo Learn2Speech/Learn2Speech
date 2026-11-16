@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProgressChart from "@/components/history/progress-chart"
 import PinnableChart from "@/components/history/pinnable-chart"
+import ChartReset from "@/components/history/chart-reset"
 import HistoryList, {type HistoryRow} from "@/components/history/history-list"
 import { duplicateIds } from "@/lib/duplicates"
 import { impromptuFromRow } from "@/lib/impromptu/topics"
@@ -43,14 +44,21 @@ async function RecordingsList() {
     // ([...data] copies first, because reverse() would also flip the list below)
     // duplicates (the same audio uploaded again) stay in the list, marked, but don't count twice in the charts
     const duplicates = duplicateIds(data)
-    const finished = [...data].reverse().filter((row) => row.status === "done" && row.metrics && !duplicates.has(row.id))
+    const allFinished = [...data].reverse().filter((row) => row.status === "done" && row.metrics && !duplicates.has(row.id))
+    // "Start chart fresh" (components/history/chart-reset.tsx): the charts count only recordings from that moment
+    const {data: {user}} = await supabase.auth.getUser()
+    const chartStart = typeof user?.user_metadata?.chart_start === "string" ? user.user_metadata.chart_start as string : null
+    const finished = chartStart ? allFinished.filter((row) => new Date(row.created_at) >= new Date(chartStart)) : allFinished
     const points = finished.map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
     // the same charts again for impromptu runs only, once there's at least one (it says when it needs more)
     const impromptuPoints = finished.filter((row) => impromptuFromRow(row)).map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
     const showImpromptu = impromptuPoints.length >= 1
     return (
         <>
-        <PinnableChart canPin={points.length >= 2}><ProgressChart points={points} className="mb-0" /></PinnableChart>
+        <PinnableChart canPin={points.length >= 2}
+            toolbar={(chartStart || allFinished.length >= 2) && <ChartReset chartStart={chartStart} hiddenCount={allFinished.length - finished.length} />}>
+            <ProgressChart points={points} className="mb-0" />
+        </PinnableChart>
         {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
         <HistoryList rows={data} duplicates={[...duplicates]} />
         </>

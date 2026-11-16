@@ -6,11 +6,15 @@ import { useState } from "react";
 import SwitchToggle from "@/components/ui/switch-toggle";
 import { cn } from "@/lib/utils";
 
-export default function PinnableChart({ canPin, children }: { canPin: boolean; children: React.ReactNode }) {
+// toolbar: shown on the left of the switch row (History puts "Start chart fresh" there)
+export default function PinnableChart({ canPin, toolbar, children }: { canPin: boolean; toolbar?: React.ReactNode; children: React.ReactNode }) {
   const [pinned, setPinned] = useState(false);
   return (
     <div className={cn("mb-16 flex flex-col", pinned && "lg:sticky lg:top-14 lg:z-10 lg:border-b lg:bg-background lg:pb-4")}>
-      {canPin && <SwitchToggle on={pinned} onChange={setPinned} label="Keep chart in view" className="self-end max-lg:hidden" />}
+      <div className="flex flex-wrap items-center justify-between gap-x-4">
+        <div>{toolbar}</div>
+        {canPin && <SwitchToggle on={pinned} onChange={setPinned} label="Keep chart in view" className="max-lg:hidden" />}
+      </div>
       {children}
     </div>
   );
