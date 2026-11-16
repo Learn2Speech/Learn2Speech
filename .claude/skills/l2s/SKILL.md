@@ -254,8 +254,9 @@ Newest first. One entry per big design change: date, what changed, why, where.
   `components/history/rename-recording-button.tsx`, `components/results/delete-recording-button.tsx`.
   Then: filters show even with one recording; 6 recordings per page (Previous, page numbers, Next); the
   progress section says "Not enough recordings yet" instead of disappearing; the same audio uploaded again
-  (same file size, `lib/duplicates.ts`) gets a solid orange "Duplicate" tag on the newer copy and is left
-  out of the charts.
+  (same file size and same length; not the name, which Rename and Record change; `lib/duplicates.ts`) gets
+  a solid orange "Duplicate" tag on the newer copy and is left out of the charts. A "Hide duplicates" switch
+  (shown only when there are some) hides them from the list without deleting anything.
 
 - **2026-11-15: Feedback as short lists; readable targets.** Feedback stays lists (scanning beats prose, NN/g
   1997): the prompt asks for a 1-2 sentence summary, 2-3 strengths and 3-5 improvements, each one short

@@ -17,7 +17,7 @@ import RenameRecordingButton from "@/components/history/rename-recording-button"
 import { impromptuFromRow } from "@/lib/impromptu/topics";
 import type { Recording } from "@/lib/recording-types";
 
-export type HistoryRow = Pick<Recording, "id" | "original_name" | "file_path" | "size_bytes" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">;
+export type HistoryRow = Pick<Recording, "id" | "original_name" | "file_path" | "size_bytes" | "duration_ms" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">;
 
 // a date input gives "2026-11-15"; compare it with the recording's day in the viewer's own time zone
 const localDay = (iso: string) => {
@@ -34,9 +34,11 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [pickedPage, setPage] = useState(1);
+  const [hideDuplicates, setHideDuplicates] = useState(false); // only hides them here; nothing is deleted
   const listRef = useRef<HTMLDivElement>(null);
   const q = query.trim().toLowerCase();
   const shown = rows.filter((row) => {
+    if (hideDuplicates && duplicates.includes(row.id)) return false;
     const day = localDay(row.created_at);
     if (from && day < from) return false;
     if (to && day > to) return false;
@@ -73,6 +75,18 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
             <Label htmlFor="history-to">To</Label>
             <Input id="history-to" type="date" value={to} min={from || undefined} onChange={filter(setTo)} className="h-11 w-auto text-base md:text-base" />
           </div>
+          {/* a switch (same look as the live filler counter's), only when there are duplicates to hide */}
+          {duplicates.length > 0 && (
+            <button type="button" role="switch" aria-checked={hideDuplicates} onClick={() => { setHideDuplicates(!hideDuplicates); setPage(1); }}
+              className="flex h-11 cursor-pointer items-center gap-3 rounded-md text-sm font-medium outline-none focus-visible:ring-3 focus-visible:ring-ring/50">
+              <span aria-hidden="true" className={cn("relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors duration-150",
+                hideDuplicates ? "border-transparent bg-primary" : "border-foreground/30 bg-secondary")}>
+                <span className={cn("absolute left-0.5 size-5 rounded-full bg-background shadow-sm transition-transform duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] motion-reduce:transition-none",
+                  hideDuplicates ? "translate-x-5" : "translate-x-0")} />
+              </span>
+              Hide duplicates
+            </button>
+          )}
           {filtering && (
             <Button variant="ghost" onClick={() => { setQuery(""); setFrom(""); setTo(""); setPage(1); }} className="h-11">
               <X /> Clear
@@ -80,7 +94,7 @@ export default function HistoryList({ rows, duplicates }: { rows: HistoryRow[]; 
           )}
           {/* says how many match, and screen readers hear it as the list narrows */}
           <p aria-live="polite" className="w-full text-sm text-muted-foreground tabular-nums">
-            {filtering ? `Showing ${shown.length} of ${rows.length} recordings` : ""}
+            {filtering || hideDuplicates ? `Showing ${shown.length} of ${rows.length} recordings` : ""}
           </p>
         </div>
       </div>

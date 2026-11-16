@@ -22,7 +22,7 @@ async function RecordingsList() {
     const supabase = await createServerSupabase();
     const {data: rows, error} = await supabase
         .from("recordings")
-        .select("id, original_name, file_path, size_bytes, created_at, status, metrics, feedback, error_message, topic, target_seconds")
+        .select("id, original_name, file_path, size_bytes, duration_ms, created_at, status, metrics, feedback, error_message, topic, target_seconds")
         .order("created_at", {ascending: false})
     // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
     const data = (rows ?? []) as HistoryRow[]
