@@ -1,10 +1,12 @@
 "use client"; // reads ?from=... from the address bar
 // When proxy.ts sends a logged-out visitor to /login, it adds ?from=upload (or record, history).
 // This turns that into a friendly "Log in to use Upload" box on the login card.
+// ?expired=1 (components/auth/session-timeout.tsx) says why they were logged out instead.
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { LockKeyhole } from "lucide-react";
 import { createClient } from "@/lib/supabase";
+import { AWAY_MINUTES } from "@/components/auth/session-timeout";
 
 // Only pages we know about get a name, so a made-up ?from= value shows nothing (and can't redirect anywhere else).
 export const PAGE_NAMES: Record<string, string> = {
@@ -16,7 +18,9 @@ export const PAGE_NAMES: Record<string, string> = {
 };
 
 export default function LoginNotice() {
-  const from = useSearchParams().get("from");
+  const params = useSearchParams();
+  const from = params.get("from");
+  const expired = params.get("expired") === "1";
   // hasOwn: so ?from=constructor (a built-in object key) doesn't count as a page
   const pageName = from && Object.hasOwn(PAGE_NAMES, from) ? PAGE_NAMES[from] : undefined;
 
@@ -29,12 +33,12 @@ export default function LoginNotice() {
     });
   }, [from, pageName]);
 
-  if (!pageName) return null;
+  if (!pageName && !expired) return null;
 
   return (
     <p role="status" className="flex items-center gap-2 rounded-md border border-brand/20 bg-accent px-3 py-2 text-sm text-accent-foreground">
       <LockKeyhole className="size-4 shrink-0" />
-      Log in to use {pageName}.
+      {expired ? `You were logged out after ${AWAY_MINUTES} minutes away. Log in again to keep going.` : `Log in to use ${pageName}.`}
     </p>
   );
 }
