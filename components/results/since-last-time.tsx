@@ -14,7 +14,8 @@ export default function SinceLastTime({ current, previous }: { current: SpeechMe
     <section aria-label="Compared with your last recording" className="mb-8 rounded-lg border p-4">
       <p className="mb-2 text-sm font-medium">Since your last recording</p>
       <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm tabular-nums">
-        {ROWS.map((row) => {
+        {/* pace 0 = too short to measure, so there's nothing to compare */}
+        {ROWS.filter((row) => row.lowerIsBetter !== null || (row.pick(previous) && row.pick(current))).map((row) => {
           const before = row.pick(previous), now = row.pick(current);
           const arrow = now > before ? "↑" : now < before ? "↓" : "=";
           // green when it moved the good way, red when it moved the bad way, gray otherwise

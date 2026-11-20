@@ -32,11 +32,11 @@ function Gauge({ value, min, max, bands }: { value: number; min: number; max: nu
 
 type ReadoutProps = {
   label: string;
-  value: number;
+  value: number | string;
   unit: string;
   rating: Rating;
   target: string;
-  gauge: { value: number; min: number; max: number; bands: Band[] };
+  gauge?: { value: number; min: number; max: number; bands: Band[] }; // left out when there's nothing to place
 };
 
 function Readout({ label, value, unit, rating, target, gauge }: ReadoutProps) {
@@ -48,7 +48,7 @@ function Readout({ label, value, unit, rating, target, gauge }: ReadoutProps) {
         {value}
         <span className="text-sm font-normal tracking-normal whitespace-nowrap text-muted-foreground">{unit}</span>
       </p>
-      <Gauge {...gauge} />
+      {gauge && <Gauge {...gauge} />}
       <p className="mt-4 text-lg font-medium">{rating.label}</p>
       {/* the goal: one size up from a caption so it gets read, still muted so the number stays the star */}
       <p className="mt-0.5 text-base text-muted-foreground">{target}</p>
@@ -74,17 +74,17 @@ export default function MetricsCards({ metrics, durationMs, pace = DEFAULT_PACE,
     <div className="grid divide-y border-y sm:grid-cols-3 sm:divide-x sm:divide-y-0">
       <Readout
         label="Pace"
-        value={metrics.wordsPerMinute}
+        value={metrics.wordsPerMinute || "–"}
         unit="words / min"
         rating={describePace(metrics.wordsPerMinute, pace)}
         target={`${paceLabel}: ${pace.low} to ${pace.high}`}
-        gauge={{
+        gauge={metrics.wordsPerMinute ? {
           value: metrics.wordsPerMinute, min: 60, max: 220,
           bands: [
             { to: pace.low - PACE_MARGIN, tone: "bad" }, { to: pace.low, tone: "okay" }, { to: pace.high, tone: "good" },
             { to: pace.high + PACE_MARGIN, tone: "okay" }, { to: 220, tone: "bad" },
           ],
-        }}
+        } : undefined}
       />
       <Readout
         label="Filler words"

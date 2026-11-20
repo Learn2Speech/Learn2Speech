@@ -11,7 +11,9 @@ export function wordsPerMin(words: TranscriptWord[]): number {
 
   const totalMs = last.end - first.start; 
 // We only want the website to calculate wpm for the time the person talks and not any other times before and after speaking.
-  if (totalMs <= 0) return 0;            
+  // Under 5 seconds of speech the pace isn't meaningful (2 words in 0.4 s would read as 300). 0 means
+  // "too short to measure": the results page, History and the prompt all show it that way.
+  if (totalMs < 5000) return 0;            
 
   const mins = totalMs / 60_000;        
   return Math.round(words.length / mins);

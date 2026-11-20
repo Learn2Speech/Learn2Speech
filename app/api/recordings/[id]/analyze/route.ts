@@ -9,6 +9,7 @@ import {cleanTopic, quickTopicProblem} from "@/lib/topic/check-topic"
 import {classifyTopic} from "@/lib/topic/classify-topic"
 import type {TopicInfo} from "@/lib/topic/speech-types"
 import {cleanScript, countWords} from "@/lib/script/compare-script"
+import {STALE_ANALYSIS_MS} from "@/lib/recording-types"
 export const maxDuration = 200;
 // A topic that can't be evaluated gets this status + code, so the page can show the "can't use that topic" popup.
 // The recording stays "uploaded", so the page can ask again (topic-free, or with a new topic) without re-uploading.
@@ -18,6 +19,7 @@ function topicRejected(reason: string) {
 const DAILY_LIMIT = 20;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const started = Date.now() // Claude gets whatever is left of the 200 seconds (see below)
     const {id} = await params
     if (!UUID.test(id)) {
         return Response.json({error: "Recording not found."}, {status: 404});
@@ -106,8 +108,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         if (!verdict.ok) return topicRejected(verdict.reason)
         topic = {topic: typedTopic, speechType: verdict.speechType}
     }
-    // a row stuck on "analyzing" (server timed out) becomes retryable 10 min after its analysis started
-    const stale = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+    // a row stuck on "analyzing" (server timed out) becomes retryable once its analysis is surely dead
+    const stale = new Date(Date.now() - STALE_ANALYSIS_MS).toISOString();
     // Repeat guard + claim in ONE step: only a recording that is "uploaded" or "failed" can be switched to
     // "analyzing", so two requests sent at the same time can't both start a paid analysis.
     const {data: claimed, error: updateError} = await admin.from("recordings").update({status: "analyzing", analysis_started_at: new Date().toISOString()}).eq("id", id).eq("user_id", user.id).or(`status.in.(uploaded,failed),and(status.eq.analyzing,analysis_started_at.lt.${stale})`).select("id")
@@ -118,7 +120,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         return Response.json({error: "Could not update status."}, {status: 500})
     }
     if (!claimed || claimed.length === 0) {
-        return Response.json({error: "This recording has already been analyzed."}, {status: 409});
+        return Response.json({error: data.status === "done"
+            ? "This recording has already been analyzed."
+            : "This recording is already being analyzed. Check History in a minute."}, {status: 409});
     }
 
     // The try catch below make sit so that the code will do everything in try but acts as a giant error marker
@@ -130,7 +134,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         // Uses the link and physically uses the path that has been cleared by the guards to send in that link and transcribe audio with the link
         const transcript = await transcribeAudio(link)
         // Uses that transcript and gets feedback (plus the impromptu or topic section, if any)
-        const {metrics, feedback} = await getFeedback(transcript, {impromptu, topic, script})
+        // Claude gets the time left before the 200-second limit (minus 10s to save), so a slow reply fails
+        // cleanly as "failed" (retryable) instead of the server being stopped with the row stuck on "analyzing"
+        const timeLeft = (maxDuration - 10) * 1000 - (Date.now() - started)
+        const {metrics, feedback} = await getFeedback(transcript, {impromptu, topic, script, signal: AbortSignal.timeout(Math.max(timeLeft, 1000))})
         if (redoOf) feedback.redoOf = redoOf
 
         //  Here we are now taking the values we got from Rian's code and taking them back and updating our table/database with them

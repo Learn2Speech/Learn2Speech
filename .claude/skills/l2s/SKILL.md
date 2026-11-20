@@ -246,6 +246,26 @@ W3C SC 1.4.2, Deque no-autoplay-audio, htmlburger micro-interactions.
 
 Newest first. One entry per big design change: date, what changed, why, where.
 
+- **2026-11-15: History tools.** Search (name or topic) and From/To date filters above the list (native
+  date inputs, filtered in the browser, "Showing X of Y" announced), shown once there are 2+ recordings.
+  Each row has a pencil (Rename) and a red trash can (Delete, with the same confirm popup) at the top right,
+  outside the row's link. Results pages got a Rename button next to Delete. Rename needs migration 0011
+  (users may update only `original_name` on their own rows). `components/history/history-list.tsx`,
+  `components/history/rename-recording-button.tsx`, `components/results/delete-recording-button.tsx`.
+  Then: filters show even with one recording; 6 recordings per page (Previous, page numbers, Next); the
+  progress section says "Not enough recordings yet" instead of disappearing; the same audio uploaded again
+  (same file size and same length; not the name, which Rename and Record change; `lib/duplicates.ts`) gets
+  a solid orange "Duplicate" tag on the newer copy and is left out of the charts. A "Hide duplicates" switch
+  (shown only when there are some) hides them from the list without deleting anything.
+  A Type filter (All / Impromptu / Practice) sits next to the search. "Keep chart in view" (off by default,
+  lg+ only, not remembered) pins the main progress chart under the top bar while the list scrolls; never
+  on phones, where it would cover most of the screen. Switches share `components/ui/switch-toggle.tsx`.
+  Charts open with a one-line summary written in code from the same Better/Worse verdicts ("Great progress:
+  ...", "Your pace has improved... Keep working on your filler words."). "Start chart fresh" (confirm popup)
+  makes the charts count only recordings from now on; nothing is deleted and "Bring back old points" undoes
+  it. Saved in the account's user_metadata.chart_start, so it follows the user across devices.
+  `components/history/chart-reset.tsx`.
+
 - **2026-11-15: Feedback as short lists; readable targets.** Feedback stays lists (scanning beats prose, NN/g
   1997): the prompt asks for a 1-2 sentence summary, 2-3 strengths and 3-5 improvements, each one short
   sentence. The metric labels and "aim for" lines went from 14px to 16px (still muted) so people read the

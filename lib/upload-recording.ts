@@ -63,7 +63,7 @@ export default async function uploadRecording(supabase: SupabaseClient, file: Fi
     const {data: newRecording, error: insertError} = await supabase.from("recordings").insert({
         user_id: data.user.id,
         file_path: address,
-        original_name: file.name,
+        original_name: file.name.slice(0, 200), // the database allows 200 characters
         size_bytes: file.size,
         // only sent for impromptu runs, so normal uploads don't depend on the new columns
         ...(impromptu ? {topic: impromptu.topic, target_seconds: impromptu.targetSeconds} : {}),

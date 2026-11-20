@@ -8,6 +8,7 @@ export type Rating = { label: string; tone: "good" | "okay" | "bad"};
 // kind of speech instead (lib/topic/speech-types.ts); up to 20 wpm outside the range counts as "a bit" off.
 export const PACE_MARGIN = 20;
 export function describePace(wpm: number, range: { low: number; high: number } = { low: 120, high: 160 }): Rating {
+  if (!wpm) return { label: "Too short to rate", tone: "okay" }; // under 5 seconds of speech (lib/metrics/wpm.ts)
   if (wpm < range.low - PACE_MARGIN) return { label: "Too slow", tone: "bad" };
   if (wpm < range.low) return { label: "A bit slow", tone: "okay" };
   if (wpm <= range.high) return { label: "Good pace", tone: "good" };

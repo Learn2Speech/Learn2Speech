@@ -51,7 +51,9 @@ export default function ResultsView({ metrics, feedback, transcript, impromptu }
           <h2 className="text-3xl leading-[1.05] font-semibold sm:text-4xl">
             {top
               ? `You said “${top.word}” ${top.count === 1 ? "once" : `${top.count} times`}.`
-              : `${metrics.wordsPerMinute} words per minute, and not one filler word.`}
+              : metrics.wordsPerMinute
+                ? `${metrics.wordsPerMinute} words per minute, and not one filler word.`
+                : "Not one filler word, but it was too short to measure your pace."}
           </h2>
           <p className="mt-4 max-w-[52ch] text-lg text-muted-foreground">{feedback.summary}</p>
         </div>
