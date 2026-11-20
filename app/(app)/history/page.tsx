@@ -2,21 +2,21 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import Link from "next/link";
-import formatSize from "@/lib/format-size";
 import {createServerSupabase} from "@/lib/supabase-server"
 import PageHeader from "@/components/page-header";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import type {Recording} from "@/lib/recording-types"
 import ProgressChart from "@/components/history/progress-chart"
+import PinnableChart from "@/components/history/pinnable-chart"
+import ChartReset from "@/components/history/chart-reset"
+import HistoryList, {type HistoryRow} from "@/components/history/history-list"
+import { duplicateIds } from "@/lib/duplicates"
 import { impromptuFromRow } from "@/lib/impromptu/topics"
 
 export const metadata: Metadata = { title: "History" };
 
-// Only the columns the list shows. We leave out the full transcript on purpose:
+// Only the columns the list shows (HistoryRow). We leave out the full transcript on purpose:
 // it holds every word with timestamps, which is too heavy to load for every row.
-type HistoryRow = Pick<Recording, "id" | "original_name" | "size_bytes" | "created_at" | "status" | "metrics" | "feedback" | "error_message" | "topic" | "target_seconds">
 
 async function RecordingsList() {
 
@@ -24,7 +24,7 @@ async function RecordingsList() {
     const supabase = await createServerSupabase();
     const {data: rows, error} = await supabase
         .from("recordings")
-        .select("id, original_name, size_bytes, created_at, status, metrics, feedback, error_message, topic, target_seconds")
+        .select("id, original_name, file_path, size_bytes, duration_ms, created_at, status, metrics, feedback, error_message, topic, target_seconds")
         .order("created_at", {ascending: false})
     // The Supabase client doesn't know our table's shape, so we tell TypeScript what came back
     const data = (rows ?? []) as HistoryRow[]
@@ -42,80 +42,27 @@ async function RecordingsList() {
     }
     // finished recordings only, oldest first, so the chart reads left → right over time
     // ([...data] copies first, because reverse() would also flip the list below)
-    const finished = [...data].reverse().filter((row) => row.status === "done" && row.metrics)
+    // duplicates (the same audio uploaded again) stay in the list, marked, but don't count twice in the charts
+    const duplicates = duplicateIds(data)
+    const allFinished = [...data].reverse().filter((row) => row.status === "done" && row.metrics && !duplicates.has(row.id))
+    // "Start chart fresh" (components/history/chart-reset.tsx): the charts count only recordings from that moment
+    const {data: {user}} = await supabase.auth.getUser()
+    const chartStart = typeof user?.user_metadata?.chart_start === "string" ? user.user_metadata.chart_start as string : null
+    const finished = chartStart ? allFinished.filter((row) => new Date(row.created_at) >= new Date(chartStart)) : allFinished
     const points = finished.map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
-    // the same charts again for impromptu runs only, once there are at least two of them
+    // the same charts again for impromptu runs only, once there's at least one (it says when it needs more)
     const impromptuPoints = finished.filter((row) => impromptuFromRow(row)).map((row) => ({createdAt: row.created_at, metrics: row.metrics!}))
-    const showImpromptu = impromptuPoints.length >= 2
+    const showImpromptu = impromptuPoints.length >= 1
     return (
         <>
-        <ProgressChart points={points} />
+        <PinnableChart canPin={points.length >= 2}
+            toolbar={(chartStart || allFinished.length >= 2) && <ChartReset chartStart={chartStart} hiddenCount={allFinished.length - finished.length} />}>
+            <ProgressChart points={points} className="mb-0" />
+        </PinnableChart>
         {showImpromptu && <ProgressChart points={impromptuPoints} title="Impromptu progress" />}
-        <ul className="divide-y border-y border-foreground">
-            {/* map returns one <li> per row; key lets React tell the items apart */}
-            {data.map((row) => {
-                const impromptu = impromptuFromRow(row)
-                return (
-                <li key={row.id}>
-                    {/* the whole row is a link to that recording's full results */}
-                    <Link href={`/history/${row.id}`} className="block py-6 transition-colors duration-150 hover:bg-muted/60 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none sm:-mx-3 sm:rounded-md sm:px-3">
-                        <div className="flex items-start justify-between gap-3">
-                            <p className="min-w-0 truncate text-xl font-semibold sm:text-2xl" title={row.original_name}>{row.original_name}</p>
-                            <div className="flex shrink-0 gap-1.5">
-                                {impromptu && <Badge variant="outline" className="border-orange/40 bg-orange/10 text-foreground">Impromptu</Badge>}
-                                {/* a redo of an earlier take (components/redo) */}
-                                {row.feedback?.redoOf && <Badge variant="outline">Redo</Badge>}
-                                {/* practiced from a pasted script (components/script) */}
-                                {row.feedback?.script && <Badge variant="outline">Script</Badge>}
-                                <StatusBadge status={row.status} />
-                            </div>
-                        </div>
-                        {impromptu && <p className="mt-1 text-foreground">Topic: {impromptu.topic}</p>}
-                        {/* a topic the speaker typed lives in the feedback (topic mode) */}
-                        {!impromptu && row.feedback?.topic && <p className="mt-1 break-words text-foreground">Topic: {row.feedback.topic.topic}</p>}
-                        <p className="text-sm text-muted-foreground">
-                            {formatSize(row.size_bytes)} · {new Date(row.created_at).toLocaleDateString()}
-                        </p>
-                        {/* What we show depends on where the recording is in the analysis */}
-                        {row.status === "analyzing" && (
-                            <p className="mt-2 text-sm text-muted-foreground">Analyzing... refresh in a few minutes.</p>
-                        )}
-                        {row.status === "uploaded" && (
-                            <p className="mt-2 text-sm text-muted-foreground">Waiting to be analyzed.</p>
-                        )}
-                        {row.status === "failed" && (
-                            <p className="mt-2 text-sm text-destructive">Analysis failed: {row.error_message ?? "unknown reason"}</p>
-                        )}
-                        {/* metrics and feedback can be null, so check they exist before reading them */}
-                        {row.status === "done" && row.metrics && row.feedback && (
-                            <div className="mt-4 space-y-3">
-                                <p className="flex flex-wrap items-baseline gap-x-8 gap-y-1 tabular-nums">
-                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.wordsPerMinute}</span> <span className="text-muted-foreground">words/min</span></span>
-                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.fillerCount}</span> <span className="text-muted-foreground">fillers</span></span>
-                                    <span><span className="text-3xl font-black text-(--brand)">{row.metrics.pauses.length}</span> <span className="text-muted-foreground">long pauses</span></span>
-                                </p>
-                                <p className="line-clamp-2 max-w-[75ch] text-muted-foreground">{row.feedback.summary}</p>
-                            </div>
-                        )}
-                    </Link>
-                </li>
-                )
-            })}
-        </ul>
+        <HistoryList rows={data} duplicates={[...duplicates]} />
         </>
     );
-}
-
-// Small colored label in the corner of each row, so you can scan the list for what's finished.
-function StatusBadge({ status }: { status: Recording["status"] }) {
-    const labels: Record<Recording["status"], string> = { uploaded: "Waiting", analyzing: "Analyzing", done: "Done", failed: "Failed" };
-    const colors: Record<Recording["status"], string> = {
-        uploaded: "",
-        analyzing: "border-brand/30 bg-accent text-accent-foreground",
-        done: "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400",
-        failed: "border-destructive/30 bg-destructive/10 text-destructive",
-    };
-    return <Badge variant="outline" className={`shrink-0 ${colors[status]}`}>{labels[status]}</Badge>;
 }
 
 // Gray placeholder rows shown while the list loads, shaped like the real rows.
