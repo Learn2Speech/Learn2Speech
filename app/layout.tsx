@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import CookieConsent from "@/components/cookie-consent";
+import SessionTimeout from "@/components/auth/session-timeout";
 import UiSounds from "@/components/ui-sounds";
 import "./globals.css";
 
@@ -40,6 +41,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
           <CookieConsent />
           <UiSounds />
+          {/* logs you out after 30 minutes away (shared and school computers) */}
+          <SessionTimeout />
         </ThemeProvider>
       </body>
     </html>
